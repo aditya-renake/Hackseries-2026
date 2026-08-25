@@ -1,0 +1,41 @@
+{
+  "name": "hackseries-2026",
+  "version": "1.0.0",
+  "description": "HackSeries 2026 - Full-Stack Event Registration, QR Pass, and Check-in System ready for Vercel deployment",
+  "type": "module",
+  "scripts": {
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build": "cd frontend && npm install && npm run build",
+    "start": "node backend/src/server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.1",
+    "nodemailer": "^6.9.13",
+    "qrcode": "^1.5.3",
+    "uuid": "^9.0.1",
+    "mongodb-memory-server": "^9.2.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "hackathon",
+    "qr-code",
+    "check-in",
+    "google-forms",
+    "nodemailer",
+    "express",
+    "react",
+    "hackseries",
+    "vercel"
+  ],
+  "author": "Aditya Renake <aditya.renake@outlook.com>",
+  "license": "MIT"
+}
