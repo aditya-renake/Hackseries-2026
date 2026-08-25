@@ -45,7 +45,11 @@ export const sendSinglePassEmail = async (req, res) => {
     });
   } catch (error) {
     console.error('❌ Send email error:', error);
-    res.status(500).json({ success: false, message: 'Failed to send pass email', error: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to send pass email',
+      error: error.message,
+    });
   }
 };
 
@@ -86,7 +90,12 @@ export const sendBulkEmails = async (req, res) => {
       results,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Bulk email dispatch failed', error: error.message });
+    console.error('❌ Bulk send email error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Bulk email dispatch failed',
+      error: error.message,
+    });
   }
 };
 

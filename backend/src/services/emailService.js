@@ -9,15 +9,18 @@ let transporter = null;
 export const getTransporter = async () => {
   if (transporter) return transporter;
 
-  const host = process.env.SMTP_HOST || 'smtp.office365.com';
-  const user = process.env.SMTP_USER || 'aditya.renake@outlook.com';
-  const pass = process.env.SMTP_PASS;
+  const user = (process.env.SMTP_USER || 'aditya.renake@outlook.com').trim();
+  const pass = (process.env.SMTP_PASS || '').trim();
 
-  if (pass && pass.trim() !== '') {
+  if (pass && pass !== '') {
+    const isOutlook = user.includes('@outlook.') || user.includes('@hotmail.') || user.includes('@live.');
+    const host = process.env.SMTP_HOST || (isOutlook ? 'smtp-mail.outlook.com' : 'smtp.office365.com');
+    const port = parseInt(process.env.SMTP_PORT || '587', 10);
+
     transporter = nodemailer.createTransport({
       host: host,
-      port: parseInt(process.env.SMTP_PORT || '587', 10),
-      secure: process.env.SMTP_SECURE === 'true',
+      port: port,
+      secure: port === 465,
       auth: {
         user: user,
         pass: pass,
@@ -26,8 +29,10 @@ export const getTransporter = async () => {
         ciphers: 'SSLv3',
         rejectUnauthorized: false,
       },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
     });
-    console.log(`📧 Configured Outlook / SMTP transporter for: ${user}`);
+    console.log(`📧 Configured SMTP transporter for: ${user} on ${host}:${port}`);
   } else {
     // Ethereal / Simulated Mailer for zero-setup local dev
     try {
@@ -46,7 +51,7 @@ export const getTransporter = async () => {
       console.warn('⚠️ Falling back to mock logger mailer:', err.message);
       transporter = {
         sendMail: async (mailOptions) => {
-          console.log(`📨 [SIMULATED OUTLOOK EMAIL] From: ${mailOptions.from} | To: ${mailOptions.to} | Subject: ${mailOptions.subject}`);
+          console.log(`📨 [SIMULATED EMAIL] From: ${mailOptions.from} | To: ${mailOptions.to} | Subject: ${mailOptions.subject}`);
           return { messageId: 'hackseries-simulated-' + Date.now(), simulated: true };
         },
       };
