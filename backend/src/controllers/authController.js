@@ -5,13 +5,20 @@ const JWT_SECRET = process.env.JWT_SECRET || 'hackseries_2026_jwt_super_secret_k
 
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, email, identifier, password } = req.body;
+    const rawIdentifier = (username || email || identifier || '').toLowerCase().trim();
 
-    if (!email || !password) {
-      return res.status(400).json({ success: false, message: 'Email and password are required.' });
+    if (!rawIdentifier || !password) {
+      return res.status(400).json({ success: false, message: 'Username/Email and password are required.' });
     }
 
-    const user = await StaffUser.findOne({ email: email.toLowerCase().trim() });
+    const user = await StaffUser.findOne({
+      $or: [
+        { username: rawIdentifier },
+        { email: rawIdentifier },
+      ],
+    });
+
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid credentials. User not found.' });
     }
@@ -27,6 +34,7 @@ export const login = async (req, res) => {
     const token = jwt.sign(
       {
         userId: user._id,
+        username: user.username,
         email: user.email,
         name: user.name,
         role: user.role,
@@ -41,6 +49,7 @@ export const login = async (req, res) => {
       token,
       user: {
         id: user._id,
+        username: user.username,
         email: user.email,
         name: user.name,
         role: user.role,

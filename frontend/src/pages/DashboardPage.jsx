@@ -12,7 +12,8 @@ import {
   Sliders, 
   Download,
   Zap,
-  ShieldCheck
+  ShieldCheck,
+  QrCode
 } from 'lucide-react';
 import { api } from '../services/api';
 import { StatCard } from '../components/StatCard';
@@ -22,7 +23,7 @@ import { WebhookGuideModal } from '../components/WebhookGuideModal';
 import { EmailTemplateModal } from '../components/EmailTemplateModal';
 import { BulkEmailModal } from '../components/BulkEmailModal';
 
-export const DashboardPage = ({ onShowToast }) => {
+export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
   const [registrants, setRegistrants] = useState([]);
   const [stats, setStats] = useState({
     totalRegistrants: 0,
@@ -117,6 +118,12 @@ export const DashboardPage = ({ onShowToast }) => {
 
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {onNavigateToScanner && (
+            <button className="btn btn-cyan btn-sm" onClick={onNavigateToScanner}>
+              <QrCode size={14} /> Open Gate Scanner
+            </button>
+          )}
+
           <button className="btn btn-secondary btn-sm" onClick={() => setShowWebhookGuide(true)}>
             <FileSpreadsheet size={15} color="#22c55e" /> Google Sheet Webhook Script
           </button>

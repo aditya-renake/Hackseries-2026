@@ -11,32 +11,19 @@ export const seedDatabase = async () => {
     if (userCount === 0) {
       console.log('🌱 Seeding initial staff and admin accounts for HackSeries 2026...');
 
-      const adminPasswordHash = await bcrypt.hash('hackseries2026', 10);
-      const standardAdminHash = await bcrypt.hash('admin123', 10);
-      const scannerPasswordHash = await bcrypt.hash('scanner123', 10);
+      const adminPasswordHash = await bcrypt.hash('Aditya@11', 10);
 
       await StaffUser.create([
         {
+          username: 'adityarenake',
           name: 'Aditya Renake',
           email: 'aditya.renake@outlook.com',
           passwordHash: adminPasswordHash,
           role: 'admin',
         },
-        {
-          name: 'HackSeries Operations Admin',
-          email: 'admin@hackseries.io',
-          passwordHash: standardAdminHash,
-          role: 'admin',
-        },
-        {
-          name: 'Gate Scanner #1',
-          email: 'gate1@hackseries.io',
-          passwordHash: scannerPasswordHash,
-          role: 'scanner',
-        },
       ]);
 
-      console.log('✅ Staff users created.');
+      console.log('✅ Admin user adityarenake created.');
     }
 
     const configCount = await EventConfig.countDocuments();

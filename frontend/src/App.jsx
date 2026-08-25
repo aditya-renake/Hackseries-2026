@@ -100,7 +100,10 @@ export function App() {
         )}
 
         {currentView === 'dashboard' && user && (
-          <DashboardPage onShowToast={handleShowToast} />
+          <DashboardPage
+            onShowToast={handleShowToast}
+            onNavigateToScanner={() => setCurrentView('scanner')}
+          />
         )}
 
         {currentView === 'scanner' && user && (

@@ -100,13 +100,11 @@ npx vercel
 
 ---
 
-## 🔐 Staff & Admin Demo Credentials
+## 🔐 Staff & Admin Access Credentials
 
-| Role | Email | Password |
-|---|---|---|
-| **Lead Admin** | `aditya.renake@outlook.com` | `hackseries2026` |
-| **Operations Admin** | `admin@hackseries.io` | `admin123` |
-| **Gate Scanner** | `gate1@hackseries.io` | `scanner123` |
+| Role | Username / Email | Password | Access |
+|---|---|---|---|
+| **Lead Operations Admin** | `adityarenake` *(or `aditya.renake@outlook.com`)* | `Aditya@11` | Full Control Room + Gate Scanner |
 
 ---
 

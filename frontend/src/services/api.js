@@ -27,11 +27,11 @@ const handleResponse = async (res) => {
 export const api = {
   // Auth API
   auth: {
-    login: async (email, password) => {
+    login: async (identifier, password) => {
       const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ identifier, username: identifier, email: identifier, password }),
       });
       const data = await handleResponse(res);
       if (data.token) {
