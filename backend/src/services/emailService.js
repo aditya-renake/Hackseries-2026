@@ -9,30 +9,47 @@ let transporter = null;
 export const getTransporter = async () => {
   if (transporter) return transporter;
 
-  const user = (process.env.SMTP_USER || 'aditya.renake@outlook.com').trim();
+  const user = (process.env.SMTP_USER || '').trim();
   const pass = (process.env.SMTP_PASS || '').trim();
+  const customHost = (process.env.SMTP_HOST || '').trim();
 
   if (pass && pass !== '') {
+    const isGmail = user.includes('@gmail.com') || customHost.includes('gmail');
+    const isResend = customHost.includes('resend.com') || user.toLowerCase() === 'resend';
     const isOutlook = user.includes('@outlook.') || user.includes('@hotmail.') || user.includes('@live.');
-    const host = process.env.SMTP_HOST || (isOutlook ? 'smtp-mail.outlook.com' : 'smtp.office365.com');
-    const port = parseInt(process.env.SMTP_PORT || '587', 10);
+    
+    let host = customHost;
+    let port = parseInt(process.env.SMTP_PORT || '587', 10);
+    let secure = port === 465;
 
-    transporter = nodemailer.createTransport({
-      host: host,
-      port: port,
-      secure: port === 465,
+    if (!host) {
+      if (isGmail) host = 'smtp.gmail.com';
+      else if (isResend) host = 'smtp.resend.com';
+      else if (isOutlook) host = 'smtp-mail.outlook.com';
+      else host = 'smtp.office365.com';
+    }
+
+    const transportConfig = {
+      host,
+      port,
+      secure,
       auth: {
-        user: user,
-        pass: pass,
+        user,
+        pass,
       },
       tls: {
-        ciphers: 'SSLv3',
         rejectUnauthorized: false,
       },
       connectionTimeout: 10000,
       greetingTimeout: 10000,
-    });
-    console.log(`📧 Configured SMTP transporter for: ${user} on ${host}:${port}`);
+    };
+
+    if (isGmail) {
+      transportConfig.service = 'gmail';
+    }
+
+    transporter = nodemailer.createTransport(transportConfig);
+    console.log(`📧 Configured SMTP transporter (${isGmail ? 'Gmail' : isResend ? 'Resend' : host}) for: ${user}`);
   } else {
     // Ethereal / Simulated Mailer for zero-setup local dev
     try {
@@ -363,10 +380,12 @@ export const sendPassEmail = async (registrant, eventConfig = {}) => {
     .replace('{{eventName}}', eventName)
     .replace('{{name}}', registrant.name);
 
+  const fromAddress = process.env.EMAIL_FROM || `"HackSeries 2026" <${senderEmail}>`;
+
   const mailOptions = {
-    from: `"HackSeries 2026" <${senderEmail}>`,
+    from: fromAddress,
     to: registrant.email,
-    replyTo: senderEmail,
+    replyTo: process.env.REPLY_TO || senderEmail,
     subject: subject,
     html: html,
     attachments: [
