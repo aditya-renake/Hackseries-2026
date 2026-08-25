@@ -31,10 +31,15 @@ export const ensureDBConnected = async (req, res, next) => {
     await connectDB();
     if (next) next();
   } catch (err) {
-    console.error('Database connection middleware error:', err);
-    if (res) {
-      return res.status(500).json({ success: false, message: 'Database connection failed' });
+    console.error('Database connection middleware error:', err.message);
+    if (res && res.status) {
+      return res.status(500).json({
+        success: false,
+        message: `Database connection failed: ${err.message}`,
+        error: err.message,
+      });
     }
+    throw err;
   }
 };
 
