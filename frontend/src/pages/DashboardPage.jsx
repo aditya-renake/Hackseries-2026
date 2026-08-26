@@ -13,7 +13,8 @@ import {
   Download,
   Zap,
   ShieldCheck,
-  QrCode
+  QrCode,
+  CheckSquare
 } from 'lucide-react';
 import { api } from '../services/api';
 import { StatCard } from '../components/StatCard';
@@ -22,6 +23,7 @@ import { PassPreviewModal } from '../components/PassPreviewModal';
 import { WebhookGuideModal } from '../components/WebhookGuideModal';
 import { EmailTemplateModal } from '../components/EmailTemplateModal';
 import { BulkEmailModal } from '../components/BulkEmailModal';
+import { sounds } from '../utils/soundEffects';
 
 export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
   const [registrants, setRegistrants] = useState([]);
@@ -38,6 +40,9 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
     totalItems: 0,
     totalPages: 1,
   });
+
+  // Selected Attendees for Bulk Actions
+  const [selectedIds, setSelectedIds] = useState([]);
 
   // Filter States
   const [search, setSearch] = useState('');
@@ -98,8 +103,35 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
   };
 
   const handleExportCSV = () => {
+    sounds.playClick();
     window.location.href = api.registrants.exportCSVUrl();
   };
+
+  // Selection Handlers
+  const handleToggleSelect = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAllVisible = (visibleIds) => {
+    setSelectedIds((prev) => {
+      const isAllSelected = visibleIds.length > 0 && visibleIds.every((id) => prev.includes(id));
+      if (isAllSelected) {
+        return prev.filter((id) => !visibleIds.includes(id));
+      }
+      return Array.from(new Set([...prev, ...visibleIds]));
+    });
+  };
+
+  const handleClearSelection = () => {
+    setSelectedIds([]);
+  };
+
+  // Compute selected registrant objects
+  const selectedRegistrantsList = registrants.filter((r) =>
+    selectedIds.includes(r.uniqueId || r._id)
+  );
 
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px' }}>
@@ -118,7 +150,7 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
         </div>
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
           {onNavigateToScanner && (
             <button className="btn btn-cyan btn-sm" onClick={onNavigateToScanner}>
               <QrCode size={14} /> Open Gate Scanner
@@ -129,8 +161,22 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
             <FileSpreadsheet size={15} color="#22c55e" /> Google Sheet Webhook Script
           </button>
 
-          <button className="btn btn-primary btn-sm" onClick={() => setShowBulkEmail(true)}>
-            <Send size={14} /> Bulk Email Passes
+          {/* Bulk Email button with selected counter badge */}
+          <button 
+            className="btn btn-primary btn-sm" 
+            onClick={() => {
+              sounds.playClick();
+              setShowBulkEmail(true);
+            }}
+            style={{
+              background: selectedIds.length > 0 ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : undefined,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <Send size={14} /> 
+            <span>{selectedIds.length > 0 ? `Email Selected (${selectedIds.length})` : 'Bulk Email Passes'}</span>
           </button>
 
           <button className="btn btn-secondary btn-sm" onClick={() => setShowEmailTemplate(true)}>
@@ -169,7 +215,7 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
         <StatCard
           title="Passes Dispatched"
           value={stats.emailSentCount}
-          subtitle="Sent via aditya.renake@outlook.com"
+          subtitle="Sent via tigeradi1504@gmail.com"
           icon={Mail}
           color="violet"
         />
@@ -245,10 +291,15 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
         </form>
       </div>
 
-      {/* Registrant Data Table */}
+      {/* Registrant Data Table with Selection Controls */}
       <RegistrantTable
         registrants={registrants}
         pagination={pagination}
+        selectedIds={selectedIds}
+        onToggleSelect={handleToggleSelect}
+        onSelectAllVisible={handleSelectAllVisible}
+        onClearSelection={handleClearSelection}
+        onOpenBulkEmail={() => setShowBulkEmail(true)}
         onPageChange={(p) => fetchData(p)}
         onRefresh={() => fetchData(pagination.page)}
         onViewPass={(reg) => setSelectedPassRegistrant(reg)}
@@ -286,9 +337,11 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
         <BulkEmailModal
           pendingCount={stats.pendingEmailCount}
           totalCount={stats.totalRegistrants}
+          selectedRegistrants={selectedRegistrantsList}
           onClose={() => setShowBulkEmail(false)}
           onShowToast={onShowToast}
           onRefresh={() => fetchData(pagination.page)}
+          onClearSelection={handleClearSelection}
         />
       )}
 

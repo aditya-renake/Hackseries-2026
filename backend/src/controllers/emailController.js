@@ -56,8 +56,14 @@ export const sendBulkEmails = async (req, res) => {
     let registrants = allResult.items || [];
 
     if (selectedIds && Array.isArray(selectedIds) && selectedIds.length > 0) {
-      const idSet = new Set(selectedIds);
-      registrants = registrants.filter((r) => idSet.has(r.uniqueId) || idSet.has(r._id));
+      const idSet = new Set(selectedIds.map((id) => String(id).toUpperCase().trim()));
+      const emailSet = new Set(selectedIds.map((id) => String(id).toLowerCase().trim()));
+      
+      registrants = registrants.filter((r) => 
+        idSet.has(String(r.uniqueId || '').toUpperCase().trim()) ||
+        idSet.has(String(r._id || '').toUpperCase().trim()) ||
+        emailSet.has(String(r.email || '').toLowerCase().trim())
+      );
     } else if (onlyPending) {
       registrants = registrants.filter((r) => !r.emailSent);
     }
