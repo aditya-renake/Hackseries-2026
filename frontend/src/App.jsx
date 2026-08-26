@@ -5,6 +5,7 @@ import { DigitalPassPage } from './pages/DigitalPassPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ScannerPage } from './pages/ScannerPage';
 import { LoginPage } from './pages/LoginPage';
+import { RegistrationPage } from './pages/RegistrationPage';
 import { api } from './services/api';
 import { CheckCircle2, AlertTriangle, Info, XCircle } from 'lucide-react';
 
@@ -14,7 +15,7 @@ export function App() {
   const [user, setUser] = useState(null);
   const [toasts, setToasts] = useState([]);
 
-  // Check URL pathname for /pass/:uniqueId
+  // Check URL pathname for /pass/:uniqueId or /register
   useEffect(() => {
     const path = window.location.pathname;
     if (path.startsWith('/pass/')) {
@@ -23,6 +24,8 @@ export function App() {
         setActivePassId(id);
         setCurrentView('pass');
       }
+    } else if (path === '/register') {
+      setCurrentView('register');
     }
   }, []);
 
@@ -60,6 +63,15 @@ export function App() {
     setCurrentView('pass');
   };
 
+  const handleNavigateToRegister = (openInNewTab = false) => {
+    if (openInNewTab) {
+      window.open('/register', '_blank');
+    } else {
+      window.history.pushState({}, '', '/register');
+      setCurrentView('register');
+    }
+  };
+
   const handleBackToLanding = () => {
     window.history.pushState({}, '', '/');
     setActivePassId(null);
@@ -70,22 +82,35 @@ export function App() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       
       {/* Top Navbar */}
-      <Navbar
-        currentView={currentView}
-        setCurrentView={(view) => {
-          if (view === 'landing') {
-            window.history.pushState({}, '', '/');
-          }
-          setCurrentView(view);
-        }}
-        user={user}
-        onLogout={handleLogout}
-      />
+      {currentView !== 'register' && currentView !== 'pass' && (
+        <Navbar
+          currentView={currentView}
+          setCurrentView={(view) => {
+            if (view === 'landing') {
+              window.history.pushState({}, '', '/');
+            } else if (view === 'register') {
+              window.history.pushState({}, '', '/register');
+            }
+            setCurrentView(view);
+          }}
+          user={user}
+          onLogout={handleLogout}
+        />
+      )}
 
       {/* Main Content Area */}
       <main style={{ flex: 1 }}>
         {currentView === 'landing' && (
           <EventLandingPage
+            onNavigateToPass={handleNavigateToPass}
+            onNavigateToRegister={handleNavigateToRegister}
+            onShowToast={handleShowToast}
+          />
+        )}
+
+        {currentView === 'register' && (
+          <RegistrationPage
+            onBack={handleBackToLanding}
             onNavigateToPass={handleNavigateToPass}
             onShowToast={handleShowToast}
           />
@@ -122,18 +147,20 @@ export function App() {
       </main>
 
       {/* Footer */}
-      <footer style={{ background: '#030712', borderTop: '1px solid var(--border-subtle)', padding: '24px', textAlign: 'center', fontSize: '12px', color: 'var(--text-dim)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-          <div>
-            © 2026 <strong>HackSeries</strong> • Operations Lead: <strong>aditya.renake@outlook.com</strong>
+      {currentView !== 'landing' && (
+        <footer style={{ background: '#030712', borderTop: '1px solid var(--border-subtle)', padding: '24px', textAlign: 'center', fontSize: '12px', color: 'var(--text-dim)' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              © 2026 <strong>HackSeries</strong> • Operations Lead: <strong>aditya.renake@outlook.com</strong>
+            </div>
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <span>🔒 Zero-Forgery HMAC Engine</span>
+              <span>⚡ Direct Database Intake</span>
+              <span>📱 In-Browser Camera Scanner</span>
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: '16px' }}>
-            <span>🔒 Zero-Forgery HMAC Engine</span>
-            <span>⚡ Google Forms Sync</span>
-            <span>📱 In-Browser Camera Scanner</span>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      )}
 
       {/* Global Toast Notification System */}
       <div className="toast-container">

@@ -24,11 +24,9 @@ import { ConstellationBackground } from '../components/ConstellationBackground';
 import { GallerySection } from '../components/GallerySection';
 import { api } from '../services/api';
 
-export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
+export const EventLandingPage = ({ onNavigateToPass, onNavigateToRegister, onShowToast }) => {
   const [lookupInput, setLookupInput] = useState('');
   const [isLookingUp, setIsLookingUp] = useState(false);
-
-  const googleFormUrl = 'https://forms.gle/U24ip7E6NqtbZkiT9';
 
   const tracks = [
     {
@@ -177,14 +175,12 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
 
         {/* Action Button & Cyber Coords Box */}
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '14px', flexWrap: 'wrap', marginBottom: '44px' }}>
-          <a
-            href={googleFormUrl}
-            target="_blank"
-            rel="noreferrer"
+          <button
+            onClick={() => onNavigateToRegister(true)}
             className="btn-initialize"
           >
             <Power size={16} /> INITIALIZE REGISTRATION <ExternalLink size={13} />
-          </a>
+          </button>
 
           <div className="cyber-coords-box">
             <div>COORD: <strong style={{ color: '#f7d070' }}>18.6256° N, 73.8122° E</strong></div>

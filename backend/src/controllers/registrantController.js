@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Registrant } from '../models/Registrant.js';
 import { createQRPayload, generatePassSignature, generateQRCodeDataUrl } from '../services/qrService.js';
+import { sendPassEmail } from '../services/emailService.js';
 
 /**
  * List registrants with search, filter, and pagination (optimized for 2000+ scale).
@@ -164,12 +165,25 @@ export const handleWebhookSubmission = async (req, res) => {
 
     await registrant.save();
 
-    console.log(`📥 [HACKSERIES WEBHOOK] Registered: ${registrant.name} (${registrant.email}) -> Pass ID: ${uniqueId}`);
+    console.log(`📥 [HACKSERIES REGISTRATION] Registered: ${registrant.name} (${registrant.email}) -> Pass ID: ${uniqueId}`);
+
+    // Automatically send pass email in background
+    sendPassEmail(registrant)
+      .then(async (result) => {
+        if (result && result.success) {
+          registrant.emailSent = true;
+          registrant.emailSentAt = new Date();
+          await registrant.save();
+        }
+      })
+      .catch((err) => console.error('Automated pass email dispatch error:', err));
 
     res.status(201).json({
       success: true,
-      message: 'Registrant created successfully from Google Form webhook',
+      message: 'Registration successful! Digital Pass generated and email dispatched.',
       data: registrant,
+      uniqueId: registrant.uniqueId,
+      passUrl: `/pass/${uniqueId}`,
       isNew: true,
     });
   } catch (error) {

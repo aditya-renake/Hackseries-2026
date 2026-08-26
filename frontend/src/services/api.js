@@ -95,6 +95,14 @@ export const api = {
       const res = await fetch(`${API_BASE}/registrants/pass/${encodeURIComponent(idOrEmail)}`);
       return handleResponse(res);
     },
+    register: async (formData) => {
+      const res = await fetch(`${API_BASE}/registrants/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      return handleResponse(res);
+    },
     simulateGoogleFormWebhook: async (payload) => {
       const res = await fetch(`${API_BASE}/registrants/webhook`, {
         method: 'POST',
