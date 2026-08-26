@@ -20,7 +20,9 @@ import {
   Activity,
   Smartphone,
   QrCode,
-  Download
+  Download,
+  Instagram,
+  Github
 } from 'lucide-react';
 import { DYPDPULogo, ACESLogo } from '../components/CollegeLogos';
 import { ConstellationBackground } from '../components/ConstellationBackground';
@@ -564,8 +566,50 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
             © 2026 HackSeries • ACES, Dept. of Computer Engineering, DIT Pune (DYPDPU)
           </span>
         </div>
-        <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-          Lead Operations: <a href="mailto:aditya.renake@outlook.com" style={{ color: 'var(--dyp-gold)', textDecoration: 'none', fontWeight: '700' }}>aditya.renake@outlook.com</a>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-muted)' }}>
+          <span>Lead Operations: <strong style={{ color: '#ffffff', fontWeight: '800' }}>Aditya Renake</strong></span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginLeft: '4px' }}>
+            <a 
+              href="https://instagram.com/aditya.renake" 
+              target="_blank" 
+              rel="noreferrer" 
+              title="Instagram Profile"
+              style={{
+                color: '#e1306c',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'rgba(225, 48, 108, 0.12)',
+                border: '1px solid rgba(225, 48, 108, 0.25)',
+                padding: '5px',
+                borderRadius: '6px',
+                transition: 'all 0.2s ease',
+                textDecoration: 'none'
+              }}
+            >
+              <Instagram size={14} />
+            </a>
+            <a 
+              href="https://github.com/aditya-renake" 
+              target="_blank" 
+              rel="noreferrer" 
+              title="GitHub Profile"
+              style={{
+                color: '#ffffff',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                padding: '5px',
+                borderRadius: '6px',
+                transition: 'all 0.2s ease',
+                textDecoration: 'none'
+              }}
+            >
+              <Github size={14} />
+            </a>
+          </div>
         </div>
       </footer>
 

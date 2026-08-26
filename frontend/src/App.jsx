@@ -6,7 +6,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ScannerPage } from './pages/ScannerPage';
 import { LoginPage } from './pages/LoginPage';
 import { api } from './services/api';
-import { CheckCircle2, AlertTriangle, Info, XCircle } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, Info, XCircle, Instagram, Github } from 'lucide-react';
 
 export function App() {
   const [currentView, setCurrentView] = useState('landing');
@@ -124,8 +124,48 @@ export function App() {
       {/* Footer */}
       <footer style={{ background: '#030712', borderTop: '1px solid var(--border-subtle)', padding: '24px', textAlign: 'center', fontSize: '12px', color: 'var(--text-dim)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-          <div>
-            © 2026 <strong>HackSeries</strong> • Operations Lead: <strong>aditya.renake@outlook.com</strong>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>© 2026 <strong>HackSeries</strong> • Lead Operations: <strong style={{ color: '#ffffff' }}>Aditya Renake</strong></span>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginLeft: '4px' }}>
+              <a 
+                href="https://instagram.com/aditya.renake" 
+                target="_blank" 
+                rel="noreferrer" 
+                title="Instagram Profile"
+                style={{
+                  color: '#e1306c',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(225, 48, 108, 0.12)',
+                  border: '1px solid rgba(225, 48, 108, 0.25)',
+                  padding: '4px',
+                  borderRadius: '6px',
+                  textDecoration: 'none'
+                }}
+              >
+                <Instagram size={13} />
+              </a>
+              <a 
+                href="https://github.com/aditya-renake" 
+                target="_blank" 
+                rel="noreferrer" 
+                title="GitHub Profile"
+                style={{
+                  color: '#ffffff',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  padding: '4px',
+                  borderRadius: '6px',
+                  textDecoration: 'none'
+                }}
+              >
+                <Github size={13} />
+              </a>
+            </div>
           </div>
           <div style={{ display: 'flex', gap: '16px' }}>
             <span>🔒 Zero-Forgery HMAC Engine</span>
