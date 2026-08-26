@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { StaffUser } from '../models/StaffUser.js';
+import { staffRepo } from '../models/staffRepo.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'hackseries_2026_jwt_super_secret_key_8899';
 
@@ -12,28 +12,22 @@ export const login = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Username/Email and password are required.' });
     }
 
-    const user = await StaffUser.findOne({
-      $or: [
-        { username: rawIdentifier },
-        { email: rawIdentifier },
-      ],
-    });
+    const user = await staffRepo.findByIdentifier(rawIdentifier);
 
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid credentials. User not found.' });
     }
 
-    const isMatch = await user.comparePassword(password);
+    const isMatch = await staffRepo.verifyPassword(password, user.passwordHash);
     if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Invalid credentials. Incorrect password.' });
     }
 
-    user.lastLogin = new Date();
-    await user.save();
+    await staffRepo.updateLastLogin(user.username);
 
     const token = jwt.sign(
       {
-        userId: user._id,
+        userId: user.username,
         username: user.username,
         email: user.email,
         name: user.name,
@@ -48,7 +42,7 @@ export const login = async (req, res) => {
       message: 'Login successful',
       token,
       user: {
-        id: user._id,
+        id: user.username,
         username: user.username,
         email: user.email,
         name: user.name,

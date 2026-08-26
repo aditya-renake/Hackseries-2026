@@ -1,5 +1,5 @@
-import { Registrant } from '../models/Registrant.js';
-import { EventConfig } from '../models/EventConfig.js';
+import { registrantRepo } from '../models/registrantRepo.js';
+import { configRepo } from '../models/configRepo.js';
 import { sendPassEmail, sendBulkPassEmails, buildPassEmailHtml } from '../services/emailService.js';
 
 /**
@@ -8,39 +8,31 @@ import { sendPassEmail, sendBulkPassEmails, buildPassEmailHtml } from '../servic
 export const sendSinglePassEmail = async (req, res) => {
   try {
     const { id } = req.params;
-    const registrant = await Registrant.findById(id);
+    const registrant = await registrantRepo.findByUniqueId(id);
 
     if (!registrant) {
       return res.status(404).json({ success: false, message: 'Registrant not found' });
     }
 
-    let config = await EventConfig.findOne().lean();
-    if (!config) {
-      config = {
-        eventName: 'HackSeries 2026',
-        eventDate: 'October 16 - 18, 2026',
-        eventTime: '09:00 AM IST',
-        eventVenue: 'Apex Tech Hub & Innovation Arena, Pune',
-      };
-    }
-
+    const config = await configRepo.getConfig();
     const emailResult = await sendPassEmail(registrant, config);
 
-    registrant.emailSent = true;
-    registrant.emailSentAt = new Date();
-    registrant.emailSendCount = (registrant.emailSendCount || 0) + 1;
-    await registrant.save();
+    const updated = await registrantRepo.update(registrant.uniqueId, {
+      emailSent: true,
+      emailSentAt: new Date().toISOString(),
+      emailSendCount: (registrant.emailSendCount || 0) + 1,
+    });
 
     res.json({
       success: true,
-      message: `Pass email successfully sent to ${registrant.email}`,
+      message: `Pass email successfully sent to ${updated.email}`,
       result: emailResult,
       registrant: {
-        _id: registrant._id,
-        email: registrant.email,
-        emailSent: registrant.emailSent,
-        emailSentAt: registrant.emailSentAt,
-        emailSendCount: registrant.emailSendCount,
+        _id: updated.uniqueId,
+        email: updated.email,
+        emailSent: updated.emailSent,
+        emailSentAt: updated.emailSentAt,
+        emailSendCount: updated.emailSendCount,
       },
     });
   } catch (error) {
@@ -60,14 +52,15 @@ export const sendBulkEmails = async (req, res) => {
   try {
     const { onlyPending = true, selectedIds } = req.body;
 
-    let query = {};
-    if (selectedIds && Array.isArray(selectedIds) && selectedIds.length > 0) {
-      query._id = { $in: selectedIds };
-    } else if (onlyPending) {
-      query.emailSent = false;
-    }
+    const allResult = await registrantRepo.getAll({ limit: 10000 });
+    let registrants = allResult.items || [];
 
-    const registrants = await Registrant.find(query);
+    if (selectedIds && Array.isArray(selectedIds) && selectedIds.length > 0) {
+      const idSet = new Set(selectedIds);
+      registrants = registrants.filter((r) => idSet.has(r.uniqueId) || idSet.has(r._id));
+    } else if (onlyPending) {
+      registrants = registrants.filter((r) => !r.emailSent);
+    }
 
     if (registrants.length === 0) {
       return res.json({
@@ -77,12 +70,17 @@ export const sendBulkEmails = async (req, res) => {
       });
     }
 
-    let config = await EventConfig.findOne().lean();
-    if (!config) {
-      config = { eventName: 'HackSeries 2026' };
-    }
-
+    const config = await configRepo.getConfig();
     const results = await sendBulkPassEmails(registrants, config);
+
+    // Update sent flags in DynamoDB
+    for (const r of registrants) {
+      await registrantRepo.update(r.uniqueId, {
+        emailSent: true,
+        emailSentAt: new Date().toISOString(),
+        emailSendCount: (r.emailSendCount || 0) + 1,
+      });
+    }
 
     res.json({
       success: true,
@@ -108,7 +106,7 @@ export const previewPassEmail = async (req, res) => {
     let registrant;
 
     if (registrantId) {
-      registrant = await Registrant.findById(registrantId).lean();
+      registrant = await registrantRepo.findByUniqueId(registrantId);
     }
 
     if (!registrant) {
@@ -122,16 +120,7 @@ export const previewPassEmail = async (req, res) => {
       };
     }
 
-    let config = await EventConfig.findOne().lean();
-    if (!config) {
-      config = {
-        eventName: 'HackSeries 2026',
-        eventDate: 'October 16 - 18, 2026',
-        eventTime: '09:00 AM IST',
-        eventVenue: 'Apex Tech Hub & Innovation Arena, Pune',
-      };
-    }
-
+    const config = await configRepo.getConfig();
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
     const html = buildPassEmailHtml({
       attendeeName: registrant.name,

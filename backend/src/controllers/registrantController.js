@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Registrant } from '../models/Registrant.js';
+import { registrantRepo } from '../models/registrantRepo.js';
 import { createQRPayload, generatePassSignature, generateQRCodeDataUrl } from '../services/qrService.js';
 
 /**
- * List registrants with search, filter, and pagination (optimized for 2000+ scale).
+ * List registrants with search, filter, and pagination (optimized via DynamoDB).
  */
 export const getRegistrants = async (req, res) => {
   try {
@@ -19,71 +19,23 @@ export const getRegistrants = async (req, res) => {
       sortOrder = 'desc',
     } = req.query;
 
-    const query = {};
-
-    if (checkedIn !== undefined && checkedIn !== '') {
-      query.checkedIn = checkedIn === 'true';
-    }
-
-    if (emailSent !== undefined && emailSent !== '') {
-      query.emailSent = emailSent === 'true';
-    }
-
-    if (ticketType && ticketType !== 'all') {
-      query.ticketType = ticketType;
-    }
-
-    if (track && track !== 'all') {
-      query.track = track;
-    }
-
-    if (search && search.trim() !== '') {
-      const regex = new RegExp(search.trim(), 'i');
-      query.$or = [
-        { name: regex },
-        { email: regex },
-        { phone: regex },
-        { uniqueId: regex },
-        { teamName: regex },
-        { institution: regex },
-      ];
-    }
-
-    const pageNum = Math.max(1, parseInt(page, 10));
-    const limitNum = Math.min(200, Math.max(1, parseInt(limit, 10)));
-    const skip = (pageNum - 1) * limitNum;
-
-    const sortOptions = {};
-    sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
-
-    const [registrants, totalCount, totalAll, checkedInCount, emailSentCount] = await Promise.all([
-      Registrant.find(query).sort(sortOptions).skip(skip).limit(limitNum).lean(),
-      Registrant.countDocuments(query),
-      Registrant.countDocuments({}),
-      Registrant.countDocuments({ checkedIn: true }),
-      Registrant.countDocuments({ emailSent: true }),
-    ]);
-
-    const totalPages = Math.ceil(totalCount / limitNum);
+    const result = await registrantRepo.getAll({
+      page,
+      limit,
+      search,
+      checkedIn,
+      emailSent,
+      ticketType,
+      track,
+      sortBy,
+      sortOrder,
+    });
 
     res.json({
       success: true,
-      data: registrants,
-      pagination: {
-        page: pageNum,
-        limit: limitNum,
-        totalItems: totalCount,
-        totalPages,
-        hasNextPage: pageNum < totalPages,
-        hasPrevPage: pageNum > 1,
-      },
-      stats: {
-        totalRegistrants: totalAll,
-        checkedInCount,
-        checkedInPercentage: totalAll > 0 ? Math.round((checkedInCount / totalAll) * 100) : 0,
-        emailSentCount,
-        pendingEmailCount: totalAll - emailSentCount,
-      },
+      data: result.items,
+      pagination: result.pagination,
+      stats: result.stats,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch registrants', error: error.message });
@@ -116,21 +68,22 @@ export const handleWebhookSubmission = async (req, res) => {
 
     const cleanEmail = email.toLowerCase().trim();
 
-    // Check if registrant already exists
-    let existing = await Registrant.findOne({ email: cleanEmail });
+    // Check if registrant already exists in DynamoDB
+    let existing = await registrantRepo.findByEmail(cleanEmail);
     if (existing) {
-      existing.formResponses = { ...existing.formResponses, ...formResponses };
-      if (phone) existing.phone = phone;
-      if (teamName) existing.teamName = teamName;
-      if (track) existing.track = track;
-      if (githubUrl) existing.githubUrl = githubUrl;
-      if (institution) existing.institution = institution;
-      await existing.save();
+      const updated = await registrantRepo.update(existing.uniqueId, {
+        formResponses: { ...existing.formResponses, ...formResponses },
+        phone: phone ? phone.trim() : existing.phone,
+        teamName: teamName ? teamName.trim() : existing.teamName,
+        track: track || existing.track,
+        githubUrl: githubUrl ? githubUrl.trim() : existing.githubUrl,
+        institution: institution ? institution.trim() : existing.institution,
+      });
 
       return res.status(200).json({
         success: true,
         message: 'Existing HackSeries registrant updated with latest response.',
-        data: existing,
+        data: updated,
         isNew: false,
       });
     }
@@ -144,7 +97,7 @@ export const handleWebhookSubmission = async (req, res) => {
     const qrPayload = createQRPayload(uniqueId, cleanEmail, ticketType);
     const qrCodeDataUrl = await generateQRCodeDataUrl(qrPayload);
 
-    const registrant = new Registrant({
+    const newRegistrant = await registrantRepo.create({
       uniqueId,
       name: name.trim(),
       email: cleanEmail,
@@ -162,14 +115,12 @@ export const handleWebhookSubmission = async (req, res) => {
       checkedIn: false,
     });
 
-    await registrant.save();
-
-    console.log(`📥 [HACKSERIES WEBHOOK] Registered: ${registrant.name} (${registrant.email}) -> Pass ID: ${uniqueId}`);
+    console.log(`📥 [HACKSERIES WEBHOOK] Registered in DynamoDB: ${newRegistrant.name} (${newRegistrant.email}) -> Pass ID: ${uniqueId}`);
 
     res.status(201).json({
       success: true,
       message: 'Registrant created successfully from Google Form webhook',
-      data: registrant,
+      data: newRegistrant,
       isNew: true,
     });
   } catch (error) {
@@ -179,7 +130,7 @@ export const handleWebhookSubmission = async (req, res) => {
 };
 
 /**
- * Manual registrant creation by staff/admin or public registration form
+ * Manual registrant creation by staff/admin
  */
 export const createRegistrant = async (req, res) => {
   try {
@@ -200,7 +151,7 @@ export const createRegistrant = async (req, res) => {
     }
 
     const cleanEmail = email.toLowerCase().trim();
-    const existing = await Registrant.findOne({ email: cleanEmail });
+    const existing = await registrantRepo.findByEmail(cleanEmail);
     if (existing) {
       return res.status(400).json({ success: false, message: 'A hacker is already registered with this email address.' });
     }
@@ -212,7 +163,7 @@ export const createRegistrant = async (req, res) => {
     const qrPayload = createQRPayload(uniqueId, cleanEmail, ticketType);
     const qrCodeDataUrl = await generateQRCodeDataUrl(qrPayload);
 
-    const registrant = new Registrant({
+    const registrant = await registrantRepo.create({
       uniqueId,
       name: name.trim(),
       email: cleanEmail,
@@ -226,9 +177,9 @@ export const createRegistrant = async (req, res) => {
       qrPayload,
       qrSignature: signature,
       qrCodeDataUrl,
+      emailSent: false,
+      checkedIn: false,
     });
-
-    await registrant.save();
 
     res.status(201).json({
       success: true,
@@ -246,11 +197,8 @@ export const createRegistrant = async (req, res) => {
 export const getPublicPass = async (req, res) => {
   try {
     const { idOrEmail } = req.params;
-    const query = idOrEmail.includes('@')
-      ? { email: idOrEmail.toLowerCase().trim() }
-      : { uniqueId: idOrEmail.toUpperCase().trim() };
+    const registrant = await registrantRepo.findByIdOrEmail(idOrEmail);
 
-    const registrant = await Registrant.findOne(query).lean();
     if (!registrant) {
       return res.status(404).json({
         success: false,
@@ -282,11 +230,11 @@ export const getPublicPass = async (req, res) => {
 };
 
 /**
- * Get single registrant by DB ID
+ * Get single registrant by uniqueId or DB ID
  */
 export const getRegistrantById = async (req, res) => {
   try {
-    const registrant = await Registrant.findById(req.params.id);
+    const registrant = await registrantRepo.findByUniqueId(req.params.id);
     if (!registrant) {
       return res.status(404).json({ success: false, message: 'Registrant not found' });
     }
@@ -301,7 +249,7 @@ export const getRegistrantById = async (req, res) => {
  */
 export const regenerateQR = async (req, res) => {
   try {
-    const registrant = await Registrant.findById(req.params.id);
+    const registrant = await registrantRepo.findByUniqueId(req.params.id);
     if (!registrant) {
       return res.status(404).json({ success: false, message: 'Registrant not found' });
     }
@@ -310,15 +258,16 @@ export const regenerateQR = async (req, res) => {
     const qrPayload = createQRPayload(registrant.uniqueId, registrant.email, registrant.ticketType);
     const qrCodeDataUrl = await generateQRCodeDataUrl(qrPayload);
 
-    registrant.qrSignature = signature;
-    registrant.qrPayload = qrPayload;
-    registrant.qrCodeDataUrl = qrCodeDataUrl;
-    await registrant.save();
+    const updated = await registrantRepo.update(registrant.uniqueId, {
+      qrSignature: signature,
+      qrPayload,
+      qrCodeDataUrl,
+    });
 
     res.json({
       success: true,
       message: 'Cryptographic QR Pass regenerated successfully',
-      data: registrant,
+      data: updated,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to regenerate QR', error: error.message });
@@ -330,8 +279,8 @@ export const regenerateQR = async (req, res) => {
  */
 export const deleteRegistrant = async (req, res) => {
   try {
-    const registrant = await Registrant.findByIdAndDelete(req.params.id);
-    if (!registrant) {
+    const deleted = await registrantRepo.delete(req.params.id);
+    if (!deleted) {
       return res.status(404).json({ success: false, message: 'Registrant not found' });
     }
     res.json({ success: true, message: 'Registrant deleted successfully' });
@@ -345,12 +294,13 @@ export const deleteRegistrant = async (req, res) => {
  */
 export const exportCSV = async (req, res) => {
   try {
-    const registrants = await Registrant.find({}).sort({ createdAt: -1 }).lean();
+    const result = await registrantRepo.getAll({ limit: 10000 });
+    const registrants = result.items || [];
 
     const headers = ['Unique ID', 'Name', 'Email', 'Phone', 'Ticket Type', 'Team Name', 'Track', 'Checked In', 'Checked In At', 'Checked In By', 'Pass Emailed', 'Created At'];
     const rows = registrants.map((r) => [
       r.uniqueId,
-      `"${r.name.replace(/"/g, '""')}"`,
+      `"${(r.name || '').replace(/"/g, '""')}"`,
       r.email,
       r.phone || '',
       r.ticketType,
@@ -360,7 +310,7 @@ export const exportCSV = async (req, res) => {
       r.checkedInAt ? new Date(r.checkedInAt).toISOString() : '',
       r.checkedInBy || '',
       r.emailSent ? 'YES' : 'NO',
-      new Date(r.createdAt).toISOString(),
+      r.createdAt ? new Date(r.createdAt).toISOString() : '',
     ]);
 
     const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');

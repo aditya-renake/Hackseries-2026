@@ -1,4 +1,4 @@
-import { Registrant } from '../models/Registrant.js';
+import { registrantRepo } from '../models/registrantRepo.js';
 import { verifyQRPayload } from '../services/qrService.js';
 
 /**
@@ -25,14 +25,11 @@ export const scanCheckin = async (req, res) => {
       }
     }
 
-    // Fast indexed query
-    const registrant = await Registrant.findOne({
-      $or: [
-        { uniqueId: searchId.toUpperCase() },
-        { uniqueId: rawInput.toUpperCase() },
-        { email: rawInput.toLowerCase() },
-      ],
-    });
+    // Fast DynamoDB lookup
+    let registrant = await registrantRepo.findByIdOrEmail(searchId);
+    if (!registrant && searchId !== rawInput) {
+      registrant = await registrantRepo.findByIdOrEmail(rawInput);
+    }
 
     if (!registrant) {
       return res.status(404).json({
@@ -67,7 +64,7 @@ export const scanCheckin = async (req, res) => {
         checkedInAt: registrant.checkedInAt,
         checkedInBy: registrant.checkedInBy,
         registrant: {
-          _id: registrant._id,
+          _id: registrant.uniqueId,
           uniqueId: registrant.uniqueId,
           name: registrant.name,
           email: registrant.email,
@@ -82,31 +79,34 @@ export const scanCheckin = async (req, res) => {
       });
     }
 
-    // Perform Check-in
+    // Perform Check-in in DynamoDB
     const staffName = req.user ? req.user.name : (req.body.scannedBy || 'Gate Scanner');
-    registrant.checkedIn = true;
-    registrant.checkedInAt = new Date();
-    registrant.checkedInBy = staffName;
-    await registrant.save();
+    const checkedInAt = new Date().toISOString();
 
-    console.log(`✅ [CHECK-IN APPROVED] ${registrant.name} (${registrant.uniqueId}) checked in by ${staffName}`);
+    const updated = await registrantRepo.update(registrant.uniqueId, {
+      checkedIn: true,
+      checkedInAt,
+      checkedInBy: staffName,
+    });
+
+    console.log(`✅ [CHECK-IN APPROVED] ${updated.name} (${updated.uniqueId}) checked in by ${staffName}`);
 
     res.json({
       success: true,
       status: 'SUCCESS',
-      message: `✅ Check-in Approved: Welcome to HackSeries 2026, ${registrant.name}!`,
+      message: `✅ Check-in Approved: Welcome to HackSeries 2026, ${updated.name}!`,
       registrant: {
-        _id: registrant._id,
-        uniqueId: registrant.uniqueId,
-        name: registrant.name,
-        email: registrant.email,
-        phone: registrant.phone,
-        ticketType: registrant.ticketType,
-        teamName: registrant.teamName,
-        track: registrant.track,
-        institution: registrant.institution,
+        _id: updated.uniqueId,
+        uniqueId: updated.uniqueId,
+        name: updated.name,
+        email: updated.email,
+        phone: updated.phone,
+        ticketType: updated.ticketType,
+        teamName: updated.teamName,
+        track: updated.track,
+        institution: updated.institution,
         checkedIn: true,
-        checkedInAt: registrant.checkedInAt,
+        checkedInAt: updated.checkedInAt,
         checkedInBy: staffName,
       },
     });
@@ -122,7 +122,7 @@ export const scanCheckin = async (req, res) => {
 export const getCheckinStatus = async (req, res) => {
   try {
     const { uniqueId } = req.params;
-    const registrant = await Registrant.findOne({ uniqueId: uniqueId.toUpperCase() }).lean();
+    const registrant = await registrantRepo.findByUniqueId(uniqueId);
 
     if (!registrant) {
       return res.status(404).json({ success: false, message: 'Registrant not found' });
@@ -147,21 +147,22 @@ export const getCheckinStatus = async (req, res) => {
 export const undoCheckin = async (req, res) => {
   try {
     const { id } = req.params;
-    const registrant = await Registrant.findById(id);
+    const registrant = await registrantRepo.findByUniqueId(id);
 
     if (!registrant) {
       return res.status(404).json({ success: false, message: 'Registrant not found' });
     }
 
-    registrant.checkedIn = false;
-    registrant.checkedInAt = null;
-    registrant.checkedInBy = null;
-    await registrant.save();
+    const updated = await registrantRepo.update(registrant.uniqueId, {
+      checkedIn: false,
+      checkedInAt: null,
+      checkedInBy: null,
+    });
 
     res.json({
       success: true,
-      message: `Check-in reverted for ${registrant.name}`,
-      registrant,
+      message: `Check-in reverted for ${updated.name}`,
+      registrant: updated,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to revert check-in', error: error.message });
@@ -173,12 +174,7 @@ export const undoCheckin = async (req, res) => {
  */
 export const getRecentScans = async (req, res) => {
   try {
-    const recents = await Registrant.find({ checkedIn: true })
-      .sort({ checkedInAt: -1 })
-      .limit(20)
-      .select('uniqueId name email ticketType teamName track checkedInAt checkedInBy')
-      .lean();
-
+    const recents = await registrantRepo.getRecentCheckins(20);
     res.json({ success: true, data: recents });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch recent scans', error: error.message });

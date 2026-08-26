@@ -1,7 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { connectDB } from './config/db.js';
+import { initDynamoDB } from './config/dynamodb.js';
+import { staffRepo } from './models/staffRepo.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 import authRoutes from './routes/auth.routes.js';
@@ -25,25 +26,23 @@ app.use((req, res, next) => {
   next();
 });
 
-// Middleware to ensure DB connection is ready (Crucial for Vercel Serverless Functions)
-export const ensureDBConnected = async (req, res, next) => {
+// DynamoDB Initialization Middleware (Ensures tables & default admin exist)
+let dbInitialized = false;
+export const ensureDynamoDBReady = async (req, res, next) => {
   try {
-    await connectDB();
+    if (!dbInitialized) {
+      await initDynamoDB();
+      await staffRepo.seedDefaultAdmin();
+      dbInitialized = true;
+    }
     if (next) next();
   } catch (err) {
-    console.error('Database connection middleware error:', err.message);
-    if (res && res.status) {
-      return res.status(500).json({
-        success: false,
-        message: `Database connection failed: ${err.message}`,
-        error: err.message,
-      });
-    }
-    throw err;
+    console.error('DynamoDB initialization notice:', err.message);
+    if (next) next();
   }
 };
 
-app.use(ensureDBConnected);
+app.use(ensureDynamoDBReady);
 
 // Mount Routes (supporting both /api/* and /* for maximum serverless compatibility)
 app.use('/api/auth', authRoutes);
@@ -61,6 +60,7 @@ app.use('/event', eventRoutes);
 app.get(['/api/health', '/health', '/api'], (req, res) => {
   res.json({
     status: 'online',
+    database: 'AWS DynamoDB',
     event: 'HackSeries 2026',
     environment: process.env.NODE_ENV || 'production',
     timestamp: new Date(),
