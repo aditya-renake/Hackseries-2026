@@ -128,9 +128,17 @@ export const buildPassEmailHtml = ({
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
     }
     .header {
-      background: linear-gradient(135deg, #059669 0%, #0284c7 50%, #6366f1 100%);
+      background: linear-gradient(135deg, #7a1518 0%, #b22b2f 50%, #d1a550 100%);
       padding: 36px 30px;
       text-align: center;
+    }
+    .header .college-sub {
+      margin: 0 0 6px 0;
+      font-size: 11px;
+      font-weight: 800;
+      color: #f7d070;
+      letter-spacing: 1px;
+      text-transform: uppercase;
     }
     .header h1 {
       margin: 0;
@@ -142,9 +150,9 @@ export const buildPassEmailHtml = ({
     }
     .header p {
       margin: 8px 0 0 0;
-      font-size: 14px;
-      color: #e0f2fe;
-      font-weight: 600;
+      font-size: 13px;
+      color: #fef08a;
+      font-weight: 700;
       letter-spacing: 0.5px;
     }
     .content {
@@ -165,11 +173,11 @@ export const buildPassEmailHtml = ({
     .ticket-card {
       background: #111827;
       border-radius: 16px;
-      border: 1px solid #22c55e44;
+      border: 1px solid #b22b2f44;
       padding: 24px;
       text-align: center;
       margin-bottom: 24px;
-      box-shadow: 0 0 30px rgba(34, 197, 94, 0.08);
+      box-shadow: 0 0 30px rgba(178, 43, 47, 0.12);
     }
     .ticket-badge {
       display: inline-block;
@@ -193,7 +201,7 @@ export const buildPassEmailHtml = ({
     .ticket-id {
       font-family: monospace;
       font-size: 13px;
-      color: #22c55e;
+      color: #f7d070;
       font-weight: 700;
       letter-spacing: 1px;
       margin-bottom: 20px;
@@ -252,15 +260,15 @@ export const buildPassEmailHtml = ({
     }
     .btn {
       display: inline-block;
-      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-      color: #030712 !important;
+      background: linear-gradient(135deg, #b22b2f 0%, #d1a550 100%);
+      color: #ffffff !important;
       text-decoration: none;
       font-weight: 800;
       font-size: 15px;
       padding: 14px 32px;
       border-radius: 12px;
       letter-spacing: 0.5px;
-      box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.4);
+      box-shadow: 0 10px 25px -5px rgba(178, 43, 47, 0.5);
     }
     .footer {
       background: #030712;
@@ -275,13 +283,14 @@ export const buildPassEmailHtml = ({
 <body>
   <div class="wrapper">
     <div class="header">
+      <div class="college-sub">🏛️ DR. D. Y. PATIL INSTITUTE OF TECHNOLOGY, PIMPRI, PUNE (DYPDPU)</div>
       <h1>⚡ ${eventName}</h1>
-      <p>Official Digital Entry Pass & Hacker Badge</p>
+      <p>Presented by ACES — Dept. of Computer Engineering</p>
     </div>
     <div class="content">
       <div class="greeting">Hey ${attendeeName}! 🚀</div>
       <p class="subtext">
-        Your spot for <strong>${eventName}</strong> is confirmed! Present the verified QR code below at the check-in gates for instant access, hacker swag kits, and food coupon wristbands.
+        Your spot for <strong>${eventName}</strong> at <strong>Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune</strong> is confirmed! Present the verified QR code below at the check-in gates for express access, hacker swag kits, and food coupon wristbands.
       </p>
 
       <div class="ticket-card">
@@ -337,8 +346,8 @@ export const buildPassEmailHtml = ({
     </div>
 
     <div class="footer">
-      <p style="margin: 0 0 6px 0;">Sent via HackSeries Operations Team • <strong>aditya.renake@outlook.com</strong></p>
-      <p style="margin: 0;">For team changes or support, reply directly to this email.</p>
+      <p style="margin: 0 0 6px 0;">Organised by <strong>ACES</strong> • Department of Computer Engineering, DIT Pune (DYPDPU)</p>
+      <p style="margin: 0;">Lead Coordinator: <strong>Aditya Renake</strong> (aditya.renake@outlook.com)</p>
     </div>
   </div>
 </body>

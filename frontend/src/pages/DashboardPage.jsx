@@ -110,9 +110,10 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <h1 style={{ fontSize: '26px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>Operations Control Room</h1>
             <span className="badge badge-emerald">HACKSERIES 2026</span>
+            <span className="badge badge-dyp">ACES • DIT PUNE</span>
           </div>
           <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>
-            Live Google Forms Sync • Cryptographic Pass Generation • Express Gate Check-In (2000+ Scale)
+            Live Google Forms Sync • Dr. D. Y. Patil Institute of Technology (DYPDPU) • Express Gate Check-In (2000+ Scale)
           </p>
         </div>
 

@@ -30,15 +30,15 @@ export const seedDatabase = async () => {
     if (configCount === 0) {
       await EventConfig.create({
         eventName: 'HackSeries 2026',
-        eventTagline: 'India’s Ultimate 48-Hour Hackathon & Innovation Arena',
+        eventTagline: 'Presented by ACES — Dept. of Computer Engineering, Dr. D. Y. Patil Institute of Technology, Pimpri, Pune (DYPDPU)',
         eventDate: 'October 16 - 18, 2026',
         eventTime: '09:00 AM IST (Gate Check-in starts 07:30 AM)',
-        eventVenue: 'Apex Tech Hub & Innovation Arena, Pune / Hybrid',
+        eventVenue: 'Dr. D. Y. Patil Institute of Technology (DIT), Sant Tukaram Nagar, Pimpri, Pune - 411018',
         organizerEmail: 'aditya.renake@outlook.com',
-        organizerName: 'Aditya Renake (HackSeries Operations Lead)',
+        organizerName: 'ACES (Association of Computer Engineering Students), DIT Pune',
         googleFormUrl: 'https://forms.gle/U24ip7E6NqtbZkiT9',
         emailSubjectTemplate: '🎟️ Your Official Entry Pass for HackSeries 2026 — {{name}}',
-        emailBodyNotice: 'Please present this digital pass with QR code at the registration desk for express check-in and hacker kit collection.',
+        emailBodyNotice: 'Please present this digital pass with QR code at the registration desk in DIT Pune campus for express check-in and hacker kit collection.',
       });
       console.log('✅ Event configuration initialized.');
     }

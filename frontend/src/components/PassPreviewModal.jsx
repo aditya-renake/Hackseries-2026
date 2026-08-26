@@ -76,10 +76,13 @@ export const PassPreviewModal = ({ registrant, onClose, onShowToast, onRefresh }
             <div className="holo-inner">
               
               {/* Event Badge Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '10px' }}>
                 <div>
-                  <div style={{ fontSize: '16px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>HACKSERIES 2026</div>
-                  <div style={{ fontSize: '10px', color: '#22c55e', fontWeight: '700' }}>OCTOBER 16 - 18 • PUNE / HYBRID</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '16px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>HACKSERIES 2026</span>
+                    <span className="badge badge-dyp" style={{ fontSize: '9px' }}>ACES • DIT PUNE</span>
+                  </div>
+                  <div style={{ fontSize: '9px', color: '#d1a550', fontWeight: '800', marginTop: '2px' }}>DR. D. Y. PATIL INSTITUTE OF TECHNOLOGY (DYPDPU)</div>
                 </div>
                 <span className="badge badge-emerald">{registrant.ticketType}</span>
               </div>
@@ -107,7 +110,7 @@ export const PassPreviewModal = ({ registrant, onClose, onShowToast, onRefresh }
                   />
                 </div>
 
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', color: '#22c55e', fontWeight: '800', marginTop: '12px', letterSpacing: '1px' }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', color: '#f7d070', fontWeight: '800', marginTop: '12px', letterSpacing: '1px' }}>
                   {registrant.uniqueId}
                 </div>
 
@@ -118,11 +121,11 @@ export const PassPreviewModal = ({ registrant, onClose, onShowToast, onRefresh }
 
               {/* Event Metadata Footer */}
               <div style={{ background: '#030712', borderRadius: '10px', padding: '12px 16px', border: '1px solid var(--border-subtle)', fontSize: '11px', color: 'var(--text-muted)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                  <MapPin size={12} color="#22c55e" /> Apex Tech Hub, Innovation Arena (Pune)
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', marginBottom: '4px' }}>
+                  <MapPin size={13} color="#b22b2f" style={{ marginTop: '2px', flexShrink: 0 }} /> Dr. D. Y. Patil Institute of Technology (DIT), Sant Tukaram Nagar, Pimpri, Pune
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Calendar size={12} color="#22c55e" /> Check-in: 07:30 AM IST • Bring Laptop & ID
+                  <Calendar size={13} color="#f7d070" /> Check-in: Oct 16, 07:30 AM IST • Bring Laptop & ID
                 </div>
               </div>
 

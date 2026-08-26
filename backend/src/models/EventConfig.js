@@ -8,7 +8,7 @@ const eventConfigSchema = new mongoose.Schema(
     },
     eventTagline: {
       type: String,
-      default: 'India’s Ultimate 48-Hour Hackathon & Innovation Arena',
+      default: 'Presented by ACES — Dept. of Computer Engineering, Dr. D. Y. Patil Institute of Technology, Pimpri, Pune (DYPDPU)',
     },
     eventDate: {
       type: String,
@@ -16,11 +16,11 @@ const eventConfigSchema = new mongoose.Schema(
     },
     eventTime: {
       type: String,
-      default: '09:00 AM IST (Check-in starts 07:30 AM)',
+      default: '09:00 AM IST (Gate Check-in starts 07:30 AM)',
     },
     eventVenue: {
       type: String,
-      default: 'Apex Tech Hub & Innovation Arena, Pune / Hybrid',
+      default: 'Dr. D. Y. Patil Institute of Technology (DIT), Sant Tukaram Nagar, Pimpri, Pune - 411018',
     },
     organizerEmail: {
       type: String,
@@ -28,7 +28,7 @@ const eventConfigSchema = new mongoose.Schema(
     },
     organizerName: {
       type: String,
-      default: 'Aditya Renake (HackSeries Operations Lead)',
+      default: 'ACES (Association of Computer Engineering Students), DIT Pune',
     },
     googleFormUrl: {
       type: String,

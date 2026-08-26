@@ -60,14 +60,14 @@ export const ScannerPage = ({ onShowToast }) => {
       
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(6, 182, 212, 0.1)', border: '1px solid rgba(6, 182, 212, 0.3)', borderRadius: '999px', padding: '4px 14px', fontSize: '11px', color: '#22d3ee', fontWeight: '700', marginBottom: '12px' }}>
-          <QrCode size={13} /> GATE ENTRY SCANNER CONSOLE
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(90deg, rgba(178, 43, 47, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%)', border: '1px solid rgba(209, 165, 80, 0.4)', borderRadius: '999px', padding: '4px 16px', fontSize: '11px', color: '#f7d070', fontWeight: '800', marginBottom: '12px' }}>
+          <QrCode size={13} color="#22d3ee" /> DIT PUNE GATE ENTRY SCANNER • ACES OPS
         </div>
         <h1 style={{ fontSize: '28px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>
           HackSeries 2026 Check-in Terminal
         </h1>
         <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
-          Point camera at attendee QR pass or enter Pass ID • Audio feedback & anti-forgery verification active
+          Dr. D. Y. Patil Institute of Technology (DIT) Campus • Live anti-forgery QR verification
         </p>
       </div>
 

@@ -94,10 +94,13 @@ export const DigitalPassPage = ({ uniqueId, onBack, onShowToast }) => {
         <div className="holo-inner">
           
           {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '12px' }}>
             <div>
-              <div style={{ fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>HACKSERIES 2026</div>
-              <div style={{ fontSize: '11px', color: '#22c55e', fontWeight: '700' }}>48-HOUR ARENA • PUNE</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>HACKSERIES 2026</span>
+                <span className="badge badge-dyp" style={{ fontSize: '10px' }}>ACES • DIT PUNE</span>
+              </div>
+              <div style={{ fontSize: '10px', color: '#d1a550', fontWeight: '800', marginTop: '2px' }}>DR. D. Y. PATIL INSTITUTE OF TECHNOLOGY (DYPDPU)</div>
             </div>
             <span className="badge badge-emerald">{passData.ticketType}</span>
           </div>
@@ -126,7 +129,7 @@ export const DigitalPassPage = ({ uniqueId, onBack, onShowToast }) => {
               />
             </div>
 
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '15px', color: '#22c55e', fontWeight: '900', marginTop: '14px', letterSpacing: '1px' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '15px', color: '#f7d070', fontWeight: '900', marginTop: '14px', letterSpacing: '1px' }}>
               {passData.uniqueId}
             </div>
 
@@ -139,7 +142,7 @@ export const DigitalPassPage = ({ uniqueId, onBack, onShowToast }) => {
           <div style={{ textAlign: 'center', margin: '14px 0' }}>
             {passData.checkedIn ? (
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(34, 197, 94, 0.15)', border: '1px solid rgba(34, 197, 94, 0.4)', borderRadius: '999px', padding: '6px 18px', color: '#4ade80', fontSize: '12px', fontWeight: '800' }}>
-                <CheckCircle2 size={15} /> CHECKED IN AT VENUE
+                <CheckCircle2 size={15} /> CHECKED IN AT DIT CAMPUS
               </div>
             ) : (
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(6, 182, 212, 0.15)', border: '1px solid rgba(6, 182, 212, 0.4)', borderRadius: '999px', padding: '6px 18px', color: '#22d3ee', fontSize: '12px', fontWeight: '800' }}>
@@ -151,12 +154,12 @@ export const DigitalPassPage = ({ uniqueId, onBack, onShowToast }) => {
           {/* Details */}
           <div style={{ background: '#030712', borderRadius: '12px', padding: '16px', border: '1px solid var(--border-subtle)', fontSize: '12px', color: 'var(--text-muted)', marginTop: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-              <Calendar size={14} color="#22c55e" />
+              <Calendar size={14} color="#f7d070" />
               <span><strong>Dates:</strong> October 16 - 18, 2026 (Check-in 07:30 AM IST)</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-              <MapPin size={14} color="#06b6d4" />
-              <span><strong>Venue:</strong> Apex Tech Hub & Arena, Pune</span>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
+              <MapPin size={14} color="#b22b2f" style={{ marginTop: '2px', flexShrink: 0 }} />
+              <span><strong>Venue:</strong> Dr. D. Y. Patil Institute of Technology (DIT), Sant Tukaram Nagar, Pimpri, Pune - 411018</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Mail size={14} color="#a78bfa" />

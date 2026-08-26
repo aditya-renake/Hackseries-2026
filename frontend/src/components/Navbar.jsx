@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, QrCode, LayoutDashboard, Globe, LogOut, Lock, Zap } from 'lucide-react';
+import { DYPDPULogo, ACESLogo, InstitutionalHeaderBar } from './CollegeLogos';
 import { api } from '../services/api';
 
 export const Navbar = ({ currentView, setCurrentView, user, onLogout }) => {
@@ -17,19 +18,29 @@ export const Navbar = ({ currentView, setCurrentView, user, onLogout }) => {
 
   return (
     <header className="glass-panel" style={{ borderRadius: '0', borderLeft: 'none', borderRight: 'none', borderTop: 'none', position: 'sticky', top: 0, zIndex: 100 }}>
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+      {/* Top Institutional Bar */}
+      <InstitutionalHeaderBar />
+
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
         
-        {/* Brand Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => setCurrentView('landing')}>
-          <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'linear-gradient(135deg, #22c55e 0%, #06b6d4 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#030712', boxShadow: '0 0 15px rgba(34, 197, 94, 0.4)' }}>
-            <Zap size={22} strokeWidth={2.5} />
-          </div>
+        {/* Brand Logos: DYPDPU + ACES + HackSeries */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', cursor: 'pointer' }} onClick={() => setCurrentView('landing')}>
+          <DYPDPULogo size={38} />
+          
+          <div style={{ width: '1px', height: '28px', background: 'rgba(255, 255, 255, 0.15)' }} />
+
+          <ACESLogo size={36} />
+
+          <div style={{ width: '1px', height: '28px', background: 'rgba(255, 255, 255, 0.15)' }} />
+
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '18px', fontWeight: '900', letterSpacing: '-0.5px', color: '#ffffff' }}>HACKSERIES</span>
+              <span style={{ fontSize: '18px', fontWeight: '900', letterSpacing: '-0.5px', background: 'linear-gradient(135deg, #ffffff 0%, #d1a550 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                HACKSERIES
+              </span>
               <span className="badge badge-emerald">2026</span>
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--text-dim)', letterSpacing: '0.5px' }}>EVENT OPS & CHECK-IN PORTAL</div>
+            <div style={{ fontSize: '10px', color: 'var(--text-dim)', letterSpacing: '0.5px' }}>DIT PUNE • 48H HACKATHON</div>
           </div>
         </div>
 
