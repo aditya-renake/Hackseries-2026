@@ -175,4 +175,24 @@ export const api = {
       return handleResponse(res);
     },
   },
+
+  // Payment Gateway API
+  payment: {
+    createOrder: async (data) => {
+      const res = await fetch(`${API_BASE}/payment/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      return handleResponse(res);
+    },
+    verifyPayment: async (data) => {
+      const res = await fetch(`${API_BASE}/payment/verify-payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      return handleResponse(res);
+    },
+  },
 };
