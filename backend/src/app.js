@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { initDynamoDB } from './config/dynamodb.js';
+import { initFirebase } from './config/firebase.js';
 import { staffRepo } from './models/staffRepo.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
@@ -26,25 +26,25 @@ app.use((req, res, next) => {
   next();
 });
 
-// DynamoDB Initialization Middleware (Ensures tables & default admin exist)
+// Firebase Firestore Initialization Middleware
 let dbInitialized = false;
-export const ensureDynamoDBReady = async (req, res, next) => {
+export const ensureFirestoreReady = async (req, res, next) => {
   try {
     if (!dbInitialized) {
-      await initDynamoDB();
+      initFirebase();
       await staffRepo.seedDefaultAdmin();
       dbInitialized = true;
     }
     if (next) next();
   } catch (err) {
-    console.error('DynamoDB initialization notice:', err.message);
+    console.error('Firestore initialization notice:', err.message);
     if (next) next();
   }
 };
 
-app.use(ensureDynamoDBReady);
+app.use(ensureFirestoreReady);
 
-// Mount Routes (supporting both /api/* and /* for maximum serverless compatibility)
+// Mount Routes
 app.use('/api/auth', authRoutes);
 app.use('/auth', authRoutes);
 app.use('/api/registrants', registrantRoutes);
@@ -60,7 +60,7 @@ app.use('/event', eventRoutes);
 app.get(['/api/health', '/health', '/api'], (req, res) => {
   res.json({
     status: 'online',
-    database: 'AWS DynamoDB',
+    database: 'Google Cloud Firestore',
     event: 'HackSeries 2026',
     environment: process.env.NODE_ENV || 'production',
     timestamp: new Date(),

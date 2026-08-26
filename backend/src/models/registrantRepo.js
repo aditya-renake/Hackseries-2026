@@ -1,75 +1,57 @@
-import {
-  GetCommand,
-  PutCommand,
-  QueryCommand,
-  ScanCommand,
-  UpdateCommand,
-  DeleteCommand
-} from '@aws-sdk/lib-dynamodb';
-import { ddbDocClient, TABLE_NAMES } from '../config/dynamodb.js';
+import { getFirestore } from '../config/firebase.js';
 
 export const registrantRepo = {
+  getCollection() {
+    const db = getFirestore();
+    return db.collection('registrants');
+  },
+
   /**
-   * Put new registrant item into DynamoDB
+   * Create or overwrite registrant document in Firestore
    */
   async create(data) {
+    const collection = this.getCollection();
+    const cleanId = data.uniqueId.toUpperCase().trim();
     const item = {
       ...data,
-      _id: data.uniqueId, // compatibility with frontend _id
-      uniqueId: data.uniqueId.toUpperCase(),
+      _id: cleanId,
+      uniqueId: cleanId,
       email: data.email.toLowerCase().trim(),
       createdAt: data.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
-    await ddbDocClient.send(
-      new PutCommand({
-        TableName: TABLE_NAMES.REGISTRANTS,
-        Item: item,
-      })
-    );
-
+    await collection.doc(cleanId).set(item);
     return item;
   },
 
   /**
-   * Find registrant by uniqueId (Partition Key)
+   * Find registrant by uniqueId
    */
   async findByUniqueId(uniqueId) {
     if (!uniqueId) return null;
     const cleanId = uniqueId.toUpperCase().trim();
+    const collection = this.getCollection();
 
-    const res = await ddbDocClient.send(
-      new GetCommand({
-        TableName: TABLE_NAMES.REGISTRANTS,
-        Key: { uniqueId: cleanId },
-      })
-    );
-
-    return res.Item || null;
+    const doc = await collection.doc(cleanId).get();
+    if (doc.exists) {
+      return { _id: doc.id, ...doc.data() };
+    }
+    return null;
   },
 
   /**
-   * Find registrant by email using Global Secondary Index (email-index)
+   * Find registrant by email address
    */
   async findByEmail(email) {
     if (!email) return null;
     const cleanEmail = email.toLowerCase().trim();
+    const collection = this.getCollection();
 
-    const res = await ddbDocClient.send(
-      new QueryCommand({
-        TableName: TABLE_NAMES.REGISTRANTS,
-        IndexName: 'email-index',
-        KeyConditionExpression: 'email = :emailVal',
-        ExpressionAttributeValues: {
-          ':emailVal': cleanEmail,
-        },
-        Limit: 1,
-      })
-    );
-
-    if (res.Items && res.Items.length > 0) {
-      return res.Items[0];
+    const snapshot = await collection.where('email', '==', cleanEmail).limit(1).get();
+    if (!snapshot.empty) {
+      const doc = snapshot.docs[0];
+      return { _id: doc.id, ...doc.data() };
     }
     return null;
   },
@@ -101,15 +83,20 @@ export const registrantRepo = {
     sortBy = 'createdAt',
     sortOrder = 'desc',
   } = {}) {
-    const res = await ddbDocClient.send(
-      new ScanCommand({
-        TableName: TABLE_NAMES.REGISTRANTS,
-      })
-    );
+    const collection = this.getCollection();
+    const snapshot = await collection.get();
 
-    let items = res.Items || [];
+    let items = [];
+    snapshot.docs.forEach((doc) => {
+      items.push({ _id: doc.id, ...doc.data() });
+    });
 
-    // Client-side filtering across the scanned dataset (or DynamoDB FilterExpression)
+    // Total counts across all items
+    const totalAll = items.length;
+    const checkedInCount = items.filter((i) => i.checkedIn).length;
+    const emailSentCount = items.filter((i) => i.emailSent).length;
+
+    // Filters
     if (checkedIn !== undefined && checkedIn !== '') {
       const isChecked = checkedIn === 'true' || checkedIn === true;
       items = items.filter((item) => Boolean(item.checkedIn) === isChecked);
@@ -140,7 +127,7 @@ export const registrantRepo = {
       );
     }
 
-    // Sort items
+    // Sort
     items.sort((a, b) => {
       let valA = a[sortBy] || '';
       let valB = b[sortBy] || '';
@@ -155,13 +142,6 @@ export const registrantRepo = {
     const skip = (pageNum - 1) * limitNum;
     const paginatedItems = items.slice(skip, skip + limitNum);
     const totalPages = Math.ceil(totalCount / limitNum);
-
-    // Compute stats
-    const allRes = await ddbDocClient.send(new ScanCommand({ TableName: TABLE_NAMES.REGISTRANTS }));
-    const allItems = allRes.Items || [];
-    const totalAll = allItems.length;
-    const checkedInCount = allItems.filter((i) => i.checkedIn).length;
-    const emailSentCount = allItems.filter((i) => i.emailSent).length;
 
     return {
       items: paginatedItems,
@@ -184,41 +164,35 @@ export const registrantRepo = {
   },
 
   /**
-   * Update registrant attributes
+   * Update registrant document in Firestore
    */
   async update(uniqueId, updates) {
     if (!uniqueId) return null;
-    const existing = await this.findByUniqueId(uniqueId);
+    const cleanId = uniqueId.toUpperCase().trim();
+    const collection = this.getCollection();
+
+    const existing = await this.findByUniqueId(cleanId);
     if (!existing) return null;
 
     const merged = {
       ...existing,
       ...updates,
-      uniqueId: existing.uniqueId,
+      uniqueId: cleanId,
       updatedAt: new Date().toISOString(),
     };
 
-    await ddbDocClient.send(
-      new PutCommand({
-        TableName: TABLE_NAMES.REGISTRANTS,
-        Item: merged,
-      })
-    );
-
+    await collection.doc(cleanId).set(merged, { merge: true });
     return merged;
   },
 
   /**
-   * Delete registrant
+   * Delete registrant document
    */
   async delete(uniqueId) {
     if (!uniqueId) return false;
-    await ddbDocClient.send(
-      new DeleteCommand({
-        TableName: TABLE_NAMES.REGISTRANTS,
-        Key: { uniqueId: uniqueId.toUpperCase().trim() },
-      })
-    );
+    const cleanId = uniqueId.toUpperCase().trim();
+    const collection = this.getCollection();
+    await collection.doc(cleanId).delete();
     return true;
   },
 
@@ -226,31 +200,33 @@ export const registrantRepo = {
    * Get recent check-ins stream for gate monitor
    */
   async getRecentCheckins(limitCount = 20) {
-    const res = await ddbDocClient.send(
-      new ScanCommand({
-        TableName: TABLE_NAMES.REGISTRANTS,
-      })
-    );
+    const collection = this.getCollection();
+    const snapshot = await collection.get();
 
-    const items = (res.Items || [])
-      .filter((i) => i.checkedIn)
-      .sort((a, b) => new Date(b.checkedInAt || 0) - new Date(a.checkedInAt || 0))
-      .slice(0, limitCount);
+    const items = [];
+    snapshot.docs.forEach((doc) => {
+      const data = doc.data();
+      if (data.checkedIn) {
+        items.push({ _id: doc.id, ...data });
+      }
+    });
 
-    return items;
+    items.sort((a, b) => new Date(b.checkedInAt || 0) - new Date(a.checkedInAt || 0));
+    return items.slice(0, limitCount);
   },
 
   /**
-   * Get total stats summary
+   * Total stats summary
    */
   async getStats() {
-    const res = await ddbDocClient.send(
-      new ScanCommand({
-        TableName: TABLE_NAMES.REGISTRANTS,
-      })
-    );
+    const collection = this.getCollection();
+    const snapshot = await collection.get();
 
-    const items = res.Items || [];
+    const items = [];
+    snapshot.docs.forEach((doc) => {
+      items.push(doc.data());
+    });
+
     const totalRegistrants = items.length;
     const checkedInCount = items.filter((i) => i.checkedIn).length;
     const emailSentCount = items.filter((i) => i.emailSent).length;

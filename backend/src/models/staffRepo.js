@@ -1,69 +1,39 @@
-import {
-  GetCommand,
-  PutCommand,
-  QueryCommand,
-  ScanCommand,
-  UpdateCommand
-} from '@aws-sdk/lib-dynamodb';
 import bcrypt from 'bcryptjs';
-import { ddbDocClient, TABLE_NAMES } from '../config/dynamodb.js';
+import { getFirestore } from '../config/firebase.js';
 
 export const staffRepo = {
+  getCollection() {
+    const db = getFirestore();
+    return db.collection('staff_users');
+  },
+
   /**
    * Find staff user by username
    */
   async findByUsername(username) {
     if (!username) return null;
     const cleanUsername = username.toLowerCase().trim();
+    const collection = this.getCollection();
 
-    try {
-      const res = await ddbDocClient.send(
-        new GetCommand({
-          TableName: TABLE_NAMES.STAFF,
-          Key: { username: cleanUsername },
-        })
-      );
-      return res.Item || null;
-    } catch (e) {
-      console.warn('[staffRepo] findByUsername notice:', e.message);
-      return null;
+    const doc = await collection.doc(cleanUsername).get();
+    if (doc.exists) {
+      return { id: doc.id, username: doc.id, ...doc.data() };
     }
+    return null;
   },
 
   /**
-   * Find staff user by email (using GSI or Scan fallback)
+   * Find staff user by email
    */
   async findByEmail(email) {
     if (!email) return null;
     const cleanEmail = email.toLowerCase().trim();
+    const collection = this.getCollection();
 
-    try {
-      const res = await ddbDocClient.send(
-        new QueryCommand({
-          TableName: TABLE_NAMES.STAFF,
-          IndexName: 'staff-email-index',
-          KeyConditionExpression: 'email = :emailVal',
-          ExpressionAttributeValues: {
-            ':emailVal': cleanEmail,
-          },
-          Limit: 1,
-        })
-      );
-      if (res.Items && res.Items.length > 0) {
-        return res.Items[0];
-      }
-    } catch (e) {
-      // Fallback scan if GSI is not yet active
-      const scanRes = await ddbDocClient.send(
-        new ScanCommand({
-          TableName: TABLE_NAMES.STAFF,
-          FilterExpression: 'email = :emailVal',
-          ExpressionAttributeValues: { ':emailVal': cleanEmail },
-        })
-      );
-      if (scanRes.Items && scanRes.Items.length > 0) {
-        return scanRes.Items[0];
-      }
+    const snapshot = await collection.where('email', '==', cleanEmail).limit(1).get();
+    if (!snapshot.empty) {
+      const doc = snapshot.docs[0];
+      return { id: doc.id, username: doc.id, ...doc.data() };
     }
     return null;
   },
@@ -75,11 +45,9 @@ export const staffRepo = {
     if (!identifier) return null;
     const clean = identifier.toLowerCase().trim();
 
-    // Check username first
     const byUsername = await this.findByUsername(clean);
     if (byUsername) return byUsername;
 
-    // Check email
     return this.findByEmail(clean);
   },
 
@@ -89,9 +57,10 @@ export const staffRepo = {
   async createStaff({ username, email, name, password, role = 'admin' }) {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
+    const cleanUsername = username.toLowerCase().trim();
 
     const user = {
-      username: username.toLowerCase().trim(),
+      username: cleanUsername,
       email: email.toLowerCase().trim(),
       name: name.trim(),
       passwordHash,
@@ -101,14 +70,9 @@ export const staffRepo = {
       updatedAt: new Date().toISOString(),
     };
 
-    await ddbDocClient.send(
-      new PutCommand({
-        TableName: TABLE_NAMES.STAFF,
-        Item: user,
-      })
-    );
-
-    return user;
+    const collection = this.getCollection();
+    await collection.doc(cleanUsername).set(user);
+    return { id: cleanUsername, ...user };
   },
 
   /**
@@ -125,16 +89,12 @@ export const staffRepo = {
   async updateLastLogin(username) {
     if (!username) return;
     try {
-      const user = await this.findByUsername(username);
-      if (user) {
-        user.lastLogin = new Date().toISOString();
-        await ddbDocClient.send(
-          new PutCommand({
-            TableName: TABLE_NAMES.STAFF,
-            Item: user,
-          })
-        );
-      }
+      const cleanUsername = username.toLowerCase().trim();
+      const collection = this.getCollection();
+      await collection.doc(cleanUsername).set(
+        { lastLogin: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { merge: true }
+      );
     } catch (e) {
       console.warn('[staffRepo] updateLastLogin error:', e.message);
     }
@@ -147,7 +107,7 @@ export const staffRepo = {
     try {
       const existing = await this.findByUsername('adityarenake');
       if (!existing) {
-        console.log('👑 [DynamoDB] Seeding default admin account (adityarenake)...');
+        console.log('👑 [Firestore] Seeding default admin account (adityarenake)...');
         await this.createStaff({
           username: 'adityarenake',
           email: 'aditya.renake@outlook.com',
@@ -155,10 +115,10 @@ export const staffRepo = {
           password: 'Aditya@11',
           role: 'admin',
         });
-        console.log('✅ [DynamoDB] Default admin created successfully.');
+        console.log('✅ [Firestore] Default admin created successfully.');
       }
     } catch (e) {
-      console.warn('⚠️ [DynamoDB] Admin seed notice:', e.message);
+      console.warn('⚠️ [Firestore] Admin seed notice:', e.message);
     }
   },
 };

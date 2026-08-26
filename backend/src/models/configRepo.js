@@ -1,10 +1,8 @@
-import { GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
-import { ddbDocClient, TABLE_NAMES } from '../config/dynamodb.js';
+import { getFirestore } from '../config/firebase.js';
 
-const CONFIG_KEY = 'MAIN_EVENT_2026';
+const CONFIG_DOC_ID = 'main_event_2026';
 
 const DEFAULT_CONFIG = {
-  configKey: CONFIG_KEY,
   eventName: 'HackSeries 2026',
   eventTagline: 'Presented by ACES — Dept. of Computer Engineering, Dr. D. Y. Patil Institute of Technology, Pimpri, Pune (DYPDPU)',
   eventDate: 'October 16 - 18, 2026',
@@ -20,29 +18,24 @@ const DEFAULT_CONFIG = {
 };
 
 export const configRepo = {
+  getCollection() {
+    const db = getFirestore();
+    return db.collection('event_config');
+  },
+
   /**
    * Fetch current event configuration
    */
   async getConfig() {
     try {
-      const res = await ddbDocClient.send(
-        new GetCommand({
-          TableName: TABLE_NAMES.CONFIG,
-          Key: { configKey: CONFIG_KEY },
-        })
-      );
+      const collection = this.getCollection();
+      const doc = await collection.doc(CONFIG_DOC_ID).get();
 
-      if (res.Item) {
-        return res.Item;
+      if (doc.exists) {
+        return doc.data();
       }
 
-      // If not yet present in DynamoDB, seed default and return
-      await ddbDocClient.send(
-        new PutCommand({
-          TableName: TABLE_NAMES.CONFIG,
-          Item: DEFAULT_CONFIG,
-        })
-      );
+      await collection.doc(CONFIG_DOC_ID).set(DEFAULT_CONFIG);
       return DEFAULT_CONFIG;
     } catch (e) {
       console.warn('[configRepo] getConfig notice:', e.message);
@@ -54,21 +47,15 @@ export const configRepo = {
    * Update event configuration
    */
   async updateConfig(updates) {
+    const collection = this.getCollection();
     const current = await this.getConfig();
     const merged = {
       ...current,
       ...updates,
-      configKey: CONFIG_KEY,
       updatedAt: new Date().toISOString(),
     };
 
-    await ddbDocClient.send(
-      new PutCommand({
-        TableName: TABLE_NAMES.CONFIG,
-        Item: merged,
-      })
-    );
-
+    await collection.doc(CONFIG_DOC_ID).set(merged, { merge: true });
     return merged;
   },
 };
