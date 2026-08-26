@@ -9,24 +9,24 @@ let transporter = null;
 export const getTransporter = async () => {
   if (transporter) return transporter;
 
-  const user = (process.env.SMTP_USER || '').trim();
+  const user = (process.env.SMTP_USER || 'tigeradi1504@gmail.com').trim();
   const pass = (process.env.SMTP_PASS || '').trim();
   const customHost = (process.env.SMTP_HOST || '').trim();
 
   if (pass && pass !== '') {
-    const isGmail = user.includes('@gmail.com') || customHost.includes('gmail');
+    const isGmail = user.includes('@gmail.com') || customHost.includes('gmail') || (!customHost && !user.includes('@outlook'));
     const isResend = customHost.includes('resend.com') || user.toLowerCase() === 'resend';
     const isOutlook = user.includes('@outlook.') || user.includes('@hotmail.') || user.includes('@live.');
     
     let host = customHost;
-    let port = parseInt(process.env.SMTP_PORT || '587', 10);
+    let port = parseInt(process.env.SMTP_PORT || (isGmail ? '465' : '587'), 10);
     let secure = port === 465;
 
     if (!host) {
       if (isGmail) host = 'smtp.gmail.com';
       else if (isResend) host = 'smtp.resend.com';
       else if (isOutlook) host = 'smtp-mail.outlook.com';
-      else host = 'smtp.office365.com';
+      else host = 'smtp.gmail.com';
     }
 
     const transportConfig = {
@@ -40,8 +40,8 @@ export const getTransporter = async () => {
       tls: {
         rejectUnauthorized: false,
       },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
+      connectionTimeout: 15000,
+      greetingTimeout: 15000,
     };
 
     if (isGmail) {
@@ -347,7 +347,7 @@ export const buildPassEmailHtml = ({
 
     <div class="footer">
       <p style="margin: 0 0 6px 0;">Organised by <strong>ACES</strong> • Department of Computer Engineering, DIT Pune (DYPDPU)</p>
-      <p style="margin: 0;">Lead Coordinator: <strong>Aditya Renake</strong> (aditya.renake@outlook.com)</p>
+      <p style="margin: 0;">Lead Coordinator: <strong>Aditya Renake</strong> (tigeradi1504@gmail.com)</p>
     </div>
   </div>
 </body>
@@ -367,7 +367,7 @@ export const sendPassEmail = async (registrant, eventConfig = {}) => {
   const eventVenue = eventConfig.eventVenue || 'Apex Tech Hub & Innovation Arena, Pune';
   const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
   const passUrl = `${clientUrl}/pass/${registrant.uniqueId}`;
-  const senderEmail = process.env.SMTP_USER || 'aditya.renake@outlook.com';
+  const senderEmail = process.env.SMTP_USER || 'tigeradi1504@gmail.com';
 
   const qrBuffer = await generateQRCodeBuffer(registrant.qrPayload);
 
@@ -441,13 +441,15 @@ export const sendBulkPassEmails = async (registrants, eventConfig, onProgress) =
         try {
           await sendPassEmail(reg, eventConfig);
           reg.emailSent = true;
-          reg.emailSentAt = new Date();
+          reg.emailSentAt = new Date().toISOString();
           reg.emailSendCount = (reg.emailSendCount || 0) + 1;
-          await reg.save();
+          if (typeof reg.save === 'function') {
+            await reg.save();
+          }
           results.sent++;
         } catch (err) {
           results.failed++;
-          results.errors.push({ id: reg._id, email: reg.email, error: err.message });
+          results.errors.push({ id: reg._id || reg.uniqueId, email: reg.email, error: err.message });
         }
       })
     );

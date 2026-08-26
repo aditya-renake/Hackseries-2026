@@ -8,7 +8,7 @@ const DEFAULT_CONFIG = {
   eventDate: 'October 16 - 18, 2026',
   eventTime: '09:00 AM IST (Gate Check-in starts 07:30 AM)',
   eventVenue: 'Dr. D. Y. Patil Institute of Technology (DIT), Sant Tukaram Nagar, Pimpri, Pune - 411018',
-  organizerEmail: 'aditya.renake@outlook.com',
+  organizerEmail: 'tigeradi1504@gmail.com',
   organizerName: 'ACES (Association of Computer Engineering Students), DIT Pune',
   googleFormUrl: 'https://forms.gle/U24ip7E6NqtbZkiT9',
   emailSubjectTemplate: '🎟️ Your Official Entry Pass for HackSeries 2026 — {{name}}',
