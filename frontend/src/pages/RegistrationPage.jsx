@@ -222,7 +222,30 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#4ade80', fontWeight: '700', marginTop: '14px', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
-              <ShieldCheck size={14} /> HMAC-SHA256 Cryptographic Pass Active • Email Dispatched
+              <ShieldCheck size={14} /> HMAC-SHA256 Cryptographic Pass Active • Email & WhatsApp Dispatched
+            </div>
+
+            {/* WhatsApp Notification Dispatch Notice */}
+            <div style={{ background: 'rgba(34, 197, 94, 0.08)', border: '1px solid rgba(34, 197, 94, 0.25)', borderRadius: '10px', padding: '12px 16px', marginTop: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'left' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontWeight: '900', flexShrink: 0 }}>
+                  <Smartphone size={16} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '12px', fontWeight: '800', color: '#ffffff' }}>WhatsApp Ticket Sent</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>From Operations Lead: <strong style={{ color: '#f7d070' }}>+91 9890829874</strong></div>
+                </div>
+              </div>
+
+              <a
+                href={`https://api.whatsapp.com/send?phone=91${(registeredData.phone || '').replace(/[^0-9]/g, '').slice(-10)}&text=${encodeURIComponent(`⚡ *HACKSERIES 2026 OFFICIAL PASS*\nPass ID: ${registeredData.uniqueId}\nName: ${registeredData.name}\nTrack: ${registeredData.track}\nLive Pass Link: ${window.location.origin}/pass/${registeredData.uniqueId}\n\nHelpdesk: +91 9890829874`)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-secondary btn-sm"
+                style={{ background: '#25D366', color: '#000000', fontWeight: '800', border: 'none', textDecoration: 'none' }}
+              >
+                💬 Open in WhatsApp
+              </a>
             </div>
           </div>
 

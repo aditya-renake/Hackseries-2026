@@ -114,6 +114,20 @@ const registrantSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    // WhatsApp Notification Tracking (From: 9890829874)
+    whatsappSent: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    whatsappSentAt: {
+      type: Date,
+      default: null,
+    },
+    whatsappSender: {
+      type: String,
+      default: '9890829874',
+    },
     checkedIn: {
       type: Boolean,
       default: false,

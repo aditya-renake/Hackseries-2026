@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Registrant } from '../models/Registrant.js';
 import { createQRPayload, generatePassSignature, generateQRCodeDataUrl } from '../services/qrService.js';
 import { sendPassEmail } from '../services/emailService.js';
+import { sendWhatsAppPass, WHATSAPP_SENDER_NUMBER } from '../services/whatsappService.js';
 
 /**
  * Pricing tiers for HackSeries 2026 registration (Defaulted to ₹1 demo payment)
@@ -164,9 +165,7 @@ export const verifyPaymentAndRegister = async (req, res) => {
 
     await registrant.save();
 
-    console.log(`💳 [PAYMENT VERIFIED] ₹${amount} received for ${registrant.name} (${registrant.email}) -> Pass ID: ${uniqueId}`);
-
-    // Dispatch official digital pass to registrant's email in background
+    // 1. Dispatch official digital pass to registrant's email in background
     sendPassEmail(registrant)
       .then(async (result) => {
         if (result && result.success) {
@@ -177,9 +176,22 @@ export const verifyPaymentAndRegister = async (req, res) => {
       })
       .catch((err) => console.error('Automated pass email dispatch error:', err));
 
+    // 2. Dispatch automated WhatsApp pass notification from 9890829874
+    sendWhatsAppPass(registrant)
+      .then(async (result) => {
+        if (result && result.success) {
+          registrant.whatsappSent = true;
+          registrant.whatsappSentAt = new Date();
+          registrant.whatsappSender = WHATSAPP_SENDER_NUMBER;
+          await registrant.save();
+          console.log(`📱 [WHATSAPP DISPATCH SUCCESS] Notified ${registrant.name} (${registrant.phone}) from ${WHATSAPP_SENDER_NUMBER}`);
+        }
+      })
+      .catch((err) => console.error('Automated WhatsApp pass dispatch error:', err));
+
     res.status(201).json({
       success: true,
-      message: 'Payment verified! HackSeries 2026 Digital Pass generated and emailed successfully.',
+      message: 'Payment verified! HackSeries 2026 Digital Pass generated, emailed, and sent via WhatsApp.',
       data: registrant,
       uniqueId: registrant.uniqueId,
       passUrl: `/pass/${uniqueId}`,

@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Registrant } from '../models/Registrant.js';
 import { createQRPayload, generatePassSignature, generateQRCodeDataUrl } from '../services/qrService.js';
 import { sendPassEmail } from '../services/emailService.js';
+import { sendWhatsAppPass, WHATSAPP_SENDER_NUMBER } from '../services/whatsappService.js';
 
 /**
  * List registrants with search, filter, and pagination (optimized for 2000+ scale).
@@ -167,7 +168,7 @@ export const handleWebhookSubmission = async (req, res) => {
 
     console.log(`📥 [HACKSERIES REGISTRATION] Registered: ${registrant.name} (${registrant.email}) -> Pass ID: ${uniqueId}`);
 
-    // Automatically send pass email in background
+    // 1. Automatically send pass email in background
     sendPassEmail(registrant)
       .then(async (result) => {
         if (result && result.success) {
@@ -178,9 +179,22 @@ export const handleWebhookSubmission = async (req, res) => {
       })
       .catch((err) => console.error('Automated pass email dispatch error:', err));
 
+    // 2. Automatically dispatch WhatsApp pass from 9890829874
+    sendWhatsAppPass(registrant)
+      .then(async (result) => {
+        if (result && result.success) {
+          registrant.whatsappSent = true;
+          registrant.whatsappSentAt = new Date();
+          registrant.whatsappSender = WHATSAPP_SENDER_NUMBER;
+          await registrant.save();
+          console.log(`📱 [WHATSAPP DISPATCH] Notified ${registrant.name} (${registrant.phone}) from ${WHATSAPP_SENDER_NUMBER}`);
+        }
+      })
+      .catch((err) => console.error('Automated WhatsApp dispatch error:', err));
+
     res.status(201).json({
       success: true,
-      message: 'Registration successful! Digital Pass generated and email dispatched.',
+      message: 'Registration successful! Digital Pass generated, emailed, and sent via WhatsApp.',
       data: registrant,
       uniqueId: registrant.uniqueId,
       passUrl: `/pass/${uniqueId}`,
