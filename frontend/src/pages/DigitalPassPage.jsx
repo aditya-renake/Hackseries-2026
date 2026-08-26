@@ -13,6 +13,7 @@ import {
   Smartphone,
   RefreshCw
 } from 'lucide-react';
+import { DYPDPULogo } from '../components/CollegeLogos';
 import { api } from '../services/api';
 
 export const DigitalPassPage = ({ uniqueId, onBack, onShowToast }) => {
@@ -95,12 +96,15 @@ export const DigitalPassPage = ({ uniqueId, onBack, onShowToast }) => {
           
           {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '12px' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>HACKSERIES 2026</span>
-                <span className="badge badge-dyp" style={{ fontSize: '10px' }}>ACES • DIT PUNE</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <DYPDPULogo height={22} />
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '16px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>HACKSERIES 2026</span>
+                  <span className="badge badge-dyp" style={{ fontSize: '9px', padding: '1px 6px' }}>ACES DIT</span>
+                </div>
+                <div style={{ fontSize: '9px', color: '#d1a550', fontWeight: '800', marginTop: '1px' }}>DR. D. Y. PATIL INSTITUTE OF TECHNOLOGY (DYPDPU)</div>
               </div>
-              <div style={{ fontSize: '10px', color: '#d1a550', fontWeight: '800', marginTop: '2px' }}>DR. D. Y. PATIL INSTITUTE OF TECHNOLOGY (DYPDPU)</div>
             </div>
             <span className="badge badge-emerald">{passData.ticketType}</span>
           </div>

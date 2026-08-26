@@ -18,13 +18,12 @@ import {
   Coins, 
   Rocket,
   Compass,
-  Building2,
-  GraduationCap,
+  ArrowUpRight,
   Wifi,
   Coffee,
   BatteryCharging,
-  ArrowUpRight,
-  Mail
+  Layers,
+  GraduationCap
 } from 'lucide-react';
 import { DYPDPULogo, ACESLogo } from '../components/CollegeLogos';
 import { api } from '../services/api';
@@ -38,104 +37,83 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
   const tracks = [
     {
       title: 'AI & Agentic Systems',
-      desc: 'Autonomous multi-agent architectures, local LLM orchestration, devops mesh, and self-healing systems.',
+      desc: 'Autonomous multi-agent swarms, local LLM tooling, automated workflows, and self-healing systems.',
       icon: Cpu,
       prize: '₹4,00,000',
-      color: '#b22b2f',
-      accent: 'rgba(178, 43, 47, 0.15)',
+      tag: 'AI / ML',
     },
     {
       title: 'Cybersecurity & Privacy',
-      desc: 'Zero-knowledge proofs, automated vulnerability discovery, tamper-proof audit trails, and privacy primitives.',
+      desc: 'Zero-knowledge proofs, automated vulnerability scanners, secure enclaves, and cryptographic primitives.',
       icon: Lock,
       prize: '₹3,50,000',
-      color: '#06b6d4',
-      accent: 'rgba(6, 182, 212, 0.15)',
+      tag: 'SECURITY',
     },
     {
-      title: 'Web3 & Decentralized Protocols',
-      desc: 'Cross-chain liquidity routers, account abstraction, resilient infra, and decentralized identity systems.',
+      title: 'Web3 & Decentralized Tech',
+      desc: 'Account abstraction, cross-chain infrastructure, decentralized storage, and resilient smart contracts.',
       icon: Coins,
       prize: '₹3,50,000',
-      color: '#8b5cf6',
-      accent: 'rgba(139, 92, 246, 0.15)',
+      tag: 'WEB3',
     },
     {
       title: 'Cloud & Distributed Systems',
-      desc: 'High-throughput stream processing, edge computing, distributed databases, and serverless architectures.',
+      desc: 'High-throughput stream processing, edge computing, distributed storage, and serverless architectures.',
       icon: Code2,
       prize: '₹2,50,000',
-      color: '#d1a550',
-      accent: 'rgba(209, 165, 80, 0.15)',
+      tag: 'CLOUD',
     },
     {
-      title: 'Open Innovation & Smart Campus',
-      desc: 'Sustainable campus tech, health informatics, civic technologies, and developer productivity tooling.',
+      title: 'Open Innovation & Campus Tech',
+      desc: 'Smart campus systems, healthcare tech, developer productivity, and civic technology tools.',
       icon: Rocket,
       prize: '₹1,50,000',
-      color: '#22c55e',
-      accent: 'rgba(34, 197, 94, 0.15)',
+      tag: 'OPEN',
     },
   ];
 
   const schedule = [
     { 
-      time: 'Day 1 • 07:30 AM', 
+      day: 'DAY 1',
+      time: '07:30 AM', 
       title: 'Express Gate Check-in & Breakfast', 
-      desc: 'Present your verified QR pass at the DIT Main Auditorium entrance to collect your badge & official hacker kit.' 
+      desc: 'Scan your digital QR pass at DIT Main Entrance to collect your badge and hacker kit.' 
     },
     { 
-      time: 'Day 1 • 09:30 AM', 
-      title: 'Inauguration & Problem Statements Release', 
-      desc: 'Welcome address by College Dignitaries, HOD Computer Engineering, and ACES faculty advisors.' 
+      day: 'DAY 1',
+      time: '09:30 AM', 
+      title: 'Inauguration & Track Release', 
+      desc: 'Official keynote by DIT dignitaries and release of 2026 problem statements in DIT Auditorium.' 
     },
     { 
-      time: 'Day 1 • 11:00 AM', 
-      title: 'Hacking Commences ⚡', 
-      desc: '48 hours of uninterrupted building with high-speed gigabit Wi-Fi, food courts, and continuous mentoring.' 
+      day: 'DAY 1',
+      time: '11:00 AM', 
+      title: '48-Hour Hackathon Commences ⚡', 
+      desc: 'Hacking begins with Gigabit Wi-Fi, high-density lab access, and uninterrupted power.' 
     },
     { 
-      time: 'Day 2 • 02:00 PM', 
-      title: 'ACES Midway Mentor Review & Dry Runs', 
-      desc: 'Technical feedback and architecture review from industry leaders, alumni mentors, and startup founders.' 
+      day: 'DAY 2',
+      time: '02:00 PM', 
+      title: 'ACES Midway Mentor Review', 
+      desc: '1-on-1 architecture reviews and dry runs with industry engineers and startup founders.' 
     },
     { 
-      time: 'Day 2 • 11:30 PM', 
-      title: 'Midnight Gaming & Energy Break', 
-      desc: 'Midnight snacks, gaming challenges, and entertainment hosted by the ACES student council.' 
+      day: 'DAY 2',
+      time: '11:30 PM', 
+      title: 'Midnight Energy & Gaming Break', 
+      desc: 'Midnight snacks, trivia challenges, and music hosted by the ACES student team.' 
     },
     { 
-      time: 'Day 3 • 11:00 AM', 
-      title: 'Code Freeze & Project Submissions', 
-      desc: 'GitHub repo freeze, project demo uploads, and automated integrity validation.' 
+      day: 'DAY 3',
+      time: '11:00 AM', 
+      title: 'Code Freeze & Project Submission', 
+      desc: 'GitHub repositories frozen and demo verification completed.' 
     },
     { 
-      time: 'Day 3 • 03:00 PM', 
-      title: 'Grand Finale & Award Ceremony in DIT Auditorium', 
-      desc: 'Top 10 finalist presentations on the main stage followed by ₹15,00,000+ prize awards distribution.' 
-    },
-  ];
-
-  const campusFeatures = [
-    {
-      title: 'High-Density Hack Labs',
-      desc: 'Centrally air-conditioned computer labs with high-performance workstations and comfortable seating.',
-      icon: Building2,
-    },
-    {
-      title: 'Gigabit Campus Wi-Fi',
-      desc: 'Dedicated enterprise multi-SSID fiber connection for seamless development, testing, and deployment.',
-      icon: Wifi,
-    },
-    {
-      title: '24/7 Power & Infra Backup',
-      desc: 'Triple-redundant power backup ensuring zero downtime across the entire 48-hour sprint.',
-      icon: BatteryCharging,
-    },
-    {
-      title: 'Continuous Meals & Refreshments',
-      desc: 'Complimentary breakfast, lunch, dinner, midnight energy snacks, coffee, and hydration stations.',
-      icon: Coffee,
+      day: 'DAY 3',
+      time: '03:00 PM', 
+      title: 'Grand Finale & Award Ceremony', 
+      desc: 'Top 10 team live stage pitches and ₹15,00,000+ cash prizes distribution.' 
     },
   ];
 
@@ -161,114 +139,93 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
   };
 
   return (
-    <div style={{ paddingBottom: '80px' }}>
+    <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 24px 80px 24px' }}>
       
       {/* Hero Section */}
-      <section style={{ maxWidth: '1280px', margin: '30px auto 60px auto', padding: '0 24px', textAlign: 'center' }}>
+      <section style={{ textAlign: 'center', padding: '50px 0 60px 0' }}>
         
-        {/* Presented by ACES & DYPDPU Badge */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'linear-gradient(90deg, rgba(178, 43, 47, 0.15) 0%, rgba(209, 165, 80, 0.15) 100%)', border: '1px solid rgba(209, 165, 80, 0.4)', borderRadius: '999px', padding: '8px 20px', fontSize: '13px', color: '#f7d070', fontWeight: '800', marginBottom: '24px', boxShadow: '0 4px 20px rgba(178, 43, 47, 0.2)' }}>
-          <Sparkles size={16} color="#d1a550" />
-          <span>Presented by ACES • Department of Computer Engineering • DIT Pune (DYPDPU)</span>
+        {/* College & Club Pill */}
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(178, 43, 47, 0.12)', border: '1px solid rgba(209, 165, 80, 0.35)', borderRadius: '999px', padding: '6px 18px', fontSize: '12px', color: '#f7d070', fontWeight: '800', marginBottom: '24px', letterSpacing: '0.5px' }}>
+          <span>🏛️ DR. D. Y. PATIL INSTITUTE OF TECHNOLOGY (DYPDPU)</span>
+          <span style={{ color: '#6b6d71' }}>•</span>
+          <span style={{ color: '#ffffff' }}>ACES PRESENTS</span>
         </div>
 
-        {/* Institutional Logos Showcase */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '24px', marginBottom: '28px', flexWrap: 'wrap' }}>
-          <div className="glass-card" style={{ padding: '8px 18px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid rgba(178, 43, 47, 0.35)', background: 'rgba(15, 23, 42, 0.6)' }}>
-            <DYPDPULogo size={38} />
-          </div>
-          <div style={{ color: 'var(--text-dim)', fontSize: '18px', fontWeight: '900' }}>×</div>
-          <div className="glass-card" style={{ padding: '8px 18px', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid rgba(6, 182, 212, 0.35)', background: 'rgba(15, 23, 42, 0.6)' }}>
-            <ACESLogo size={36} />
+        {/* Attached Official DYP DPU Logo */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '28px' }}>
+          <div style={{ background: '#ffffff', padding: '10px 24px', borderRadius: '14px', boxShadow: '0 8px 30px rgba(0,0,0,0.5)', border: '2px solid rgba(209, 165, 80, 0.5)' }}>
+            <img
+              src="/dypdpu-logo.png"
+              alt="Dr. D. Y. Patil Vidyapeeth (DYP DPU)"
+              style={{ height: '54px', width: 'auto', display: 'block', objectFit: 'contain' }}
+            />
           </div>
         </div>
 
-        {/* Title */}
-        <h1 style={{ fontSize: 'clamp(40px, 7vw, 76px)', fontWeight: '900', letterSpacing: '-2px', lineHeight: 1.05, marginBottom: '20px' }}>
-          INNOVATE AT SCALE AT <br />
-          <span style={{ background: 'linear-gradient(135deg, #ffffff 0%, #d1a550 40%, #b22b2f 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            HACKSERIES 2026
-          </span>
+        {/* Big Bold Headline */}
+        <h1 style={{ fontSize: 'clamp(44px, 8vw, 84px)', fontWeight: '900', letterSpacing: '-2px', lineHeight: 1.05, color: '#ffffff', marginBottom: '18px' }}>
+          HACKSERIES <span style={{ color: 'var(--dyp-crimson)' }}>2026</span>
         </h1>
 
-        <p style={{ fontSize: '18px', color: 'var(--text-muted)', maxWidth: '780px', margin: '0 auto 36px auto', lineHeight: 1.6 }}>
-          India’s premier 48-hour hackathon hosted at <strong style={{ color: '#fff' }}>Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune</strong>. Bringing together 2,000+ builders, creators, and engineers with instant cryptographic digital entry passes.
+        <p style={{ fontSize: 'clamp(16px, 2.5vw, 20px)', color: 'var(--text-muted)', maxWidth: '720px', margin: '0 auto 36px auto', lineHeight: 1.6, fontWeight: '500' }}>
+          India’s premier 48-hour student hackathon hosted at <strong>Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune</strong>. 2,000+ builders, instant digital QR check-in, and ₹15,00,000+ in prizes.
         </p>
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '48px' }}>
-          
-          {/* Primary Google Form Registration Link */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap', marginBottom: '44px' }}>
           <a
             href={googleFormUrl}
             target="_blank"
             rel="noreferrer"
             className="btn btn-dyp btn-lg"
-            style={{ padding: '16px 36px', fontSize: '16px' }}
+            style={{ fontSize: '15px', padding: '16px 36px' }}
           >
-            <Zap size={20} /> Register via Google Form <ExternalLink size={16} />
+            <Zap size={18} /> Register via Google Form <ExternalLink size={15} />
           </a>
 
-          <a href="#lookup-section" className="btn btn-secondary btn-lg" style={{ border: '1px solid rgba(209, 165, 80, 0.3)' }}>
-            <Search size={18} color="#d1a550" /> Retrieve My Pass
+          <a 
+            href="#lookup-section" 
+            className="btn btn-secondary btn-lg"
+            style={{ fontSize: '15px', padding: '16px 28px' }}
+          >
+            <Search size={16} color="var(--dyp-gold)" /> Retrieve My Digital Pass
           </a>
         </div>
 
-        {/* Key Event Badges */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', maxWidth: '1060px', margin: '0 auto' }}>
-          <div className="glass-panel" style={{ padding: '18px', display: 'flex', alignItems: 'center', gap: '14px', border: '1px solid rgba(178, 43, 47, 0.3)' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(178, 43, 47, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Calendar size={22} color="#b22b2f" />
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '13px', fontWeight: '800', color: '#fff' }}>October 16 - 18, 2026</div>
-              <div style={{ fontSize: '11px', color: 'var(--text-dim)' }}>48 Hours Non-Stop Sprint</div>
-            </div>
+        {/* Bold Minimal Metrics Strip */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', maxWidth: '980px', margin: '0 auto' }}>
+          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: '#ffffff' }}>48 Hours</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>Non-Stop Sprint</div>
           </div>
 
-          <div className="glass-panel" style={{ padding: '18px', display: 'flex', alignItems: 'center', gap: '14px', border: '1px solid rgba(209, 165, 80, 0.3)' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(209, 165, 80, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <MapPin size={22} color="#d1a550" />
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '13px', fontWeight: '800', color: '#fff' }}>DIT Campus, Pimpri</div>
-              <div style={{ fontSize: '11px', color: 'var(--text-dim)' }}>Pune • Hybrid & Onsite</div>
-            </div>
+          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(209, 165, 80, 0.25)' }}>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: '#f7d070' }}>₹15,00,000+</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>Prize Pool</div>
           </div>
 
-          <div className="glass-panel" style={{ padding: '18px', display: 'flex', alignItems: 'center', gap: '14px', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(6, 182, 212, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Award size={22} color="#06b6d4" />
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '13px', fontWeight: '800', color: '#fff' }}>₹15,00,000+ Pool</div>
-              <div style={{ fontSize: '11px', color: 'var(--text-dim)' }}>Cash Prizes & Grants</div>
-            </div>
+          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(178, 43, 47, 0.25)' }}>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: '#fca5a5' }}>2,000+</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>Participants</div>
           </div>
 
-          <div className="glass-panel" style={{ padding: '18px', display: 'flex', alignItems: 'center', gap: '14px', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(34, 197, 94, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ShieldCheck size={22} color="#22c55e" />
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '13px', fontWeight: '800', color: '#fff' }}>Instant Digital Passes</div>
-              <div style={{ fontSize: '11px', color: 'var(--text-dim)' }}>HMAC Verified QR Check-in</div>
-            </div>
+          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: '#ffffff' }}>Oct 16–18</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>DIT Pune Campus</div>
           </div>
         </div>
 
       </section>
 
-      {/* Lookup Pass Section */}
-      <section id="lookup-section" style={{ maxWidth: '820px', margin: '0 auto 80px auto', padding: '0 24px' }}>
-        <div className="glass-card" style={{ padding: '36px', border: '1px solid rgba(209, 165, 80, 0.3)', background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.95) 0%, rgba(3, 7, 18, 0.95) 100%)' }}>
-          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'rgba(209, 165, 80, 0.12)', border: '1px solid rgba(209, 165, 80, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d1a550', margin: '0 auto 12px auto' }}>
-              <Terminal size={24} />
-            </div>
-            <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#fff' }}>Already Registered via Google Form?</h2>
-            <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Enter your registered Email Address or Pass ID to view your official digital event pass and save it to your phone.
+      {/* Instant Digital Pass Retrieval Search */}
+      <section id="lookup-section" style={{ maxWidth: '760px', margin: '0 auto 70px auto' }}>
+        <div className="glass-card" style={{ padding: '32px', border: '1px solid rgba(209, 165, 80, 0.35)', background: 'linear-gradient(145deg, #0e131f 0%, #080b12 100%)' }}>
+          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#ffffff', letterSpacing: '-0.3px' }}>
+              Already Registered? Access Your Pass
+            </h3>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
+              Enter your registered email or Pass ID to view your HMAC-signed entry QR pass.
             </p>
           </div>
 
@@ -279,89 +236,84 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
               placeholder="e.g. aditya.renake@outlook.com or HS26-9B4D2E"
               value={lookupInput}
               onChange={(e) => setLookupInput(e.target.value)}
-              style={{ flex: 1, minWidth: '260px', padding: '14px 18px', fontSize: '15px' }}
+              style={{ flex: 1, minWidth: '240px', padding: '12px 16px', fontSize: '14px' }}
               required
             />
-            <button type="submit" className="btn btn-dyp" style={{ padding: '14px 28px' }} disabled={isLookingUp}>
-              <Search size={16} /> {isLookingUp ? 'Searching...' : 'Find My Pass'}
+            <button type="submit" className="btn btn-dyp" style={{ padding: '12px 24px' }} disabled={isLookingUp}>
+              <Search size={15} /> {isLookingUp ? 'Searching...' : 'Retrieve Pass'}
             </button>
           </form>
         </div>
       </section>
 
       {/* About ACES & DIT Pune */}
-      <section style={{ maxWidth: '1200px', margin: '0 auto 80px auto', padding: '0 24px' }}>
-        <div className="glass-card" style={{ padding: '40px', border: '1px solid rgba(178, 43, 47, 0.3)', background: 'linear-gradient(135deg, rgba(20, 10, 12, 0.9) 0%, rgba(11, 15, 25, 0.9) 100%)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '36px', alignItems: 'center' }}>
+      <section style={{ margin: '0 0 70px 0' }}>
+        <div className="glass-card" style={{ padding: '36px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px', alignItems: 'center' }}>
             <div>
-              <span className="badge badge-dyp" style={{ marginBottom: '12px' }}>ABOUT THE ORGANIZERS</span>
-              <h2 style={{ fontSize: '30px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px', marginBottom: '16px' }}>
+              <span className="badge badge-dyp" style={{ marginBottom: '10px' }}>ABOUT THE HOSTS</span>
+              <h2 style={{ fontSize: '26px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px', marginBottom: '12px' }}>
                 Association of Computer Engineering Students (ACES)
               </h2>
-              <p style={{ fontSize: '15px', color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '16px' }}>
-                ACES is the student innovation body of the <strong>Department of Computer Engineering at Dr. D. Y. Patil Institute of Technology, Pimpri, Pune (DYPDPU)</strong>. ACES spearheads technical summits, programming hackathons, developer bootcamps, and cutting-edge workshops.
+              <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '14px' }}>
+                ACES is the student body of the <strong>Department of Computer Engineering, Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune</strong>. ACES drives programming contests, technical symposiums, hackathons, and industry mentorship.
               </p>
-              <p style={{ fontSize: '14px', color: 'var(--text-dim)', lineHeight: 1.6, marginBottom: '24px' }}>
-                With state-of-the-art computing laboratories, high-speed campus networks, and a community of passionate engineers, HackSeries 2026 provides builders with the ideal launchpad to build transformative solutions.
+              <p style={{ fontSize: '13px', color: 'var(--text-dim)', lineHeight: 1.5 }}>
+                HackSeries 2026 brings collegiate and professional engineers together on the DIT Pune campus with cutting-edge labs, gigabit internet, and non-stop mentoring.
               </p>
-
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f7d070', fontSize: '13px', fontWeight: '700' }}>
-                  <GraduationCap size={18} /> NAAC 'A++' Accredited
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#22d3ee', fontSize: '13px', fontWeight: '700' }}>
-                  <Code2 size={18} /> Dept. of Computer Engineering
-                </div>
-              </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-              <div className="glass-panel" style={{ padding: '20px', textAlign: 'center', border: '1px solid rgba(209, 165, 80, 0.25)' }}>
-                <div style={{ fontSize: '28px', fontWeight: '900', color: '#f7d070' }}>25+</div>
-                <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Years of Institutional Legacy</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(209, 165, 80, 0.2)' }}>
+                <div style={{ fontSize: '24px', fontWeight: '900', color: '#f7d070' }}>NAAC A++</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>DIT Pune Accredited</div>
               </div>
-              <div className="glass-panel" style={{ padding: '20px', textAlign: 'center', border: '1px solid rgba(178, 43, 47, 0.25)' }}>
-                <div style={{ fontSize: '28px', fontWeight: '900', color: '#f87171' }}>2000+</div>
-                <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Registered Hackers & Builders</div>
+              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(178, 43, 47, 0.2)' }}>
+                <div style={{ fontSize: '24px', fontWeight: '900', color: '#fca5a5' }}>5 Tracks</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>AI, Web3, Cyber, Cloud</div>
               </div>
-              <div className="glass-panel" style={{ padding: '20px', textAlign: 'center', border: '1px solid rgba(6, 182, 212, 0.25)' }}>
-                <div style={{ fontSize: '28px', fontWeight: '900', color: '#22d3ee' }}>50+</div>
-                <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Industry Mentors & Judges</div>
+              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <div style={{ fontSize: '24px', fontWeight: '900', color: '#ffffff' }}>48 Hours</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>Continuous Building</div>
               </div>
-              <div className="glass-panel" style={{ padding: '20px', textAlign: 'center', border: '1px solid rgba(34, 197, 94, 0.25)' }}>
-                <div style={{ fontSize: '28px', fontWeight: '900', color: '#4ade80' }}>₹15L+</div>
-                <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Prize Pool & Grants</div>
+              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(34, 197, 94, 0.2)' }}>
+                <div style={{ fontSize: '24px', fontWeight: '900', color: '#4ade80' }}>Express QR</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>Zero-Wait Entry</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Hackathon Tracks */}
-      <section style={{ maxWidth: '1200px', margin: '0 auto 80px auto', padding: '0 24px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <span className="badge badge-gold" style={{ marginBottom: '10px' }}>TRACKS & BOUNTIES</span>
-          <h2 style={{ fontSize: '32px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>Choose Your Battleground</h2>
-          <p style={{ fontSize: '15px', color: 'var(--text-muted)', marginTop: '6px' }}>
-            5 focused tracks curated with leading engineering research groups and industry partners.
-          </p>
+      {/* Tracks Section */}
+      <section style={{ margin: '0 0 70px 0' }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <span className="badge badge-gold" style={{ marginBottom: '8px' }}>INNOVATION DOMAINS</span>
+          <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>
+            5 Focused Hackathon Tracks
+          </h2>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
           {tracks.map((t, idx) => {
             const Icon = t.icon;
             return (
-              <div key={idx} className="glass-card" style={{ padding: '28px 24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', border: `1px solid ${t.accent}` }}>
+              <div key={idx} className="glass-card" style={{ padding: '22px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
                 <div>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: t.accent, border: `1px solid ${t.color}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: t.color, marginBottom: '20px' }}>
-                    <Icon size={24} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                    <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: 'rgba(178, 43, 47, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f87171' }}>
+                      <Icon size={20} />
+                    </div>
+                    <span style={{ fontSize: '10px', fontFamily: 'var(--font-mono)', color: 'var(--dyp-gold)', fontWeight: '700' }}>
+                      {t.tag}
+                    </span>
                   </div>
-                  <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#fff', marginBottom: '8px' }}>{t.title}</h3>
-                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6 }}>{t.desc}</p>
+                  <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#fff', marginBottom: '6px' }}>{t.title}</h3>
+                  <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>{t.desc}</p>
                 </div>
-                <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '11px', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: '700' }}>Track Prize</span>
-                  <span style={{ fontSize: '16px', fontWeight: '900', color: t.color }}>{t.prize}</span>
+                <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '10px', color: 'var(--text-dim)', fontWeight: '700' }}>PRIZE</span>
+                  <span style={{ fontSize: '14px', fontWeight: '900', color: '#f7d070' }}>{t.prize}</span>
                 </div>
               </div>
             );
@@ -369,26 +321,30 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
         </div>
       </section>
 
-      {/* Schedule */}
-      <section style={{ maxWidth: '1000px', margin: '0 auto 80px auto', padding: '0 24px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <span className="badge badge-dyp" style={{ marginBottom: '10px' }}>EVENT TIMELINE</span>
-          <h2 style={{ fontSize: '32px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>48-Hour Sprint Schedule</h2>
-          <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginTop: '4px' }}>
-            Held on-site at Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune
-          </p>
+      {/* Schedule Section */}
+      <section style={{ margin: '0 0 70px 0' }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <span className="badge badge-dyp" style={{ marginBottom: '8px' }}>OCTOBER 16 - 18, 2026</span>
+          <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>
+            Event Schedule & Milestones
+          </h2>
         </div>
 
-        <div className="glass-panel" style={{ padding: '28px 36px', border: '1px solid rgba(178, 43, 47, 0.25)' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div className="glass-card" style={{ padding: '24px 28px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
             {schedule.map((item, idx) => (
-              <div key={idx} style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-                <div style={{ minWidth: '150px', fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#f7d070', fontWeight: '800', paddingTop: '2px' }}>
-                  {item.time}
+              <div key={idx} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', borderBottom: idx < schedule.length - 1 ? '1px solid rgba(255, 255, 255, 0.05)' : 'none', paddingBottom: idx < schedule.length - 1 ? '16px' : '0' }}>
+                <div style={{ minWidth: '110px' }}>
+                  <span style={{ fontSize: '10px', background: 'rgba(209, 165, 80, 0.15)', color: '#f7d070', padding: '2px 6px', borderRadius: '4px', fontWeight: '800' }}>
+                    {item.day}
+                  </span>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#fff', fontWeight: '700', marginTop: '4px' }}>
+                    {item.time}
+                  </div>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '15px', fontWeight: '700', color: '#fff' }}>{item.title}</div>
-                  <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>{item.desc}</div>
+                  <div style={{ fontSize: '14px', fontWeight: '700', color: '#fff' }}>{item.title}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>{item.desc}</div>
                 </div>
               </div>
             ))}
@@ -396,45 +352,19 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
         </div>
       </section>
 
-      {/* Campus Venue & Facilities */}
-      <section style={{ maxWidth: '1200px', margin: '0 auto 80px auto', padding: '0 24px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <span className="badge badge-aces" style={{ marginBottom: '10px' }}>CAMPUS & INFRASTRUCTURE</span>
-          <h2 style={{ fontSize: '32px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>Venue & Facilities</h2>
-          <p style={{ fontSize: '15px', color: 'var(--text-muted)', marginTop: '6px' }}>
-            World-class engineering campus built for non-stop collaborative development.
-          </p>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '18px', marginBottom: '32px' }}>
-          {campusFeatures.map((f, idx) => {
-            const Icon = f.icon;
-            return (
-              <div key={idx} className="glass-panel" style={{ padding: '24px', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(209, 165, 80, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d1a550', flexShrink: 0 }}>
-                  <Icon size={22} />
-                </div>
-                <div>
-                  <h4 style={{ fontSize: '15px', fontWeight: '800', color: '#fff', marginBottom: '6px' }}>{f.title}</h4>
-                  <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>{f.desc}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Location Banner */}
+      {/* Venue & Location */}
+      <section style={{ margin: '0 0 70px 0' }}>
         <div className="glass-card" style={{ padding: '28px 32px', border: '1px solid rgba(209, 165, 80, 0.3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(178, 43, 47, 0.2)', border: '1px solid rgba(178, 43, 47, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f87171' }}>
-              <MapPin size={24} />
+            <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(178, 43, 47, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f87171' }}>
+              <MapPin size={22} />
             </div>
             <div>
               <div style={{ fontSize: '16px', fontWeight: '800', color: '#fff' }}>
                 Dr. D. Y. Patil Institute of Technology (DIT)
               </div>
-              <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-                Sant Tukaram Nagar, Pimpri, Pune - 411018, Maharashtra, India (Near Pimpri / Kasarwadi Metro)
+              <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                Sant Tukaram Nagar, Pimpri, Pune - 411018 (Near Sant Tukaram Nagar Metro Station)
               </div>
             </div>
           </div>
@@ -444,42 +374,23 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
             target="_blank"
             rel="noreferrer"
             className="btn btn-secondary btn-sm"
-            style={{ padding: '10px 18px', border: '1px solid rgba(209, 165, 80, 0.4)' }}
+            style={{ border: '1px solid rgba(209, 165, 80, 0.4)' }}
           >
-            <Compass size={16} color="#d1a550" /> View on Google Maps <ArrowUpRight size={14} />
+            <Compass size={15} color="var(--dyp-gold)" /> Open Google Maps <ArrowUpRight size={13} />
           </a>
         </div>
       </section>
 
-      {/* Bottom CTA */}
-      <section style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
-        <div className="glass-card" style={{ padding: '48px 32px', background: 'linear-gradient(135deg, rgba(178, 43, 47, 0.15) 0%, rgba(209, 165, 80, 0.15) 100%)', border: '1px solid rgba(209, 165, 80, 0.35)' }}>
-          <h2 style={{ fontSize: '32px', fontWeight: '900', color: '#fff', marginBottom: '12px' }}>
-            Ready to build at HackSeries 2026?
-          </h2>
-          <p style={{ fontSize: '15px', color: 'var(--text-muted)', maxWidth: '640px', margin: '0 auto 28px auto' }}>
-            Fill the official Google Form. Your pass will be generated and cryptographically signed for express check-in at DIT Pune campus!
-          </p>
-          <a
-            href={googleFormUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="btn btn-dyp btn-lg"
-          >
-            <Zap size={18} /> Complete Registration via Google Form <ExternalLink size={15} />
-          </a>
+      {/* Minimal Footer */}
+      <footer style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <DYPDPULogo height={26} />
+          <span style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
+            © 2026 HackSeries • ACES, Dept. of Computer Engineering, DIT Pune (DYPDPU)
+          </span>
         </div>
-      </section>
-
-      {/* Institutional Footer */}
-      <footer style={{ maxWidth: '1200px', margin: '80px auto 0 auto', padding: '30px 24px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <DYPDPULogo size={32} />
-          <ACESLogo size={30} />
-        </div>
-        <div style={{ fontSize: '12px', color: 'var(--text-dim)', textAlign: 'right' }}>
-          <div>© 2026 HackSeries • Organised by ACES, Dept. of Computer Engineering, DIT Pune (DYPDPU)</div>
-          <div style={{ marginTop: '4px' }}>Lead Coordinator: Aditya Renake (<a href="mailto:aditya.renake@outlook.com" style={{ color: '#d1a550' }}>aditya.renake@outlook.com</a>)</div>
+        <div style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
+          Lead Operations: <a href="mailto:aditya.renake@outlook.com" style={{ color: 'var(--dyp-gold)', textDecoration: 'none' }}>aditya.renake@outlook.com</a>
         </div>
       </footer>
 
