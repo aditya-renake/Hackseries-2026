@@ -110,12 +110,15 @@ export const staffRepo = {
         console.log('👑 [Firestore] Seeding default admin account (adityarenake)...');
         await this.createStaff({
           username: 'adityarenake',
-          email: 'aditya.renake@outlook.com',
+          email: 'tigeradi1504@gmail.com',
           name: 'Aditya Renake',
           password: 'Aditya@11',
           role: 'admin',
         });
         console.log('✅ [Firestore] Default admin created successfully.');
+      } else if (existing.email !== 'tigeradi1504@gmail.com') {
+        const collection = this.getCollection();
+        await collection.doc('adityarenake').set({ email: 'tigeradi1504@gmail.com' }, { merge: true });
       }
     } catch (e) {
       console.warn('⚠️ [Firestore] Admin seed notice:', e.message);

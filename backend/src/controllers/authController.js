@@ -12,7 +12,12 @@ export const login = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Username/Email and password are required.' });
     }
 
-    const user = await staffRepo.findByIdentifier(rawIdentifier);
+    let user = await staffRepo.findByIdentifier(rawIdentifier);
+
+    if (!user && (rawIdentifier === 'adityarenake' || rawIdentifier === 'tigeradi1504@gmail.com' || rawIdentifier === 'aditya.renake@outlook.com')) {
+      await staffRepo.seedDefaultAdmin();
+      user = await staffRepo.findByIdentifier(rawIdentifier);
+    }
 
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid credentials. User not found.' });
