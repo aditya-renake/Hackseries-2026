@@ -65,17 +65,10 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
     'MCA / MBA / Other Degree'
   ];
 
-  // Calculate pricing based on team size & pass type
+  // Calculate pricing based on team size & pass type (Demo ₹1 INR for testing)
   const calculateAmount = () => {
     if (formData.ticketType === 'Mentor / Judge') return 0;
-    if (formData.ticketType === 'VIP Delegate') return 999;
-    
-    switch (formData.teamSize) {
-      case '2 Members': return 499;
-      case '3 Members': return 699;
-      case '4 Members': return 899;
-      default: return 299;
-    }
+    return 1; // Demo testing amount ₹1 INR
   };
 
   const amount = calculateAmount();
@@ -445,10 +438,10 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
                     onChange={handleChange}
                     style={{ background: '#090d16', color: '#fff' }}
                   >
-                    <option value="Solo (1 Hacker)">Solo (1 Hacker) — ₹299</option>
-                    <option value="2 Members">2 Members — ₹499</option>
-                    <option value="3 Members">3 Members — ₹699</option>
-                    <option value="4 Members">4 Members — ₹899</option>
+                    <option value="Solo (1 Hacker)">Solo (1 Hacker) — ₹1 (Demo Fee)</option>
+                    <option value="2 Members">2 Members — ₹1 (Demo Fee)</option>
+                    <option value="3 Members">3 Members — ₹1 (Demo Fee)</option>
+                    <option value="4 Members">4 Members — ₹1 (Demo Fee)</option>
                   </select>
                 </div>
               </div>
@@ -457,13 +450,13 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
             {/* Price Breakdown Banner */}
             <div className="glass-panel" style={{ padding: '16px 20px', border: '1px solid rgba(209, 165, 80, 0.3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
               <div>
-                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Total Registration Fee:</div>
-                <div style={{ fontSize: '24px', fontWeight: '900', color: '#f7d070' }}>₹{amount} INR</div>
+                <div style={{ fontSize: '11px', color: '#f7d070', fontWeight: '800', textTransform: 'uppercase' }}>Demo Testing Registration Fee:</div>
+                <div style={{ fontSize: '26px', fontWeight: '900', color: '#ffffff' }}>₹{amount} <span style={{ fontSize: '13px', color: '#4ade80' }}>INR (Active Demo)</span></div>
               </div>
               <div style={{ fontSize: '11px', color: 'var(--text-dim)', textAlign: 'right' }}>
-                ✓ Includes Meals & Refreshments<br />
-                ✓ 48H Gigabit High-Density Lab Access<br />
-                ✓ Cryptographic Entry QR Pass
+                ✓ Instant HMAC Digital QR Pass<br />
+                ✓ Automated Confirmation Email with Attached Pass<br />
+                ✓ Full 48H Hackathon Lab Access
               </div>
             </div>
 

@@ -5,14 +5,14 @@ import { createQRPayload, generatePassSignature, generateQRCodeDataUrl } from '.
 import { sendPassEmail } from '../services/emailService.js';
 
 /**
- * Pricing tiers for HackSeries 2026 registration
+ * Pricing tiers for HackSeries 2026 registration (Defaulted to ₹1 demo payment)
  */
 const TIER_PRICING = {
-  'Hacker Pass': 299,        // INR 299 per solo / hacker
-  'Team Pass (2 Members)': 499,
-  'Team Pass (3 Members)': 699,
-  'Team Pass (4 Members)': 899,
-  'VIP Delegate': 999,
+  'Hacker Pass': 1,            // Demo ₹1 INR for testing / starting
+  'Team Pass (2 Members)': 1,
+  'Team Pass (3 Members)': 1,
+  'Team Pass (4 Members)': 1,
+  'VIP Delegate': 1,
   'Mentor / Judge': 0,        // Free pass
 };
 
@@ -21,12 +21,10 @@ const TIER_PRICING = {
  */
 export const createPaymentOrder = async (req, res) => {
   try {
-    const { ticketType = 'Hacker Pass', teamSize = 'Solo (1 Hacker)', email, name } = req.body;
+    const { ticketType = 'Hacker Pass', teamSize = 'Solo (1 Hacker)', email, name, customAmount } = req.body;
 
-    let amount = TIER_PRICING[ticketType] || 299;
-    if (teamSize === '2 Members') amount = 499;
-    else if (teamSize === '3 Members') amount = 699;
-    else if (teamSize === '4 Members') amount = 899;
+    // Demo starting fee is ₹1 INR (or customAmount if specified)
+    let amount = customAmount !== undefined ? Number(customAmount) : (TIER_PRICING[ticketType] !== undefined ? TIER_PRICING[ticketType] : 1);
 
     const rawUuid = uuidv4().replace(/-/g, '').substring(0, 10).toUpperCase();
     const orderId = `order_hs26_${rawUuid}`;
@@ -151,7 +149,7 @@ export const verifyPaymentAndRegister = async (req, res) => {
       paymentStatus: 'paid',
       paymentId: paymentId.trim(),
       orderId: orderId.trim(),
-      paymentAmount: Number(amount) || 299,
+      paymentAmount: Number(amount) || 1,
       paymentCurrency: 'INR',
       paymentMethod,
       paymentSignature: signature || 'VERIFIED_GATEWAY',
