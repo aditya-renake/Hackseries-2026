@@ -120,9 +120,19 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
   const handleCompletePayment = async () => {
     if (!paymentOrder) return;
 
+    const cleanRef = (transactionRef || '').trim();
+    if (!cleanRef || cleanRef.length < 6) {
+      onShowToast({
+        type: 'error',
+        title: 'UPI Transaction ID Required',
+        message: 'Please complete the ₹1 payment on Google Pay and enter the 12-digit UPI UTR / Transaction ID from your payment receipt.',
+      });
+      return;
+    }
+
     try {
       setIsProcessingPayment(true);
-      const paymentId = transactionRef.trim() || `pay_gpay_${Date.now()}`;
+      const paymentId = cleanRef;
       
       const res = await api.payment.verifyPayment({
         orderId: paymentOrder.orderId,
@@ -563,19 +573,23 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
               </div>
             </div>
 
-            {/* Transaction Ref Input (Optional) */}
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#9ca3af', marginBottom: '6px', textTransform: 'uppercase' }}>
-                UPI Ref / UTR / Transaction ID (Optional)
+            {/* Transaction Ref Input (Required for Verification) */}
+            <div style={{ marginBottom: '18px', textAlign: 'left' }}>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', color: '#f7d070', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                12-Digit UPI UTR / Google Pay Transaction ID <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 type="text"
                 className="input-control"
-                placeholder="e.g. 423872918239 or UPI Reference No"
+                placeholder="e.g. 423819284712 (12-digit UTR Number)"
                 value={transactionRef}
                 onChange={(e) => setTransactionRef(e.target.value)}
-                style={{ padding: '10px 14px', fontSize: '13px' }}
+                style={{ padding: '12px 14px', fontSize: '14px', border: '1px solid rgba(209, 165, 80, 0.4)', background: '#070a12' }}
+                required
               />
+              <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                💡 Open Google Pay &gt; Tap payment of ₹{paymentOrder.amount} &gt; Copy the 12-digit <strong>UPI Transaction ID / UTR</strong>.
+              </div>
             </div>
 
             {/* Action Buttons */}
