@@ -1,4 +1,5 @@
-import admin from 'firebase-admin';
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -96,48 +97,44 @@ export const initFirebase = () => {
   if (dbInstance) return dbInstance;
 
   try {
-    if (admin.apps.length > 0) {
-      dbInstance = admin.firestore();
+    const apps = getApps();
+    if (apps.length > 0) {
+      dbInstance = getAdminFirestore();
       return dbInstance;
     }
 
     // 1. Check for Service Account JSON string in environment variable
     if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
+      let serviceAccount;
+      if (typeof process.env.FIREBASE_SERVICE_ACCOUNT === 'string') {
+        serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+      } else {
+        serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
+      }
+      initializeApp({
+        credential: cert(serviceAccount),
       });
       console.log('✅ Connected to Google Cloud Firestore (via FIREBASE_SERVICE_ACCOUNT).');
-      dbInstance = admin.firestore();
+      dbInstance = getAdminFirestore();
       return dbInstance;
     }
 
     // 2. Check for individual Project ID, Client Email & Private Key
     if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
       const privateKey = process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n');
-      admin.initializeApp({
-        credential: admin.credential.cert({
+      initializeApp({
+        credential: cert({
           projectId: process.env.FIREBASE_PROJECT_ID,
           clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
           privateKey,
         }),
       });
       console.log(`✅ Connected to Google Cloud Firestore (${process.env.FIREBASE_PROJECT_ID}).`);
-      dbInstance = admin.firestore();
+      dbInstance = getAdminFirestore();
       return dbInstance;
     }
 
-    // 3. Check for Google Application Default Credentials
-    if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-      admin.initializeApp({
-        credential: admin.credential.applicationDefault(),
-      });
-      console.log('✅ Connected to Google Cloud Firestore (via GOOGLE_APPLICATION_CREDENTIALS).');
-      dbInstance = admin.firestore();
-      return dbInstance;
-    }
-
-    // 4. Fallback for Local Dev
+    // 3. Fallback for Local Dev
     console.log('⚡ [Firestore] No Google Cloud credentials configured yet. Running in local memory mode for development...');
     isInMemoryFallback = true;
     dbInstance = new MemoryFirestore();
