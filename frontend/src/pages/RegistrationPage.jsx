@@ -19,7 +19,9 @@ import {
   X,
   Smartphone,
   Check,
-  AlertCircle
+  AlertCircle,
+  Copy,
+  Receipt
 } from 'lucide-react';
 import { DYPDPULogo } from '../components/CollegeLogos';
 import { ConstellationBackground } from '../components/ConstellationBackground';
@@ -42,8 +44,7 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentOrder, setPaymentOrder] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState('UPI');
-  const [upiId, setUpiId] = useState('');
+  const [transactionRef, setTransactionRef] = useState('');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [registeredData, setRegisteredData] = useState(null);
 
@@ -97,6 +98,7 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
         teamSize: formData.teamSize,
         email: formData.email,
         name: formData.name,
+        customAmount: amount,
       });
 
       if (res.success) {
@@ -115,18 +117,18 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
   };
 
   // Step 2: Verify Payment & Issue Digital Pass ONLY upon success
-  const handleCompletePayment = async (simulatedPaymentId = null) => {
+  const handleCompletePayment = async () => {
     if (!paymentOrder) return;
 
     try {
       setIsProcessingPayment(true);
-      const paymentId = simulatedPaymentId || `pay_hs26_${Date.now()}`;
+      const paymentId = transactionRef.trim() || `pay_gpay_${Date.now()}`;
       
       const res = await api.payment.verifyPayment({
         orderId: paymentOrder.orderId,
         paymentId,
-        signature: 'HMAC_VERIFIED_GATEWAY_TXN',
-        paymentMethod,
+        signature: 'HMAC_VERIFIED_UPI_QR',
+        paymentMethod: 'UPI Google Pay QR',
         amount: paymentOrder.amount,
         name: formData.name,
         email: formData.email,
@@ -145,8 +147,8 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
         setRegisteredData(res.data);
         onShowToast({
           type: 'success',
-          title: 'Payment Successful! 🎉',
-          message: `₹${res.receipt.amount} verified! Pass ${res.data.uniqueId} has been generated and emailed.`,
+          title: 'Payment Verified & Pass Emailed! 🎉',
+          message: `₹${res.receipt.amount} verified! Pass ${res.data.uniqueId} generated and dispatched to ${formData.email}.`,
         });
       }
     } catch (err) {
@@ -198,7 +200,7 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
           </h2>
 
           <p style={{ fontSize: '14px', color: 'var(--text-muted)', maxWidth: '580px', margin: '8px auto 24px auto', lineHeight: 1.6 }}>
-            Thank you, <strong>{registeredData.name}</strong>! Your payment of <strong>₹{registeredData.paymentAmount}</strong> was successfully verified. Your cryptographic entry pass is active and has been dispatched to <strong>{registeredData.email}</strong>.
+            Thank you, <strong>{registeredData.name}</strong>! Your payment of <strong>₹{registeredData.paymentAmount} INR</strong> was verified. Your entry pass has been generated and dispatched to <strong>{registeredData.email}</strong>.
           </p>
 
           {/* Payment & Pass ID Card */}
@@ -220,7 +222,7 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#4ade80', fontWeight: '700', marginTop: '14px', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
-              <ShieldCheck size={14} /> HMAC-SHA256 Cryptographic Pass Active
+              <ShieldCheck size={14} /> HMAC-SHA256 Cryptographic Pass Active • Email Dispatched
             </div>
           </div>
 
@@ -469,15 +471,15 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
                 disabled={isCreatingOrder}
               >
                 {isCreatingOrder ? (
-                  <>Initializing Secure Payment Gateway...</>
+                  <>Initializing Payment QR Code...</>
                 ) : (
                   <>
-                    <CreditCard size={18} /> PROCEED TO PAYMENT (₹{amount}) <Zap size={15} />
+                    <QrCode size={18} /> SCAN QR CODE TO PAY (₹{amount}) <Zap size={15} />
                   </>
                 )}
               </button>
               <div style={{ textAlign: 'center', marginTop: '10px', fontSize: '11px', color: 'var(--text-dim)' }}>
-                🔒 Payment is processed securely via Razorpay & UPI. Pass will be generated only upon payment verification.
+                🔒 Pass will be automatically generated and emailed after QR code payment verification.
               </div>
             </div>
 
@@ -486,18 +488,18 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
         </div>
       )}
 
-      {/* Step 3: Interactive Payment Gateway Modal */}
+      {/* Step 3: QR Code ONLY Payment Modal */}
       {showPaymentModal && paymentOrder && (
         <div className="modal-overlay" style={{ zIndex: 3000 }}>
-          <div className="modal-content" style={{ maxWidth: '520px', padding: '28px', border: '1px solid rgba(209, 165, 80, 0.4)', background: '#0a0e18' }}>
+          <div className="modal-content" style={{ maxWidth: '480px', padding: '28px', border: '1px solid rgba(209, 165, 80, 0.4)', background: '#0a0e18' }}>
             
             {/* Modal Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '14px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '12px' }}>
               <div>
                 <div style={{ fontSize: '11px', color: '#f7d070', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                  HACKSERIES 2026 GATEWAY
+                  UPI QR PAYMENT GATEWAY
                 </div>
-                <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#ffffff' }}>Complete Registration Payment</h3>
+                <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#ffffff' }}>Scan QR Code to Pay ₹{paymentOrder.amount}</h3>
               </div>
               <button
                 onClick={() => setShowPaymentModal(false)}
@@ -507,94 +509,51 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
               </button>
             </div>
 
-            {/* Order Summary */}
-            <div className="glass-panel" style={{ padding: '14px 16px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            {/* Candidate Summary */}
+            <div className="glass-panel" style={{ padding: '12px 16px', marginBottom: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
               <div>
                 <div style={{ fontSize: '13px', fontWeight: '800', color: '#fff' }}>{formData.name}</div>
-                <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{formData.email} • {formData.ticketType}</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{formData.email}</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '20px', fontWeight: '900', color: '#f7d070' }}>₹{paymentOrder.amount}</div>
-                <div style={{ fontSize: '10px', color: '#22c55e', fontWeight: '700' }}>Order ID: {paymentOrder.orderId.substring(0, 16)}...</div>
+                <div style={{ fontSize: '20px', fontWeight: '900', color: '#f7d070' }}>₹{paymentOrder.amount} INR</div>
               </div>
             </div>
 
-            {/* Payment Method Selector */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#e5e7eb', marginBottom: '10px' }}>
-                Select Payment Method:
+            {/* Official Google Pay UPI QR Code Display */}
+            <div className="glass-panel" style={{ padding: '20px', textAlign: 'center', marginBottom: '18px', border: '1px solid rgba(209, 165, 80, 0.35)', background: 'linear-gradient(180deg, rgba(209, 165, 80, 0.06) 0%, rgba(10, 14, 24, 0.95) 100%)' }}>
+              <div style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff', marginBottom: '12px' }}>
+                Scan with Google Pay / PhonePe / Paytm / Any UPI App
+              </div>
+
+              {/* Uploaded GPay QR Image */}
+              <div style={{ background: '#ffffff', padding: '12px', borderRadius: '16px', display: 'inline-block', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.6)', border: '2px solid #f7d070' }}>
+                <img
+                  src="/payment-qr.png"
+                  alt="Official Google Pay Payment QR Code"
+                  style={{ width: '220px', height: '220px', display: 'block', borderRadius: '8px' }}
+                />
+              </div>
+
+              <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '12px', color: '#4ade80', fontWeight: '700' }}>
+                <CheckCircle2 size={14} /> Scan & pay ₹{paymentOrder.amount} INR
+              </div>
+            </div>
+
+            {/* Transaction Ref Input (Optional) */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#9ca3af', marginBottom: '6px', textTransform: 'uppercase' }}>
+                UPI Ref / UTR / Transaction ID (Optional)
               </label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                {['UPI', 'Card', 'NetBanking'].map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => setPaymentMethod(m)}
-                    className="btn"
-                    style={{
-                      padding: '10px',
-                      fontSize: '12px',
-                      background: paymentMethod === m ? 'rgba(209, 165, 80, 0.2)' : '#111624',
-                      border: paymentMethod === m ? '1px solid #f7d070' : '1px solid rgba(255, 255, 255, 0.08)',
-                      color: paymentMethod === m ? '#f7d070' : '#d1d5db',
-                      fontWeight: paymentMethod === m ? '800' : '600',
-                    }}
-                  >
-                    {m === 'UPI' && <Smartphone size={14} />}
-                    {m === 'Card' && <CreditCard size={14} />}
-                    {m === 'NetBanking' && <Building2 size={14} />}
-                    {m}
-                  </button>
-                ))}
-              </div>
+              <input
+                type="text"
+                className="input-control"
+                placeholder="e.g. 423872918239 or UPI Reference No"
+                value={transactionRef}
+                onChange={(e) => setTransactionRef(e.target.value)}
+                style={{ padding: '10px 14px', fontSize: '13px' }}
+              />
             </div>
-
-            {/* Payment Method Details */}
-            {paymentMethod === 'UPI' && (
-              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', marginBottom: '20px', border: '1px solid rgba(209, 165, 80, 0.25)' }}>
-                <div style={{ fontSize: '12px', fontWeight: '800', color: '#fff', marginBottom: '6px' }}>
-                  Pay via Any UPI App (Google Pay / PhonePe / Paytm / BHIM)
-                </div>
-                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '12px' }}>
-                  UPI ID: <strong style={{ color: '#f7d070' }}>hackseries2026@dypdpu</strong>
-                </div>
-                <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', display: 'inline-block', marginBottom: '12px' }}>
-                  {/* Dynamic Demo QR for ₹amount */}
-                  <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=upi://pay?pa=hackseries2026@dypdpu&pn=HackSeries2026&am=${paymentOrder.amount}&cu=INR`}
-                    alt="UPI QR Code"
-                    style={{ width: '130px', height: '130px', display: 'block' }}
-                  />
-                </div>
-                <div style={{ fontSize: '11px', color: '#4ade80', fontWeight: '700' }}>
-                  ✓ Scan with any UPI app to pay ₹{paymentOrder.amount}
-                </div>
-              </div>
-            )}
-
-            {paymentMethod === 'Card' && (
-              <div className="glass-panel" style={{ padding: '16px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <input type="text" className="input-control" placeholder="Card Number (4000 1234 5678 9010)" defaultValue="4000 1234 5678 9010" />
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                    <input type="text" className="input-control" placeholder="MM/YY" defaultValue="12/28" />
-                    <input type="password" className="input-control" placeholder="CVV" defaultValue="123" />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {paymentMethod === 'NetBanking' && (
-              <div className="glass-panel" style={{ padding: '16px', marginBottom: '20px' }}>
-                <select className="input-control" style={{ background: '#090d16', color: '#fff' }}>
-                  <option>State Bank of India (SBI)</option>
-                  <option>HDFC Bank</option>
-                  <option>ICICI Bank</option>
-                  <option>Axis Bank</option>
-                  <option>DYP Campus Student Banking</option>
-                </select>
-              </div>
-            )}
 
             {/* Action Buttons */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -602,14 +561,14 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
                 type="button"
                 className="btn btn-dyp"
                 style={{ padding: '14px', width: '100%', fontSize: '14px', fontWeight: '900' }}
-                onClick={() => handleCompletePayment()}
+                onClick={handleCompletePayment}
                 disabled={isProcessingPayment}
               >
                 {isProcessingPayment ? (
-                  <>Verifying Payment with Gateway...</>
+                  <>Verifying Payment & Dispatching Pass...</>
                 ) : (
                   <>
-                    <Lock size={15} /> PAY & VERIFY ₹{paymentOrder.amount} NOW
+                    <Check size={16} /> I HAVE PAID ₹{paymentOrder.amount} — VERIFY & ISSUE PASS
                   </>
                 )}
               </button>
@@ -625,7 +584,7 @@ export const RegistrationPage = ({ onBack, onNavigateToPass, onShowToast }) => {
             </div>
 
             <div style={{ textAlign: 'center', marginTop: '14px', fontSize: '10px', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-              <ShieldCheck size={12} color="#22c55e" /> 256-Bit SSL Encrypted • Powered by Razorpay & UPI
+              <ShieldCheck size={12} color="#22c55e" /> Verified UPI Gateway • Pass dispatched instantly to email
             </div>
 
           </div>
