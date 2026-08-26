@@ -137,10 +137,10 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
   return (
     <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 20px 80px 20px', position: 'relative' }}>
       
-      {/* Background Matrix Constellation Nodes from Screenshot */}
+      {/* Background Matrix Constellation Nodes */}
       <ConstellationBackground />
 
-      {/* Hero Section matching the Screenshot */}
+      {/* Hero Section */}
       <section style={{ textAlign: 'center', padding: '30px 0 50px 0', position: 'relative', zIndex: 1 }}>
         
         {/* Cyber Node Init Badge */}
@@ -151,8 +151,8 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
         </div>
 
         {/* Official College Logo Card */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
-          <div style={{ background: '#ffffff', padding: '8px 20px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(178, 43, 47, 0.08)', border: '1px solid #ecd9c6' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+          <div style={{ background: '#ffffff', padding: '8px 22px', borderRadius: '12px', boxShadow: '0 4px 25px rgba(0, 0, 0, 0.4)', border: '1px solid rgba(209, 165, 80, 0.4)' }}>
             <img
               src="/dypdpu-logo.png"
               alt="Dr. D. Y. Patil Vidyapeeth (DYP DPU)"
@@ -164,11 +164,11 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
         {/* Hero Huge Bold Typography for HACKSERIES 2026 */}
         <div style={{ margin: '14px 0 20px 0' }}>
           <h1 className="hero-aces-title">
-            HACKSERIES <span style={{ color: '#1a1a1a' }}>2026</span>
+            HACKSERIES <span style={{ color: '#f7d070', textShadow: '0 0 35px rgba(247, 208, 112, 0.6)' }}>2026</span>
           </h1>
         </div>
 
-        {/* Black Subtitle Bar */}
+        {/* Subtitle Bar */}
         <div style={{ margin: '0 auto 26px auto', maxWidth: '840px' }}>
           <div className="black-subtitle-bar">
             DR. D. Y. PATIL INSTITUTE OF TECHNOLOGY • PIMPRI, PUNE (DYPDPU)
@@ -193,24 +193,24 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
         </div>
 
         {/* Bold Minimal Metrics Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', maxWidth: '980px', margin: '0 auto' }}>
-          <div className="aces-card-light" style={{ padding: '18px 14px', textAlign: 'center' }}>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: '#b22b2f' }}>48 Hours</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px', maxWidth: '980px', margin: '0 auto' }}>
+          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center' }}>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: '#fca5a5' }}>48 Hours</div>
             <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px', fontWeight: '700' }}>Continuous Hack</div>
           </div>
 
-          <div className="aces-card-light" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(209, 165, 80, 0.4)' }}>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: '#d1a550' }}>₹15,00,000+</div>
+          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(209, 165, 80, 0.4)' }}>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: '#f7d070' }}>₹15,00,000+</div>
             <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px', fontWeight: '700' }}>Prize Pool</div>
           </div>
 
-          <div className="aces-card-light" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(178, 43, 47, 0.3)' }}>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: '#b22b2f' }}>2,000+</div>
+          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(178, 43, 47, 0.4)' }}>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: '#f87171' }}>2,000+</div>
             <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px', fontWeight: '700' }}>Builders & Hackers</div>
           </div>
 
-          <div className="aces-card-light" style={{ padding: '18px 14px', textAlign: 'center' }}>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: '#1a1a1a' }}>Oct 16–18</div>
+          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center' }}>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: '#ffffff' }}>Oct 16–18</div>
             <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px', fontWeight: '700' }}>DIT Pune Campus</div>
           </div>
         </div>
@@ -219,12 +219,12 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
 
       {/* Instant Digital Pass Retrieval Search */}
       <section id="lookup-section" style={{ maxWidth: '760px', margin: '0 auto 60px auto', position: 'relative', zIndex: 1 }}>
-        <div className="aces-card-light" style={{ padding: '30px', border: '1.5px solid #ecd9c6' }}>
+        <div className="glass-card" style={{ padding: '30px', border: '1px solid rgba(209, 165, 80, 0.4)', background: 'linear-gradient(145deg, #0e1320 0%, #080b12 100%)' }}>
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
             <div className="cyber-node-badge" style={{ marginBottom: '8px' }}>
               <span>⚡</span> PASS ACCESS PORTAL
             </div>
-            <h3 style={{ fontSize: '20px', fontWeight: '900', color: '#1a1a1a', letterSpacing: '-0.3px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.3px' }}>
               Already Registered? Access Your Pass
             </h3>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
@@ -251,11 +251,11 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
 
       {/* About HackSeries & DIT Pune */}
       <section id="about-section" style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
-        <div className="aces-card-light" style={{ padding: '36px' }}>
+        <div className="glass-card" style={{ padding: '36px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px', alignItems: 'center' }}>
             <div>
               <span className="badge badge-dyp" style={{ marginBottom: '10px' }}>ABOUT THE HACKATHON</span>
-              <h2 style={{ fontSize: '26px', fontWeight: '900', color: '#1a1a1a', letterSpacing: '-0.5px', marginBottom: '12px' }}>
+              <h2 style={{ fontSize: '26px', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.5px', marginBottom: '12px' }}>
                 HackSeries 2026 — 48-Hour Innovation Arena
               </h2>
               <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '14px' }}>
@@ -267,20 +267,20 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <div className="aces-card-light" style={{ padding: '16px', textAlign: 'center', background: '#fdf8f5' }}>
-                <div style={{ fontSize: '22px', fontWeight: '900', color: '#d1a550' }}>NAAC A++</div>
+              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(209, 165, 80, 0.25)' }}>
+                <div style={{ fontSize: '22px', fontWeight: '900', color: '#f7d070' }}>NAAC A++</div>
                 <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', fontWeight: '700' }}>DIT Pune Accredited</div>
               </div>
-              <div className="aces-card-light" style={{ padding: '16px', textAlign: 'center', background: '#fdf8f5' }}>
-                <div style={{ fontSize: '22px', fontWeight: '900', color: '#b22b2f' }}>5 Tracks</div>
+              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(178, 43, 47, 0.25)' }}>
+                <div style={{ fontSize: '22px', fontWeight: '900', color: '#fca5a5' }}>5 Tracks</div>
                 <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', fontWeight: '700' }}>AI, Web3, Cyber, Cloud</div>
               </div>
-              <div className="aces-card-light" style={{ padding: '16px', textAlign: 'center', background: '#fdf8f5' }}>
-                <div style={{ fontSize: '22px', fontWeight: '900', color: '#1a1a1a' }}>48 Hours</div>
+              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <div style={{ fontSize: '22px', fontWeight: '900', color: '#ffffff' }}>48 Hours</div>
                 <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', fontWeight: '700' }}>Non-Stop Building</div>
               </div>
-              <div className="aces-card-light" style={{ padding: '16px', textAlign: 'center', background: '#fdf8f5' }}>
-                <div style={{ fontSize: '22px', fontWeight: '900', color: '#15803d' }}>Express QR</div>
+              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(34, 197, 94, 0.25)' }}>
+                <div style={{ fontSize: '22px', fontWeight: '900', color: '#4ade80' }}>Express QR</div>
                 <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', fontWeight: '700' }}>Zero-Wait Gate Entry</div>
               </div>
             </div>
@@ -292,7 +292,7 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
       <section id="tracks-section" style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <span className="badge badge-gold" style={{ marginBottom: '8px' }}>PROBLEM DOMAINS</span>
-          <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#1a1a1a', letterSpacing: '-0.5px' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.5px' }}>
             5 Focused Hackathon Tracks
           </h2>
         </div>
@@ -301,22 +301,22 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
           {tracks.map((t, idx) => {
             const Icon = t.icon;
             return (
-              <div key={idx} className="aces-card-light" style={{ padding: '22px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div key={idx} className="glass-card" style={{ padding: '22px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                    <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: 'rgba(178, 43, 47, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b22b2f' }}>
+                    <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: 'rgba(178, 43, 47, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f87171', border: '1px solid rgba(178, 43, 47, 0.3)' }}>
                       <Icon size={20} />
                     </div>
                     <span className="badge badge-dark" style={{ fontSize: '10px', fontFamily: 'var(--font-mono)' }}>
                       {t.tag}
                     </span>
                   </div>
-                  <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#1a1a1a', marginBottom: '6px' }}>{t.title}</h3>
+                  <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#ffffff', marginBottom: '6px' }}>{t.title}</h3>
                   <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>{t.desc}</p>
                 </div>
-                <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #ecd9c6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '10px', color: 'var(--text-dim)', fontWeight: '700' }}>PRIZE POOL</span>
-                  <span style={{ fontSize: '14px', fontWeight: '900', color: '#b22b2f' }}>{t.prize}</span>
+                  <span style={{ fontSize: '14px', fontWeight: '900', color: '#f7d070' }}>{t.prize}</span>
                 </div>
               </div>
             );
@@ -328,25 +328,25 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
       <section id="schedule-section" style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <span className="badge badge-dyp" style={{ marginBottom: '8px' }}>OCTOBER 16 - 18, 2026</span>
-          <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#1a1a1a', letterSpacing: '-0.5px' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.5px' }}>
             Event Schedule & Milestones
           </h2>
         </div>
 
-        <div className="aces-card-light" style={{ padding: '24px 28px' }}>
+        <div className="glass-card" style={{ padding: '24px 28px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {schedule.map((item, idx) => (
-              <div key={idx} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', borderBottom: idx < schedule.length - 1 ? '1px solid #ecd9c6' : 'none', paddingBottom: idx < schedule.length - 1 ? '14px' : '0' }}>
+              <div key={idx} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', borderBottom: idx < schedule.length - 1 ? '1px solid rgba(255, 255, 255, 0.06)' : 'none', paddingBottom: idx < schedule.length - 1 ? '14px' : '0' }}>
                 <div style={{ minWidth: '110px' }}>
                   <span className="badge badge-gold" style={{ fontSize: '10px', padding: '2px 8px' }}>
                     {item.day}
                   </span>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#1a1a1a', fontWeight: '800', marginTop: '4px' }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#ffffff', fontWeight: '800', marginTop: '4px' }}>
                     {item.time}
                   </div>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '14px', fontWeight: '800', color: '#1a1a1a' }}>{item.title}</div>
+                  <div style={{ fontSize: '14px', fontWeight: '800', color: '#ffffff' }}>{item.title}</div>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>{item.desc}</div>
                 </div>
               </div>
@@ -357,13 +357,13 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
 
       {/* Venue & Location */}
       <section id="venue-section" style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
-        <div className="aces-card-light" style={{ padding: '28px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
+        <div className="glass-card" style={{ padding: '28px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', border: '1px solid rgba(209, 165, 80, 0.35)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(178, 43, 47, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b22b2f', border: '1px solid rgba(178, 43, 47, 0.3)' }}>
+            <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(178, 43, 47, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f87171', border: '1px solid rgba(178, 43, 47, 0.4)' }}>
               <MapPin size={22} />
             </div>
             <div>
-              <div style={{ fontSize: '16px', fontWeight: '800', color: '#1a1a1a' }}>
+              <div style={{ fontSize: '16px', fontWeight: '800', color: '#ffffff' }}>
                 Dr. D. Y. Patil Institute of Technology (DIT)
               </div>
               <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -399,7 +399,7 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
           </span>
         </div>
         <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-          Lead Operations: <a href="mailto:aditya.renake@outlook.com" style={{ color: 'var(--dyp-crimson)', textDecoration: 'none', fontWeight: '700' }}>aditya.renake@outlook.com</a>
+          Lead Operations: <a href="mailto:aditya.renake@outlook.com" style={{ color: 'var(--dyp-gold)', textDecoration: 'none', fontWeight: '700' }}>aditya.renake@outlook.com</a>
         </div>
       </footer>
 
