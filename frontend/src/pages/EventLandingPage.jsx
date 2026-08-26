@@ -30,6 +30,7 @@ import { api } from '../services/api';
 export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
   const [lookupInput, setLookupInput] = useState('');
   const [isLookingUp, setIsLookingUp] = useState(false);
+  const [retrievedPass, setRetrievedPass] = useState(null);
 
   const googleFormUrl = 'https://forms.gle/U24ip7E6NqtbZkiT9';
 
@@ -124,9 +125,15 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
       setIsLookingUp(true);
       const res = await api.registrants.getPublicPass(lookupInput.trim());
       if (res.data?.uniqueId) {
-        onNavigateToPass(res.data.uniqueId);
+        setRetrievedPass(res.data);
+        onShowToast({
+          type: 'success',
+          title: 'Pass Verified! 🎟️',
+          message: `Found entry pass for ${res.data.name}. You can now send it to WhatsApp or download it.`,
+        });
       }
     } catch (err) {
+      setRetrievedPass(null);
       onShowToast({
         type: 'error',
         title: 'Pass Not Found',
@@ -135,6 +142,41 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
     } finally {
       setIsLookingUp(false);
     }
+  };
+
+  const handleSendWhatsAppForPass = (pass) => {
+    if (!pass) return;
+    const passUrl = `${window.location.origin}/pass/${pass.uniqueId}`;
+    const message = `🎟️ *HackSeries 2026 Digital Entry Pass*\n\n` +
+      `👤 *Attendee:* ${pass.name}\n` +
+      `🎫 *Pass ID:* ${pass.uniqueId}\n` +
+      `🎟️ *Ticket Type:* ${pass.ticketType}\n` +
+      `🏛️ *Venue:* Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune\n` +
+      `📅 *Dates:* October 16–18, 2026 (Check-in 07:30 AM IST)\n\n` +
+      `🔗 *Open Verified QR Pass:* ${passUrl}\n\n` +
+      `⚡ Present this QR pass at the entrance scanner for express check-in.`;
+
+    const phoneParam = pass.phone ? pass.phone.replace(/[^0-9]/g, '') : '';
+    const whatsappUrl = phoneParam && phoneParam.length >= 10
+      ? `https://api.whatsapp.com/send?phone=${phoneParam}&text=${encodeURIComponent(message)}`
+      : `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+
+    window.open(whatsappUrl, '_blank');
+    if (onShowToast) {
+      onShowToast({
+        type: 'success',
+        title: 'Opening WhatsApp 📱',
+        message: 'Pass details and QR link sent to WhatsApp.',
+      });
+    }
+  };
+
+  const handleDownloadQRForPass = (pass) => {
+    if (!pass?.qrCodeDataUrl) return;
+    const link = document.createElement('a');
+    link.download = `HackSeries2026-${pass.uniqueId}.png`;
+    link.href = pass.qrCodeDataUrl;
+    link.click();
   };
 
   return (
@@ -228,7 +270,7 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
 
       </section>
 
-      {/* Instant Digital Pass Retrieval Search & Demo Pass Preview */}
+      {/* Instant Digital Pass Retrieval Search & Generated Pass Portal */}
       <section id="lookup-section" style={{ maxWidth: '820px', margin: '0 auto 60px auto', position: 'relative', zIndex: 1 }}>
         <div className="glass-card" style={{ padding: '32px', border: '1px solid rgba(209, 165, 80, 0.4)', background: 'linear-gradient(145deg, #0e1320 0%, #080b12 100%)' }}>
           
@@ -240,11 +282,11 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
               Already Registered? Access Your Pass
             </h3>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Enter your registered email or Pass ID to view your HMAC-signed entry QR pass.
+              Enter your registered email or Pass ID to retrieve and download your official entry pass.
             </p>
           </div>
 
-          <form onSubmit={handleLookup} style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '28px' }}>
+          <form onSubmit={handleLookup} style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: retrievedPass ? '24px' : '0' }}>
             <input
               type="text"
               className="input-control"
@@ -259,87 +301,110 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
             </button>
           </form>
 
-          {/* Interactive Demo Pass Preview Card */}
-          <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '800', color: '#f7d070' }}>
-                <Sparkles size={14} color="#f7d070" /> SAMPLE PASS PREVIEW
+          {/* Generated Real Pass Display (Visible ONLY when pass is retrieved) */}
+          {retrievedPass && (
+            <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '24px', animation: 'fadeIn 0.3s ease' }}>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '800', color: '#22c55e' }}>
+                  <CheckCircle2 size={15} color="#22c55e" /> VERIFIED PASS GENERATED
+                </div>
+                <button
+                  onClick={() => {
+                    setRetrievedPass(null);
+                    setLookupInput('');
+                  }}
+                  className="btn btn-ghost btn-sm"
+                  style={{ fontSize: '11px', color: 'var(--text-muted)' }}
+                >
+                  Look up another pass
+                </button>
               </div>
-              <span style={{ fontSize: '11px', color: 'var(--text-dim)' }}>Generated automatically after Google Form completion</span>
-            </div>
 
-            {/* Holographic Sample Pass Ticket */}
-            <div className="holo-ticket" style={{ maxWidth: '440px', margin: '0 auto', boxShadow: '0 10px 40px rgba(0,0,0,0.6)' }}>
-              <div className="holo-inner" style={{ padding: '20px' }}>
-                
-                {/* Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <DYPDPULogo height={20} />
-                    <div>
-                      <div style={{ fontSize: '14px', fontWeight: '900', color: '#fff' }}>HACKSERIES 2026</div>
-                      <div style={{ fontSize: '9px', color: '#d1a550', fontWeight: '800' }}>DIT PUNE (DYPDPU)</div>
+              {/* Holographic Generated Pass Ticket */}
+              <div className="holo-ticket" style={{ maxWidth: '460px', margin: '0 auto', boxShadow: '0 10px 40px rgba(0,0,0,0.6)' }}>
+                <div className="holo-inner" style={{ padding: '22px' }}>
+                  
+                  {/* Header */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <DYPDPULogo height={20} />
+                      <div>
+                        <div style={{ fontSize: '14px', fontWeight: '900', color: '#fff' }}>HACKSERIES 2026</div>
+                        <div style={{ fontSize: '9px', color: '#d1a550', fontWeight: '800' }}>DIT PUNE (DYPDPU)</div>
+                      </div>
+                    </div>
+                    <span className="badge badge-emerald" style={{ fontSize: '10px' }}>{retrievedPass.ticketType}</span>
+                  </div>
+
+                  {/* Attendee Name */}
+                  <div style={{ textAlign: 'center', margin: '14px 0' }}>
+                    <div style={{ fontSize: '22px', fontWeight: '900', color: '#ffffff' }}>
+                      {retrievedPass.name}
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>{retrievedPass.email}</div>
+                    
+                    {retrievedPass.teamName && (
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginTop: '6px', fontSize: '11px', color: 'var(--aces-cyan)', background: 'rgba(34, 211, 238, 0.12)', padding: '2px 10px', borderRadius: '999px' }}>
+                        <Users size={11} /> Team: <strong>{retrievedPass.teamName}</strong>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* QR Code Container */}
+                  <div style={{ textAlign: 'center', margin: '16px 0' }}>
+                    <div style={{ background: '#ffffff', padding: '14px', borderRadius: '14px', display: 'inline-block', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
+                      <img
+                        src={retrievedPass.qrCodeDataUrl}
+                        alt={`QR Pass for ${retrievedPass.uniqueId}`}
+                        style={{ width: '180px', height: '180px', display: 'block' }}
+                      />
+                    </div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', color: '#f7d070', fontWeight: '900', marginTop: '10px', letterSpacing: '1px' }}>
+                      {retrievedPass.uniqueId}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '11px', color: '#10b981', marginTop: '4px', fontWeight: '700' }}>
+                      <ShieldCheck size={13} /> HMAC-SHA256 Cryptographic Signature Verified
                     </div>
                   </div>
-                  <span className="badge badge-emerald" style={{ fontSize: '10px' }}>ALL-ACCESS PASS</span>
+
+                  {/* Pass Delivery Options */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '16px' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleSendWhatsAppForPass(retrievedPass)}
+                      className="btn"
+                      style={{ background: '#25D366', color: '#ffffff', fontWeight: '800', width: '100%', padding: '12px 18px', fontSize: '13px', boxShadow: '0 4px 16px rgba(37, 211, 102, 0.35)' }}
+                    >
+                      <Smartphone size={16} /> Get Pass on WhatsApp
+                    </button>
+
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        type="button"
+                        onClick={() => handleDownloadQRForPass(retrievedPass)}
+                        className="btn btn-secondary btn-sm"
+                        style={{ flex: 1 }}
+                      >
+                        <Download size={14} /> Save QR Image
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onNavigateToPass(retrievedPass.uniqueId)}
+                        className="btn btn-secondary btn-sm"
+                        style={{ flex: 1 }}
+                      >
+                        <ExternalLink size={14} /> View Full Pass
+                      </button>
+                    </div>
+                  </div>
+
                 </div>
-
-                {/* Attendee Name */}
-                <div style={{ textAlign: 'center', margin: '12px 0' }}>
-                  <div style={{ fontSize: '20px', fontWeight: '900', color: '#ffffff' }}>
-                    Aditya Renake <span style={{ fontSize: '11px', color: '#f7d070', fontWeight: '700' }}>(Demo Pass)</span>
-                  </div>
-                  <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>aditya.renake@outlook.com</div>
-                </div>
-
-                {/* QR Code Container */}
-                <div style={{ textAlign: 'center', margin: '14px 0' }}>
-                  <div style={{ background: '#ffffff', padding: '12px', borderRadius: '14px', display: 'inline-block', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
-                    <img
-                      src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=HS26-DEMO99-SAMPLE"
-                      alt="Sample QR Pass"
-                      style={{ width: '150px', height: '150px', display: 'block' }}
-                    />
-                  </div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: '#f7d070', fontWeight: '900', marginTop: '10px' }}>
-                    HS26-DEMO99
-                  </div>
-                  <div style={{ fontSize: '10px', color: '#10b981', marginTop: '3px', fontWeight: '700' }}>
-                    🛡️ HMAC-SHA256 Cryptographic Signature Verified
-                  </div>
-                </div>
-
-                {/* Action button on Demo Pass: Get on WhatsApp */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    const message = `🎟️ *HackSeries 2026 Digital Entry Pass*\n\n` +
-                      `👤 *Attendee:* Aditya Renake\n` +
-                      `🎫 *Pass ID:* HS26-DEMO99\n` +
-                      `🎟️ *Ticket Type:* Hacker (All-Access Pass)\n` +
-                      `🏛️ *Venue:* Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune\n` +
-                      `📅 *Dates:* October 16–18, 2026 (Check-in 07:30 AM IST)\n\n` +
-                      `🔗 *Pass Link:* ${window.location.origin}\n\n` +
-                      `⚡ Show your QR pass at the entrance scanner for express check-in.`;
-                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`, '_blank');
-                    if (onShowToast) {
-                      onShowToast({
-                        type: 'success',
-                        title: 'Opening WhatsApp 📱',
-                        message: 'Demo pass details prepared for WhatsApp delivery.',
-                      });
-                    }
-                  }}
-                  className="btn"
-                  style={{ background: '#25D366', color: '#ffffff', fontWeight: '800', width: '100%', padding: '10px', marginTop: '10px', fontSize: '13px' }}
-                >
-                  <Smartphone size={15} /> Get Pass on WhatsApp
-                </button>
-
               </div>
-            </div>
 
-          </div>
+            </div>
+          )}
 
         </div>
       </section>
