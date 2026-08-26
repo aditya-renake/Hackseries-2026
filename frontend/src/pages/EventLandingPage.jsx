@@ -1,31 +1,26 @@
 import React, { useState } from 'react';
 import { 
-  Zap, 
-  Award, 
-  Calendar, 
-  MapPin, 
-  Users, 
-  Terminal, 
-  ShieldCheck, 
+  Power, 
   ExternalLink, 
   Search, 
-  CheckCircle2, 
-  Sparkles, 
-  ChevronRight, 
-  Code2, 
   Cpu, 
   Lock, 
   Coins, 
-  Rocket,
-  Compass,
-  ArrowUpRight,
-  Wifi,
-  Coffee,
-  BatteryCharging,
+  Code2, 
+  Rocket, 
+  MapPin, 
+  Compass, 
+  ArrowUpRight, 
+  ShieldCheck, 
+  CheckCircle2, 
+  Sparkles,
+  Calendar,
   Layers,
-  GraduationCap
+  Terminal,
+  Activity
 } from 'lucide-react';
 import { DYPDPULogo, ACESLogo } from '../components/CollegeLogos';
+import { ConstellationBackground } from '../components/ConstellationBackground';
 import { api } from '../services/api';
 
 export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
@@ -131,7 +126,7 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
       onShowToast({
         type: 'error',
         title: 'Pass Not Found',
-        message: 'No registered pass found for this ID or Email. Please make sure you completed the Google Form.',
+        message: 'No registered pass found for this ID or Email. Please ensure you completed the Google Form registration.',
       });
     } finally {
       setIsLookingUp(false);
@@ -141,99 +136,101 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
   return (
     <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 20px 80px 20px', position: 'relative' }}>
       
-      {/* Background Glowing Ambient Orbs matching ACES theme */}
-      <div className="bg-glow-orb" style={{ width: '450px', height: '450px', background: 'radial-gradient(circle, rgba(178, 43, 47, 0.3) 0%, transparent 70%)', top: '2%', left: '50%', transform: 'translateX(-50%)' }} />
-      <div className="bg-glow-orb" style={{ width: '350px', height: '350px', background: 'radial-gradient(circle, rgba(209, 165, 80, 0.15) 0%, transparent 70%)', top: '25%', right: '5%' }} />
+      {/* Background Matrix Constellation Nodes from Screenshot */}
+      <ConstellationBackground />
 
-      {/* Hero Section */}
-      <section style={{ textAlign: 'center', padding: '40px 0 50px 0', position: 'relative', zIndex: 1 }}>
+      {/* Hero Section matching the Screenshot */}
+      <section style={{ textAlign: 'center', padding: '30px 0 50px 0', position: 'relative', zIndex: 1 }}>
         
-        {/* ACES Background Hero Badge */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
-          <span className="badge badge-aces-hero" style={{ padding: '6px 18px', fontSize: '12px' }}>
-            🏛️ DR. D. Y. PATIL INSTITUTE OF TECHNOLOGY (DYPDPU)
-          </span>
-          <span className="badge badge-aces-gold hide-on-tiny" style={{ padding: '6px 14px', fontSize: '11px' }}>
-            ⚡ ACES PRESENTS
-          </span>
+        {/* Cyber Node Init Badge */}
+        <div style={{ marginBottom: '18px' }}>
+          <div className="cyber-node-badge">
+            <span style={{ color: '#22c55e' }}>●</span> SYS.INIT // ACES_NODE_01 // HACKSERIES_2026
+          </div>
         </div>
 
-        {/* Attached Official DYP DPU Logo with ACES card styling */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '24px' }}>
-          <div style={{ background: '#ffffff', padding: '10px 24px', borderRadius: '14px', boxShadow: '0 10px 35px rgba(0,0,0,0.6)', border: '2px solid rgba(209, 165, 80, 0.5)' }}>
+        {/* Official College Logo Card */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+          <div style={{ background: '#ffffff', padding: '8px 20px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(178, 43, 47, 0.08)', border: '1px solid #ecd9c6' }}>
             <img
               src="/dypdpu-logo.png"
               alt="Dr. D. Y. Patil Vidyapeeth (DYP DPU)"
-              style={{ height: '54px', width: 'auto', display: 'block', objectFit: 'contain' }}
+              style={{ height: '48px', width: 'auto', display: 'block' }}
             />
           </div>
         </div>
 
-        {/* Big Bold Headline */}
-        <h1 style={{ fontSize: 'clamp(40px, 7.5vw, 84px)', fontWeight: '900', letterSpacing: '-2px', lineHeight: 1.05, color: '#ffffff', marginBottom: '18px' }}>
-          HACKSERIES <span style={{ color: 'var(--dyp-crimson)' }}>2026</span>
-        </h1>
+        {/* Hero Huge Bold Typography matching Screenshot */}
+        <div style={{ margin: '10px 0 16px 0' }}>
+          <h1 className="hero-aces-title">
+            ACES
+          </h1>
+          <div style={{ fontSize: 'clamp(24px, 5vw, 44px)', fontWeight: '900', color: '#1a1a1a', letterSpacing: '-1px', marginTop: '-4px' }}>
+            HACKSERIES <span style={{ color: 'var(--dyp-crimson)' }}>2026</span>
+          </div>
+        </div>
 
-        <p style={{ fontSize: 'clamp(15px, 2.2vw, 19px)', color: 'var(--text-muted)', maxWidth: '720px', margin: '0 auto 32px auto', lineHeight: 1.6, fontWeight: '500' }}>
-          India’s premier 48-hour student hackathon hosted at <strong>Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune</strong>. 2,000+ builders, instant digital QR check-in, and ₹15,00,000+ in prizes.
-        </p>
+        {/* Black Subtitle Bar from Screenshot */}
+        <div style={{ margin: '0 auto 26px auto', maxWidth: '840px' }}>
+          <div className="black-subtitle-bar">
+            ASSOCIATION OF COMPUTER ENGINEERING STUDENTS • DIT PIMPRI PUNE
+          </div>
+        </div>
 
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap', marginBottom: '40px' }}>
+        {/* Action Button & Cyber Coords Box matching Screenshot */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '14px', flexWrap: 'wrap', marginBottom: '44px' }}>
           <a
             href={googleFormUrl}
             target="_blank"
             rel="noreferrer"
-            className="btn btn-dyp btn-lg"
-            style={{ fontSize: '15px', padding: '16px 36px' }}
+            className="btn-initialize"
           >
-            <Zap size={18} /> Register via Google Form <ExternalLink size={15} />
+            <Power size={16} /> INITIALIZE REGISTRATION <ExternalLink size={13} />
           </a>
 
-          <a 
-            href="#lookup-section" 
-            className="btn btn-secondary btn-lg"
-            style={{ fontSize: '15px', padding: '16px 28px', border: '1px solid rgba(209, 165, 80, 0.35)' }}
-          >
-            <Search size={16} color="var(--dyp-gold)" /> Retrieve My Digital Pass
-          </a>
+          <div className="cyber-coords-box">
+            <div>COORD: <strong style={{ color: '#f7d070' }}>18.6256° N, 73.8122° E</strong></div>
+            <div>STATUS: <span style={{ color: '#22c55e', fontWeight: '800' }}>ONLINE // 48H SPRINT</span></div>
+          </div>
         </div>
 
-        {/* Bold Minimal Metrics Strip with ACES Badges */}
+        {/* Bold Minimal Metrics Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', maxWidth: '980px', margin: '0 auto' }}>
-          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: '#ffffff' }}>48 Hours</div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>Non-Stop Sprint</div>
+          <div className="aces-card-light" style={{ padding: '18px 14px', textAlign: 'center' }}>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: '#b22b2f' }}>48 Hours</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px', fontWeight: '700' }}>Continuous Hack</div>
           </div>
 
-          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(209, 165, 80, 0.35)', background: 'rgba(209, 165, 80, 0.06)' }}>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: '#f7d070' }}>₹15,00,000+</div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>Prize Pool</div>
+          <div className="aces-card-light" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(209, 165, 80, 0.4)' }}>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: '#d1a550' }}>₹15,00,000+</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px', fontWeight: '700' }}>Prize Pool</div>
           </div>
 
-          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(178, 43, 47, 0.35)', background: 'rgba(178, 43, 47, 0.06)' }}>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: '#fca5a5' }}>2,000+</div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>Participants</div>
+          <div className="aces-card-light" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(178, 43, 47, 0.3)' }}>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: '#b22b2f' }}>2,000+</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px', fontWeight: '700' }}>Builders & Hackers</div>
           </div>
 
-          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: '#ffffff' }}>Oct 16–18</div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>DIT Pune Campus</div>
+          <div className="aces-card-light" style={{ padding: '18px 14px', textAlign: 'center' }}>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: '#1a1a1a' }}>Oct 16–18</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px', fontWeight: '700' }}>DIT Pune Campus</div>
           </div>
         </div>
 
       </section>
 
-      {/* Instant Digital Pass Retrieval Search with ACES Badges */}
+      {/* Instant Digital Pass Retrieval Search */}
       <section id="lookup-section" style={{ maxWidth: '760px', margin: '0 auto 60px auto', position: 'relative', zIndex: 1 }}>
-        <div className="glass-card" style={{ padding: '30px', border: '1px solid rgba(209, 165, 80, 0.4)', background: 'linear-gradient(145deg, #111624 0%, #090c15 100%)' }}>
+        <div className="aces-card-light" style={{ padding: '30px', border: '1.5px solid #ecd9c6' }}>
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <span className="badge badge-aces-gold" style={{ marginBottom: '8px' }}>EXPRESS PASS PORTAL</span>
-            <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#ffffff', letterSpacing: '-0.3px' }}>
+            <div className="cyber-node-badge" style={{ marginBottom: '8px' }}>
+              <span>⚡</span> PASS ACCESS PORTAL
+            </div>
+            <h3 style={{ fontSize: '20px', fontWeight: '900', color: '#1a1a1a', letterSpacing: '-0.3px' }}>
               Already Registered? Access Your Pass
             </h3>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Enter your registered email or Pass ID to view your HMAC-signed entry QR pass.
+              Enter your registered email or Pass ID to view and download your verified entry QR pass.
             </p>
           </div>
 
@@ -255,49 +252,49 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
       </section>
 
       {/* About ACES & DIT Pune */}
-      <section style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
-        <div className="glass-card" style={{ padding: '32px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '28px', alignItems: 'center' }}>
+      <section id="about-section" style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
+        <div className="aces-card-light" style={{ padding: '36px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px', alignItems: 'center' }}>
             <div>
-              <span className="badge badge-aces-hero" style={{ marginBottom: '10px' }}>ABOUT THE HOSTS</span>
-              <h2 style={{ fontSize: '24px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px', marginBottom: '12px' }}>
+              <span className="badge badge-dyp" style={{ marginBottom: '10px' }}>WHO ARE WE</span>
+              <h2 style={{ fontSize: '26px', fontWeight: '900', color: '#1a1a1a', letterSpacing: '-0.5px', marginBottom: '12px' }}>
                 Association of Computer Engineering Students (ACES)
               </h2>
               <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '14px' }}>
-                ACES is the student body of the <strong>Department of Computer Engineering, Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune</strong>. ACES drives programming contests, technical symposiums, hackathons, and industry mentorship.
+                ACES is the official student body of the <strong>Department of Computer Engineering, Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune</strong>. We spearhead national hackathons, technical conferences, coding contests, and research mentorship.
               </p>
               <p style={{ fontSize: '13px', color: 'var(--text-dim)', lineHeight: 1.5 }}>
-                HackSeries 2026 brings collegiate and professional engineers together on the DIT Pune campus with cutting-edge labs, gigabit internet, and non-stop mentoring.
+                HackSeries 2026 brings the brightest collegiate minds together on the DIT Pune campus with air-conditioned compute labs, gigabit fiber, 24/7 catering, and industry veteran mentorship.
               </p>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(209, 165, 80, 0.25)', background: 'rgba(209, 165, 80, 0.06)' }}>
-                <div style={{ fontSize: '22px', fontWeight: '900', color: '#f7d070' }}>NAAC A++</div>
-                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>DIT Pune Accredited</div>
+              <div className="aces-card-light" style={{ padding: '16px', textAlign: 'center', background: '#fdf8f5' }}>
+                <div style={{ fontSize: '22px', fontWeight: '900', color: '#d1a550' }}>NAAC A++</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', fontWeight: '700' }}>DIT Pune Accredited</div>
               </div>
-              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(178, 43, 47, 0.25)', background: 'rgba(178, 43, 47, 0.06)' }}>
-                <div style={{ fontSize: '22px', fontWeight: '900', color: '#fca5a5' }}>5 Tracks</div>
-                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>AI, Web3, Cyber, Cloud</div>
+              <div className="aces-card-light" style={{ padding: '16px', textAlign: 'center', background: '#fdf8f5' }}>
+                <div style={{ fontSize: '22px', fontWeight: '900', color: '#b22b2f' }}>5 Tracks</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', fontWeight: '700' }}>AI, Web3, Cyber, Cloud</div>
               </div>
-              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-                <div style={{ fontSize: '22px', fontWeight: '900', color: '#ffffff' }}>48 Hours</div>
-                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>Continuous Building</div>
+              <div className="aces-card-light" style={{ padding: '16px', textAlign: 'center', background: '#fdf8f5' }}>
+                <div style={{ fontSize: '22px', fontWeight: '900', color: '#1a1a1a' }}>48 Hours</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', fontWeight: '700' }}>Non-Stop Building</div>
               </div>
-              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(34, 197, 94, 0.25)', background: 'rgba(34, 197, 94, 0.06)' }}>
-                <div style={{ fontSize: '22px', fontWeight: '900', color: '#4ade80' }}>Express QR</div>
-                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>Zero-Wait Entry</div>
+              <div className="aces-card-light" style={{ padding: '16px', textAlign: 'center', background: '#fdf8f5' }}>
+                <div style={{ fontSize: '22px', fontWeight: '900', color: '#15803d' }}>Express QR</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', fontWeight: '700' }}>Zero-Wait Gate Entry</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Tracks Section with ACES Badges */}
-      <section style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
+      {/* Tracks Section */}
+      <section id="tracks-section" style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <span className="badge badge-aces-gold" style={{ marginBottom: '8px' }}>INNOVATION DOMAINS</span>
-          <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>
+          <span className="badge badge-gold" style={{ marginBottom: '8px' }}>PROBLEM DOMAINS</span>
+          <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#1a1a1a', letterSpacing: '-0.5px' }}>
             5 Focused Hackathon Tracks
           </h2>
         </div>
@@ -306,22 +303,22 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
           {tracks.map((t, idx) => {
             const Icon = t.icon;
             return (
-              <div key={idx} className="glass-card" style={{ padding: '22px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <div key={idx} className="aces-card-light" style={{ padding: '22px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                    <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: 'rgba(178, 43, 47, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f87171', border: '1px solid rgba(178, 43, 47, 0.3)' }}>
+                    <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: 'rgba(178, 43, 47, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b22b2f' }}>
                       <Icon size={20} />
                     </div>
-                    <span className="badge badge-aces-dark" style={{ fontSize: '10px', fontFamily: 'var(--font-mono)' }}>
+                    <span className="badge badge-dark" style={{ fontSize: '10px', fontFamily: 'var(--font-mono)' }}>
                       {t.tag}
                     </span>
                   </div>
-                  <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#fff', marginBottom: '6px' }}>{t.title}</h3>
+                  <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#1a1a1a', marginBottom: '6px' }}>{t.title}</h3>
                   <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>{t.desc}</p>
                 </div>
-                <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '10px', color: 'var(--text-dim)', fontWeight: '700' }}>PRIZE</span>
-                  <span style={{ fontSize: '14px', fontWeight: '900', color: '#f7d070' }}>{t.prize}</span>
+                <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #ecd9c6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '10px', color: 'var(--text-dim)', fontWeight: '700' }}>PRIZE POOL</span>
+                  <span style={{ fontSize: '14px', fontWeight: '900', color: '#b22b2f' }}>{t.prize}</span>
                 </div>
               </div>
             );
@@ -330,28 +327,28 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
       </section>
 
       {/* Schedule Section */}
-      <section style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
+      <section id="schedule-section" style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <span className="badge badge-aces-hero" style={{ marginBottom: '8px' }}>OCTOBER 16 - 18, 2026</span>
-          <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>
+          <span className="badge badge-dyp" style={{ marginBottom: '8px' }}>OCTOBER 16 - 18, 2026</span>
+          <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#1a1a1a', letterSpacing: '-0.5px' }}>
             Event Schedule & Milestones
           </h2>
         </div>
 
-        <div className="glass-card" style={{ padding: '24px 28px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <div className="aces-card-light" style={{ padding: '24px 28px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {schedule.map((item, idx) => (
-              <div key={idx} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', borderBottom: idx < schedule.length - 1 ? '1px solid rgba(255, 255, 255, 0.05)' : 'none', paddingBottom: idx < schedule.length - 1 ? '14px' : '0' }}>
+              <div key={idx} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', borderBottom: idx < schedule.length - 1 ? '1px solid #ecd9c6' : 'none', paddingBottom: idx < schedule.length - 1 ? '14px' : '0' }}>
                 <div style={{ minWidth: '110px' }}>
-                  <span className="badge badge-aces-gold" style={{ fontSize: '10px', padding: '2px 8px' }}>
+                  <span className="badge badge-gold" style={{ fontSize: '10px', padding: '2px 8px' }}>
                     {item.day}
                   </span>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#fff', fontWeight: '700', marginTop: '4px' }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#1a1a1a', fontWeight: '800', marginTop: '4px' }}>
                     {item.time}
                   </div>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '14px', fontWeight: '700', color: '#fff' }}>{item.title}</div>
+                  <div style={{ fontSize: '14px', fontWeight: '800', color: '#1a1a1a' }}>{item.title}</div>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>{item.desc}</div>
                 </div>
               </div>
@@ -361,14 +358,14 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
       </section>
 
       {/* Venue & Location */}
-      <section style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
-        <div className="glass-card" style={{ padding: '28px 32px', border: '1px solid rgba(209, 165, 80, 0.35)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', background: 'linear-gradient(145deg, #111522 0%, #090c14 100%)' }}>
+      <section id="venue-section" style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
+        <div className="aces-card-light" style={{ padding: '28px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(178, 43, 47, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f87171', border: '1px solid rgba(178, 43, 47, 0.4)' }}>
+            <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(178, 43, 47, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b22b2f', border: '1px solid rgba(178, 43, 47, 0.3)' }}>
               <MapPin size={22} />
             </div>
             <div>
-              <div style={{ fontSize: '16px', fontWeight: '800', color: '#fff' }}>
+              <div style={{ fontSize: '16px', fontWeight: '800', color: '#1a1a1a' }}>
                 Dr. D. Y. Patil Institute of Technology (DIT)
               </div>
               <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -382,7 +379,6 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
             target="_blank"
             rel="noreferrer"
             className="btn btn-secondary btn-sm"
-            style={{ border: '1px solid rgba(209, 165, 80, 0.4)' }}
           >
             <Compass size={15} color="var(--dyp-gold)" /> Open Google Maps <ArrowUpRight size={13} />
           </a>
@@ -390,15 +386,19 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
       </section>
 
       {/* Minimal Footer */}
-      <footer style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', position: 'relative', zIndex: 1 }}>
+      <footer style={{ borderTop: '1px solid #ecd9c6', paddingTop: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <DYPDPULogo height={26} />
-          <span style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
+          <img
+            src="/dypdpu-logo.png"
+            alt="DYP DPU"
+            style={{ height: '24px', width: 'auto' }}
+          />
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
             © 2026 HackSeries • ACES, Dept. of Computer Engineering, DIT Pune (DYPDPU)
           </span>
         </div>
-        <div style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
-          Lead Operations: <a href="mailto:aditya.renake@outlook.com" style={{ color: 'var(--dyp-gold)', textDecoration: 'none' }}>aditya.renake@outlook.com</a>
+        <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+          Lead Operations: <a href="mailto:aditya.renake@outlook.com" style={{ color: 'var(--dyp-crimson)', textDecoration: 'none', fontWeight: '700' }}>aditya.renake@outlook.com</a>
         </div>
       </footer>
 
