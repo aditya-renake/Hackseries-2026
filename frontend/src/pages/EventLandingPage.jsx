@@ -139,21 +139,28 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
   };
 
   return (
-    <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 24px 80px 24px' }}>
+    <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 20px 80px 20px', position: 'relative' }}>
       
+      {/* Background Glowing Ambient Orbs matching ACES theme */}
+      <div className="bg-glow-orb" style={{ width: '450px', height: '450px', background: 'radial-gradient(circle, rgba(178, 43, 47, 0.3) 0%, transparent 70%)', top: '2%', left: '50%', transform: 'translateX(-50%)' }} />
+      <div className="bg-glow-orb" style={{ width: '350px', height: '350px', background: 'radial-gradient(circle, rgba(209, 165, 80, 0.15) 0%, transparent 70%)', top: '25%', right: '5%' }} />
+
       {/* Hero Section */}
-      <section style={{ textAlign: 'center', padding: '50px 0 60px 0' }}>
+      <section style={{ textAlign: 'center', padding: '40px 0 50px 0', position: 'relative', zIndex: 1 }}>
         
-        {/* College & Club Pill */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(178, 43, 47, 0.12)', border: '1px solid rgba(209, 165, 80, 0.35)', borderRadius: '999px', padding: '6px 18px', fontSize: '12px', color: '#f7d070', fontWeight: '800', marginBottom: '24px', letterSpacing: '0.5px' }}>
-          <span>🏛️ DR. D. Y. PATIL INSTITUTE OF TECHNOLOGY (DYPDPU)</span>
-          <span style={{ color: '#6b6d71' }}>•</span>
-          <span style={{ color: '#ffffff' }}>ACES PRESENTS</span>
+        {/* ACES Background Hero Badge */}
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
+          <span className="badge badge-aces-hero" style={{ padding: '6px 18px', fontSize: '12px' }}>
+            🏛️ DR. D. Y. PATIL INSTITUTE OF TECHNOLOGY (DYPDPU)
+          </span>
+          <span className="badge badge-aces-gold hide-on-tiny" style={{ padding: '6px 14px', fontSize: '11px' }}>
+            ⚡ ACES PRESENTS
+          </span>
         </div>
 
-        {/* Attached Official DYP DPU Logo */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '28px' }}>
-          <div style={{ background: '#ffffff', padding: '10px 24px', borderRadius: '14px', boxShadow: '0 8px 30px rgba(0,0,0,0.5)', border: '2px solid rgba(209, 165, 80, 0.5)' }}>
+        {/* Attached Official DYP DPU Logo with ACES card styling */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '24px' }}>
+          <div style={{ background: '#ffffff', padding: '10px 24px', borderRadius: '14px', boxShadow: '0 10px 35px rgba(0,0,0,0.6)', border: '2px solid rgba(209, 165, 80, 0.5)' }}>
             <img
               src="/dypdpu-logo.png"
               alt="Dr. D. Y. Patil Vidyapeeth (DYP DPU)"
@@ -163,16 +170,16 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
         </div>
 
         {/* Big Bold Headline */}
-        <h1 style={{ fontSize: 'clamp(44px, 8vw, 84px)', fontWeight: '900', letterSpacing: '-2px', lineHeight: 1.05, color: '#ffffff', marginBottom: '18px' }}>
+        <h1 style={{ fontSize: 'clamp(40px, 7.5vw, 84px)', fontWeight: '900', letterSpacing: '-2px', lineHeight: 1.05, color: '#ffffff', marginBottom: '18px' }}>
           HACKSERIES <span style={{ color: 'var(--dyp-crimson)' }}>2026</span>
         </h1>
 
-        <p style={{ fontSize: 'clamp(16px, 2.5vw, 20px)', color: 'var(--text-muted)', maxWidth: '720px', margin: '0 auto 36px auto', lineHeight: 1.6, fontWeight: '500' }}>
+        <p style={{ fontSize: 'clamp(15px, 2.2vw, 19px)', color: 'var(--text-muted)', maxWidth: '720px', margin: '0 auto 32px auto', lineHeight: 1.6, fontWeight: '500' }}>
           India’s premier 48-hour student hackathon hosted at <strong>Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune</strong>. 2,000+ builders, instant digital QR check-in, and ₹15,00,000+ in prizes.
         </p>
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap', marginBottom: '44px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap', marginBottom: '40px' }}>
           <a
             href={googleFormUrl}
             target="_blank"
@@ -186,25 +193,25 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
           <a 
             href="#lookup-section" 
             className="btn btn-secondary btn-lg"
-            style={{ fontSize: '15px', padding: '16px 28px' }}
+            style={{ fontSize: '15px', padding: '16px 28px', border: '1px solid rgba(209, 165, 80, 0.35)' }}
           >
             <Search size={16} color="var(--dyp-gold)" /> Retrieve My Digital Pass
           </a>
         </div>
 
-        {/* Bold Minimal Metrics Strip */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', maxWidth: '980px', margin: '0 auto' }}>
+        {/* Bold Minimal Metrics Strip with ACES Badges */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', maxWidth: '980px', margin: '0 auto' }}>
           <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
             <div style={{ fontSize: '24px', fontWeight: '900', color: '#ffffff' }}>48 Hours</div>
             <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>Non-Stop Sprint</div>
           </div>
 
-          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(209, 165, 80, 0.25)' }}>
+          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(209, 165, 80, 0.35)', background: 'rgba(209, 165, 80, 0.06)' }}>
             <div style={{ fontSize: '24px', fontWeight: '900', color: '#f7d070' }}>₹15,00,000+</div>
             <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>Prize Pool</div>
           </div>
 
-          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(178, 43, 47, 0.25)' }}>
+          <div className="glass-card" style={{ padding: '18px 14px', textAlign: 'center', border: '1px solid rgba(178, 43, 47, 0.35)', background: 'rgba(178, 43, 47, 0.06)' }}>
             <div style={{ fontSize: '24px', fontWeight: '900', color: '#fca5a5' }}>2,000+</div>
             <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>Participants</div>
           </div>
@@ -217,10 +224,11 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
 
       </section>
 
-      {/* Instant Digital Pass Retrieval Search */}
-      <section id="lookup-section" style={{ maxWidth: '760px', margin: '0 auto 70px auto' }}>
-        <div className="glass-card" style={{ padding: '32px', border: '1px solid rgba(209, 165, 80, 0.35)', background: 'linear-gradient(145deg, #0e131f 0%, #080b12 100%)' }}>
+      {/* Instant Digital Pass Retrieval Search with ACES Badges */}
+      <section id="lookup-section" style={{ maxWidth: '760px', margin: '0 auto 60px auto', position: 'relative', zIndex: 1 }}>
+        <div className="glass-card" style={{ padding: '30px', border: '1px solid rgba(209, 165, 80, 0.4)', background: 'linear-gradient(145deg, #111624 0%, #090c15 100%)' }}>
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <span className="badge badge-aces-gold" style={{ marginBottom: '8px' }}>EXPRESS PASS PORTAL</span>
             <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#ffffff', letterSpacing: '-0.3px' }}>
               Already Registered? Access Your Pass
             </h3>
@@ -236,7 +244,7 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
               placeholder="e.g. aditya.renake@outlook.com or HS26-9B4D2E"
               value={lookupInput}
               onChange={(e) => setLookupInput(e.target.value)}
-              style={{ flex: 1, minWidth: '240px', padding: '12px 16px', fontSize: '14px' }}
+              style={{ flex: 1, minWidth: '220px', padding: '12px 16px', fontSize: '14px' }}
               required
             />
             <button type="submit" className="btn btn-dyp" style={{ padding: '12px 24px' }} disabled={isLookingUp}>
@@ -247,12 +255,12 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
       </section>
 
       {/* About ACES & DIT Pune */}
-      <section style={{ margin: '0 0 70px 0' }}>
-        <div className="glass-card" style={{ padding: '36px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px', alignItems: 'center' }}>
+      <section style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
+        <div className="glass-card" style={{ padding: '32px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '28px', alignItems: 'center' }}>
             <div>
-              <span className="badge badge-dyp" style={{ marginBottom: '10px' }}>ABOUT THE HOSTS</span>
-              <h2 style={{ fontSize: '26px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px', marginBottom: '12px' }}>
+              <span className="badge badge-aces-hero" style={{ marginBottom: '10px' }}>ABOUT THE HOSTS</span>
+              <h2 style={{ fontSize: '24px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px', marginBottom: '12px' }}>
                 Association of Computer Engineering Students (ACES)
               </h2>
               <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '14px' }}>
@@ -264,20 +272,20 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(209, 165, 80, 0.2)' }}>
-                <div style={{ fontSize: '24px', fontWeight: '900', color: '#f7d070' }}>NAAC A++</div>
+              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(209, 165, 80, 0.25)', background: 'rgba(209, 165, 80, 0.06)' }}>
+                <div style={{ fontSize: '22px', fontWeight: '900', color: '#f7d070' }}>NAAC A++</div>
                 <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>DIT Pune Accredited</div>
               </div>
-              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(178, 43, 47, 0.2)' }}>
-                <div style={{ fontSize: '24px', fontWeight: '900', color: '#fca5a5' }}>5 Tracks</div>
+              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(178, 43, 47, 0.25)', background: 'rgba(178, 43, 47, 0.06)' }}>
+                <div style={{ fontSize: '22px', fontWeight: '900', color: '#fca5a5' }}>5 Tracks</div>
                 <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>AI, Web3, Cyber, Cloud</div>
               </div>
               <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-                <div style={{ fontSize: '24px', fontWeight: '900', color: '#ffffff' }}>48 Hours</div>
+                <div style={{ fontSize: '22px', fontWeight: '900', color: '#ffffff' }}>48 Hours</div>
                 <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>Continuous Building</div>
               </div>
-              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(34, 197, 94, 0.2)' }}>
-                <div style={{ fontSize: '24px', fontWeight: '900', color: '#4ade80' }}>Express QR</div>
+              <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', border: '1px solid rgba(34, 197, 94, 0.25)', background: 'rgba(34, 197, 94, 0.06)' }}>
+                <div style={{ fontSize: '22px', fontWeight: '900', color: '#4ade80' }}>Express QR</div>
                 <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>Zero-Wait Entry</div>
               </div>
             </div>
@@ -285,10 +293,10 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
         </div>
       </section>
 
-      {/* Tracks Section */}
-      <section style={{ margin: '0 0 70px 0' }}>
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <span className="badge badge-gold" style={{ marginBottom: '8px' }}>INNOVATION DOMAINS</span>
+      {/* Tracks Section with ACES Badges */}
+      <section style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <span className="badge badge-aces-gold" style={{ marginBottom: '8px' }}>INNOVATION DOMAINS</span>
           <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>
             5 Focused Hackathon Tracks
           </h2>
@@ -301,10 +309,10 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
               <div key={idx} className="glass-card" style={{ padding: '22px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                    <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: 'rgba(178, 43, 47, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f87171' }}>
+                    <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: 'rgba(178, 43, 47, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f87171', border: '1px solid rgba(178, 43, 47, 0.3)' }}>
                       <Icon size={20} />
                     </div>
-                    <span style={{ fontSize: '10px', fontFamily: 'var(--font-mono)', color: 'var(--dyp-gold)', fontWeight: '700' }}>
+                    <span className="badge badge-aces-dark" style={{ fontSize: '10px', fontFamily: 'var(--font-mono)' }}>
                       {t.tag}
                     </span>
                   </div>
@@ -322,20 +330,20 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
       </section>
 
       {/* Schedule Section */}
-      <section style={{ margin: '0 0 70px 0' }}>
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <span className="badge badge-dyp" style={{ marginBottom: '8px' }}>OCTOBER 16 - 18, 2026</span>
+      <section style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <span className="badge badge-aces-hero" style={{ marginBottom: '8px' }}>OCTOBER 16 - 18, 2026</span>
           <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>
             Event Schedule & Milestones
           </h2>
         </div>
 
         <div className="glass-card" style={{ padding: '24px 28px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {schedule.map((item, idx) => (
-              <div key={idx} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', borderBottom: idx < schedule.length - 1 ? '1px solid rgba(255, 255, 255, 0.05)' : 'none', paddingBottom: idx < schedule.length - 1 ? '16px' : '0' }}>
+              <div key={idx} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', borderBottom: idx < schedule.length - 1 ? '1px solid rgba(255, 255, 255, 0.05)' : 'none', paddingBottom: idx < schedule.length - 1 ? '14px' : '0' }}>
                 <div style={{ minWidth: '110px' }}>
-                  <span style={{ fontSize: '10px', background: 'rgba(209, 165, 80, 0.15)', color: '#f7d070', padding: '2px 6px', borderRadius: '4px', fontWeight: '800' }}>
+                  <span className="badge badge-aces-gold" style={{ fontSize: '10px', padding: '2px 8px' }}>
                     {item.day}
                   </span>
                   <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#fff', fontWeight: '700', marginTop: '4px' }}>
@@ -353,10 +361,10 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
       </section>
 
       {/* Venue & Location */}
-      <section style={{ margin: '0 0 70px 0' }}>
-        <div className="glass-card" style={{ padding: '28px 32px', border: '1px solid rgba(209, 165, 80, 0.3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
+      <section style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
+        <div className="glass-card" style={{ padding: '28px 32px', border: '1px solid rgba(209, 165, 80, 0.35)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', background: 'linear-gradient(145deg, #111522 0%, #090c14 100%)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(178, 43, 47, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f87171' }}>
+            <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(178, 43, 47, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f87171', border: '1px solid rgba(178, 43, 47, 0.4)' }}>
               <MapPin size={22} />
             </div>
             <div>
@@ -382,7 +390,7 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
       </section>
 
       {/* Minimal Footer */}
-      <footer style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+      <footer style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <DYPDPULogo height={26} />
           <span style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
