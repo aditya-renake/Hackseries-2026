@@ -145,7 +145,7 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
         {/* Cyber Node Init Badge */}
         <div style={{ marginBottom: '18px' }}>
           <div className="cyber-node-badge">
-            <span style={{ color: '#22c55e' }}>●</span> SYS.INIT // ACES_NODE_01 // HACKSERIES_2026
+            <span style={{ color: '#22c55e' }}>●</span> SYS.INIT // HACKSERIES_2026 // DIT_PUNE
           </div>
         </div>
 
@@ -160,24 +160,21 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
           </div>
         </div>
 
-        {/* Hero Huge Bold Typography matching Screenshot */}
-        <div style={{ margin: '10px 0 16px 0' }}>
+        {/* Hero Huge Bold Typography for HACKSERIES 2026 */}
+        <div style={{ margin: '14px 0 20px 0' }}>
           <h1 className="hero-aces-title">
-            ACES
+            HACKSERIES <span style={{ color: '#1a1a1a' }}>2026</span>
           </h1>
-          <div style={{ fontSize: 'clamp(24px, 5vw, 44px)', fontWeight: '900', color: '#1a1a1a', letterSpacing: '-1px', marginTop: '-4px' }}>
-            HACKSERIES <span style={{ color: 'var(--dyp-crimson)' }}>2026</span>
-          </div>
         </div>
 
-        {/* Black Subtitle Bar from Screenshot */}
+        {/* Black Subtitle Bar */}
         <div style={{ margin: '0 auto 26px auto', maxWidth: '840px' }}>
           <div className="black-subtitle-bar">
-            ASSOCIATION OF COMPUTER ENGINEERING STUDENTS • DIT PIMPRI PUNE
+            DR. D. Y. PATIL INSTITUTE OF TECHNOLOGY • PIMPRI, PUNE (DYPDPU)
           </div>
         </div>
 
-        {/* Action Button & Cyber Coords Box matching Screenshot */}
+        {/* Action Button & Cyber Coords Box */}
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '14px', flexWrap: 'wrap', marginBottom: '44px' }}>
           <a
             href={googleFormUrl}
@@ -251,20 +248,20 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
         </div>
       </section>
 
-      {/* About ACES & DIT Pune */}
+      {/* About HackSeries & DIT Pune */}
       <section id="about-section" style={{ margin: '0 0 60px 0', position: 'relative', zIndex: 1 }}>
         <div className="aces-card-light" style={{ padding: '36px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px', alignItems: 'center' }}>
             <div>
-              <span className="badge badge-dyp" style={{ marginBottom: '10px' }}>WHO ARE WE</span>
+              <span className="badge badge-dyp" style={{ marginBottom: '10px' }}>ABOUT THE HACKATHON</span>
               <h2 style={{ fontSize: '26px', fontWeight: '900', color: '#1a1a1a', letterSpacing: '-0.5px', marginBottom: '12px' }}>
-                Association of Computer Engineering Students (ACES)
+                HackSeries 2026 — 48-Hour Innovation Arena
               </h2>
               <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '14px' }}>
-                ACES is the official student body of the <strong>Department of Computer Engineering, Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune</strong>. We spearhead national hackathons, technical conferences, coding contests, and research mentorship.
+                HackSeries 2026 is India’s flagship national 48-hour student hackathon hosted at <strong>Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune (DYPDPU)</strong>. Designed for collegiate developers, AI practitioners, cybersecurity enthusiasts, and hardware builders to turn ambitious ideas into production-ready software.
               </p>
               <p style={{ fontSize: '13px', color: 'var(--text-dim)', lineHeight: 1.5 }}>
-                HackSeries 2026 brings the brightest collegiate minds together on the DIT Pune campus with air-conditioned compute labs, gigabit fiber, 24/7 catering, and industry veteran mentorship.
+                Hackers receive high-density compute lab access, gigabit internet, uninterrupted power backup, meals, energy lounges, and guidance from industry engineering mentors.
               </p>
             </div>
 

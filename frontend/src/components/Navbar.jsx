@@ -41,7 +41,7 @@ export const Navbar = ({ currentView, setCurrentView, user, onLogout }) => {
             className="pill-nav-item"
             style={{ textDecoration: 'none' }}
           >
-            WHO ARE WE
+            ABOUT EVENT
           </a>
 
           <a
