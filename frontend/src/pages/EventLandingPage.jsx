@@ -570,10 +570,10 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
           <span>Lead Operations: <strong style={{ color: '#ffffff', fontWeight: '800' }}>Aditya Renake</strong></span>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginLeft: '4px' }}>
             <a 
-              href="https://instagram.com/aditya.renake" 
+              href="https://instagram.com/where.aditya" 
               target="_blank" 
               rel="noreferrer" 
-              title="Instagram Profile"
+              title="Instagram: @where.aditya"
               style={{
                 color: '#e1306c',
                 display: 'inline-flex',

@@ -128,10 +128,10 @@ export function App() {
             <span>© 2026 <strong>HackSeries</strong> • Lead Operations: <strong style={{ color: '#ffffff' }}>Aditya Renake</strong></span>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginLeft: '4px' }}>
               <a 
-                href="https://instagram.com/aditya.renake" 
+                href="https://instagram.com/where.aditya" 
                 target="_blank" 
                 rel="noreferrer" 
-                title="Instagram Profile"
+                title="Instagram: @where.aditya"
                 style={{
                   color: '#e1306c',
                   display: 'inline-flex',
