@@ -13,7 +13,12 @@ import {
   RefreshCw,
   User,
   Users,
-  Building2
+  Building2,
+  X,
+  Clock,
+  ArrowRight,
+  Sparkles,
+  Smartphone
 } from 'lucide-react';
 import { api } from '../services/api';
 import { sounds } from '../utils/soundEffects';
@@ -22,11 +27,12 @@ export const QRScanner = ({ onScanComplete, onShowToast }) => {
   const [isScanning, setIsScanning] = useState(false);
   const [cameras, setCameras] = useState([]);
   const [selectedCamera, setSelectedCamera] = useState('');
-  const [scanResult, setScanResult] = useState(null);
+  const [popupModalResult, setPopupModalResult] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [manualCode, setManualCode] = useState('');
 
   const html5QrCodeRef = useRef(null);
+  const isScannerPausedRef = useRef(false);
   const scannerContainerId = 'hackseries-qr-reader';
 
   // Fetch available cameras
@@ -35,8 +41,12 @@ export const QRScanner = ({ onScanComplete, onShowToast }) => {
       .then((devices) => {
         if (devices && devices.length) {
           setCameras(devices);
-          // Prefer back camera if available
-          const backCam = devices.find((d) => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('environment'));
+          // Prefer back camera on mobile devices
+          const backCam = devices.find((d) => 
+            d.label.toLowerCase().includes('back') || 
+            d.label.toLowerCase().includes('environment') ||
+            d.label.toLowerCase().includes('rear')
+          );
           setSelectedCamera(backCam ? backCam.id : devices[0].id);
         }
       })
@@ -49,19 +59,34 @@ export const QRScanner = ({ onScanComplete, onShowToast }) => {
     };
   }, []);
 
+  // Keyboard shortcut listener to quickly close popup modal and scan next
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (popupModalResult && (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape')) {
+        e.preventDefault();
+        handleClosePopupAndScanNext();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [popupModalResult]);
+
   const startScanner = async () => {
     if (!selectedCamera) {
+      sounds.playError();
       onShowToast({ type: 'error', title: 'Camera Error', message: 'No camera device selected or available.' });
       return;
     }
 
     try {
+      sounds.playClick();
       if (!html5QrCodeRef.current) {
         html5QrCodeRef.current = new Html5Qrcode(scannerContainerId);
       }
 
       setIsScanning(true);
-      setScanResult(null);
+      isScannerPausedRef.current = false;
+      setPopupModalResult(null);
 
       await html5QrCodeRef.current.start(
         selectedCamera,
@@ -71,18 +96,19 @@ export const QRScanner = ({ onScanComplete, onShowToast }) => {
           aspectRatio: 1.0,
         },
         async (decodedText) => {
-          // On QR scanned
-          if (!isProcessing) {
+          // On QR scanned: pause scanner immediately and process
+          if (!isProcessing && !isScannerPausedRef.current) {
             handleProcessScan(decodedText);
           }
         },
         (errorMessage) => {
-          // Frame parse error (ignore continuous scan ticks)
+          // Frame parse error (ignore frame ticks)
         }
       );
     } catch (err) {
       console.error('Failed to start scanner:', err);
       setIsScanning(false);
+      sounds.playError();
       onShowToast({
         type: 'error',
         title: 'Scanner Failed',
@@ -92,10 +118,12 @@ export const QRScanner = ({ onScanComplete, onShowToast }) => {
   };
 
   const stopScanner = async () => {
+    sounds.playClick();
     if (html5QrCodeRef.current && html5QrCodeRef.current.isScanning) {
       try {
         await html5QrCodeRef.current.stop();
         setIsScanning(false);
+        isScannerPausedRef.current = false;
       } catch (err) {
         console.error('Error stopping scanner:', err);
       }
@@ -106,6 +134,17 @@ export const QRScanner = ({ onScanComplete, onShowToast }) => {
   const handleProcessScan = async (codeString) => {
     if (!codeString || isProcessing) return;
     setIsProcessing(true);
+
+    // 1. Play scan beep and pause camera scanner immediately so user only scans once
+    sounds.playScanBeep();
+    if (html5QrCodeRef.current && html5QrCodeRef.current.isScanning) {
+      try {
+        html5QrCodeRef.current.pause(true);
+        isScannerPausedRef.current = true;
+      } catch (pauseErr) {
+        console.warn('Could not pause scanner:', pauseErr);
+      }
+    }
 
     try {
       const user = api.auth.getUser();
@@ -119,26 +158,33 @@ export const QRScanner = ({ onScanComplete, onShowToast }) => {
       if (response.status === 'SUCCESS') {
         sounds.playSuccess();
         confetti({
-          particleCount: 50,
-          spread: 60,
-          origin: { y: 0.7 },
-          colors: ['#22c55e', '#06b6d4', '#4ade80'],
+          particleCount: 60,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#22c55e', '#06b6d4', '#4ade80', '#f7d070'],
         });
-        setScanResult({
+
+        setPopupModalResult({
           type: 'success',
+          status: 'SUCCESS',
           title: 'ACCESS GRANTED ✅',
+          subtitle: 'Verified Official HackSeries Entry Pass',
           message: response.message,
           attendee: response.registrant,
+          timestamp: new Date().toLocaleTimeString(),
         });
       } else if (response.status === 'ALREADY_CHECKED_IN') {
         sounds.playWarning();
-        setScanResult({
+        setPopupModalResult({
           type: 'warning',
+          status: 'ALREADY_CHECKED_IN',
           title: 'ALREADY CHECKED IN ⚠️',
+          subtitle: 'Duplicate QR Pass Warning',
           message: response.message,
           attendee: response.registrant,
-          checkedInAt: response.checkedInAt,
-          checkedInBy: response.checkedInBy,
+          checkedInAt: response.checkedInAt ? new Date(response.checkedInAt).toLocaleTimeString() : 'Earlier today',
+          checkedInBy: response.checkedInBy || 'Gate Scanner',
+          timestamp: new Date().toLocaleTimeString(),
         });
       }
 
@@ -146,14 +192,35 @@ export const QRScanner = ({ onScanComplete, onShowToast }) => {
     } catch (err) {
       sounds.playError();
       const isForged = err.message.toLowerCase().includes('forger') || err.message.toLowerCase().includes('signature');
-      setScanResult({
+      setPopupModalResult({
         type: 'error',
+        status: 'ERROR',
         isForged,
-        title: isForged ? '🚫 SECURITY ALERT: FORGED QR CODE' : 'INVALID PASS ❌',
+        title: isForged ? '🚫 SECURITY ALERT: FORGED QR' : 'INVALID PASS ❌',
+        subtitle: isForged ? 'Cryptographic Signature Mismatch' : 'Record Not Found',
         message: err.message || 'Pass ID not found in HackSeries database.',
+        scannedCode: codeString,
+        timestamp: new Date().toLocaleTimeString(),
       });
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  // Close the popup modal and resume scanning for the next attendee
+  const handleClosePopupAndScanNext = () => {
+    sounds.playClick();
+    setPopupModalResult(null);
+
+    // Resume camera scanner
+    if (html5QrCodeRef.current && isScannerPausedRef.current) {
+      try {
+        html5QrCodeRef.current.resume();
+        isScannerPausedRef.current = false;
+      } catch (resumeErr) {
+        console.warn('Could not resume scanner, restarting:', resumeErr);
+        startScanner();
+      }
     }
   };
 
@@ -233,93 +300,194 @@ export const QRScanner = ({ onScanComplete, onShowToast }) => {
             onChange={(e) => setManualCode(e.target.value)}
             style={{ fontFamily: 'var(--font-mono)' }}
           />
-          <button type="submit" className="btn btn-cyan" disabled={!manualCode.trim() || isProcessing}>
+          <button type="submit" className="btn btn-dyp" disabled={!manualCode.trim() || isProcessing}>
             <Search size={15} /> Check In
           </button>
         </form>
       </div>
 
-      {/* Real-time Scan Result Pop-up Card */}
-      {scanResult && (
-        <div
-          className="glass-card"
-          style={{
-            padding: '24px',
-            border: `2px solid ${
-              scanResult.type === 'success'
-                ? '#22c55e'
-                : scanResult.type === 'warning'
-                ? '#f59e0b'
-                : '#ef4444'
-            }`,
-            background:
-              scanResult.type === 'success'
-                ? 'rgba(34, 197, 94, 0.08)'
-                : scanResult.type === 'warning'
-                ? 'rgba(245, 158, 11, 0.08)'
-                : 'rgba(239, 68, 68, 0.08)',
-            marginBottom: '24px',
-            animation: 'scaleUp 0.25s ease',
-          }}
+      {/* POPUP MODAL ON SCANNED QR */}
+      {popupModalResult && (
+        <div 
+          className="modal-overlay" 
+          style={{ zIndex: 3500, background: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(10px)' }}
+          onClick={handleClosePopupAndScanNext}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
-            {scanResult.type === 'success' && <CheckCircle2 size={32} color="#22c55e" />}
-            {scanResult.type === 'warning' && <AlertTriangle size={32} color="#f59e0b" />}
-            {scanResult.type === 'error' && (scanResult.isForged ? <ShieldAlert size={32} color="#ef4444" /> : <AlertTriangle size={32} color="#ef4444" />)}
-
-            <div>
-              <div
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '900',
-                  color:
-                    scanResult.type === 'success'
-                      ? '#22c55e'
-                      : scanResult.type === 'warning'
-                      ? '#f59e0b'
-                      : '#ef4444',
-                }}
-              >
-                {scanResult.title}
-              </div>
-              <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{scanResult.message}</div>
-            </div>
-          </div>
-
-          {scanResult.attendee && (
-            <div style={{ background: '#0b0f19', borderRadius: '12px', padding: '16px', border: '1px solid var(--border-subtle)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px' }}>
+          <div 
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: '520px',
+              border: `2px solid ${
+                popupModalResult.type === 'success' 
+                  ? '#22c55e' 
+                  : popupModalResult.type === 'warning' 
+                  ? '#f59e0b' 
+                  : '#ef4444'
+              }`,
+              boxShadow: `0 20px 60px ${
+                popupModalResult.type === 'success'
+                  ? 'rgba(34, 197, 94, 0.35)'
+                  : popupModalResult.type === 'warning'
+                  ? 'rgba(245, 158, 11, 0.35)'
+                  : 'rgba(239, 68, 68, 0.35)'
+              }`,
+              padding: '0',
+              overflow: 'hidden'
+            }}
+          >
+            
+            {/* Modal Header */}
+            <div 
+              style={{
+                padding: '20px 24px',
+                background: popupModalResult.type === 'success'
+                  ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(6, 182, 212, 0.1) 100%)'
+                  : popupModalResult.type === 'warning'
+                  ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(178, 43, 47, 0.1) 100%)'
+                  : 'linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(0, 0, 0, 0.4) 100%)',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                {popupModalResult.type === 'success' && <CheckCircle2 size={36} color="#22c55e" />}
+                {popupModalResult.type === 'warning' && <AlertTriangle size={36} color="#f59e0b" />}
+                {popupModalResult.type === 'error' && <ShieldAlert size={36} color="#ef4444" />}
+                
                 <div>
-                  <div style={{ fontSize: '18px', fontWeight: '800', color: '#fff' }}>
-                    {scanResult.attendee.name}
+                  <div style={{ fontSize: '20px', fontWeight: '900', color: popupModalResult.type === 'success' ? '#4ade80' : popupModalResult.type === 'warning' ? '#fbbf24' : '#f87171' }}>
+                    {popupModalResult.title}
                   </div>
-                  <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{scanResult.attendee.email}</div>
-                  {scanResult.attendee.phone && <div style={{ fontSize: '11px', color: 'var(--text-dim)' }}>{scanResult.attendee.phone}</div>}
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <span className="badge badge-emerald">{scanResult.attendee.ticketType}</span>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#22c55e', fontWeight: '700', marginTop: '4px' }}>
-                    {scanResult.attendee.uniqueId}
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                    {popupModalResult.subtitle} • {popupModalResult.timestamp}
                   </div>
                 </div>
               </div>
 
-              {(scanResult.attendee.teamName || scanResult.attendee.track) && (
-                <div style={{ display: 'flex', gap: '12px', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border-subtle)', fontSize: '12px' }}>
-                  {scanResult.attendee.teamName && (
-                    <div style={{ color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Users size={13} /> Team: <strong>{scanResult.attendee.teamName}</strong>
+              <button 
+                onClick={handleClosePopupAndScanNext}
+                className="btn btn-ghost btn-sm"
+                style={{ padding: '6px', borderRadius: '50%', color: '#fff' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: '24px' }}>
+              
+              {popupModalResult.attendee ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  
+                  {/* Attendee Name & Pass ID Banner */}
+                  <div style={{ background: '#0b0f19', padding: '18px', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
+                      <div>
+                        <div style={{ fontSize: '24px', fontWeight: '900', color: '#ffffff' }}>
+                          {popupModalResult.attendee.name}
+                        </div>
+                        <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                          {popupModalResult.attendee.email}
+                        </div>
+                      </div>
+                      <span className="badge badge-emerald" style={{ fontSize: '11px', padding: '4px 10px' }}>
+                        {popupModalResult.attendee.ticketType}
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '14px', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '15px', color: '#f7d070', fontWeight: '800' }}>
+                        {popupModalResult.attendee.uniqueId}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#10b981', fontWeight: '700' }}>
+                        <ShieldCheck size={13} /> HMAC VERIFIED
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Team & Track Details */}
+                  {(popupModalResult.attendee.teamName || popupModalResult.attendee.track || popupModalResult.attendee.college) && (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      {popupModalResult.attendee.teamName && (
+                        <div style={{ background: '#0d121f', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
+                          <div style={{ fontSize: '10px', color: 'var(--text-dim)', fontWeight: '700', textTransform: 'uppercase' }}>TEAM</div>
+                          <div style={{ fontSize: '13px', fontWeight: '800', color: '#22d3ee', marginTop: '2px' }}>
+                            {popupModalResult.attendee.teamName}
+                          </div>
+                        </div>
+                      )}
+
+                      {popupModalResult.attendee.track && (
+                        <div style={{ background: '#0d121f', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
+                          <div style={{ fontSize: '10px', color: 'var(--text-dim)', fontWeight: '700', textTransform: 'uppercase' }}>TRACK</div>
+                          <div style={{ fontSize: '13px', fontWeight: '800', color: '#f7d070', marginTop: '2px' }}>
+                            {popupModalResult.attendee.track}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
-                  {scanResult.attendee.track && (
-                    <div style={{ color: 'var(--text-muted)' }}>
-                      Track: <strong>{scanResult.attendee.track}</strong>
+
+                  {/* Duplicate warning details */}
+                  {popupModalResult.status === 'ALREADY_CHECKED_IN' && (
+                    <div style={{ background: 'rgba(245, 158, 11, 0.12)', border: '1px solid rgba(245, 158, 11, 0.35)', padding: '12px 16px', borderRadius: '10px', fontSize: '12px', color: '#fde68a' }}>
+                      <strong>⚠️ Already Checked In:</strong> {popupModalResult.checkedInAt} by {popupModalResult.checkedInBy}
+                    </div>
+                  )}
+
+                </div>
+              ) : (
+                /* Error details */
+                <div style={{ background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.35)', padding: '16px', borderRadius: '12px', fontSize: '13px', color: '#fca5a5' }}>
+                  <div style={{ fontWeight: '800', marginBottom: '4px' }}>Scan Rejected:</div>
+                  <div>{popupModalResult.message}</div>
+                  {popupModalResult.scannedCode && (
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', marginTop: '8px', color: '#ffffff', wordBreak: 'break-all' }}>
+                      Payload: {popupModalResult.scannedCode}
                     </div>
                   )}
                 </div>
               )}
+
+              {/* Action Button: Close & Scan Next QR Code */}
+              <div style={{ marginTop: '24px' }}>
+                <button
+                  onClick={handleClosePopupAndScanNext}
+                  className="btn"
+                  style={{
+                    width: '100%',
+                    padding: '14px 20px',
+                    fontSize: '15px',
+                    fontWeight: '900',
+                    background: popupModalResult.type === 'success'
+                      ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
+                      : popupModalResult.type === 'warning'
+                      ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                      : '#ef4444',
+                    color: '#ffffff',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    borderRadius: '10px',
+                    letterSpacing: '0.3px'
+                  }}
+                >
+                  <span>Close & Scan Next QR Code</span>
+                  <ArrowRight size={18} />
+                </button>
+                <div style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-dim)', marginTop: '8px' }}>
+                  Press <kbd style={{ background: '#1e2638', padding: '2px 6px', borderRadius: '4px', color: '#fff' }}>Space</kbd> or <kbd style={{ background: '#1e2638', padding: '2px 6px', borderRadius: '4px', color: '#fff' }}>Enter</kbd> to quickly dismiss and resume scanner
+                </div>
+              </div>
+
             </div>
-          )}
+
+          </div>
         </div>
       )}
 

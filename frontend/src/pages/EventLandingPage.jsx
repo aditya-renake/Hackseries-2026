@@ -26,6 +26,7 @@ import { DYPDPULogo, ACESLogo } from '../components/CollegeLogos';
 import { ConstellationBackground } from '../components/ConstellationBackground';
 import { GallerySection } from '../components/GallerySection';
 import { api } from '../services/api';
+import { sounds } from '../utils/soundEffects';
 
 export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
   const [lookupInput, setLookupInput] = useState('');
@@ -121,10 +122,12 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
     e.preventDefault();
     if (!lookupInput.trim()) return;
 
+    sounds.playClick();
     try {
       setIsLookingUp(true);
       const res = await api.registrants.getPublicPass(lookupInput.trim());
       if (res.data?.uniqueId) {
+        sounds.playSuccess();
         setRetrievedPass(res.data);
         onShowToast({
           type: 'success',
@@ -133,6 +136,7 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
         });
       }
     } catch (err) {
+      sounds.playError();
       setRetrievedPass(null);
       onShowToast({
         type: 'error',
@@ -146,6 +150,7 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
 
   const handleSendWhatsAppForPass = (pass) => {
     if (!pass) return;
+    sounds.playClick();
     const passUrl = `${window.location.origin}/pass/${pass.uniqueId}`;
     const message = `🎟️ *HackSeries 2026 Digital Entry Pass*\n\n` +
       `👤 *Attendee:* ${pass.name}\n` +
@@ -173,6 +178,7 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
 
   const handleDownloadQRForPass = (pass) => {
     if (!pass?.qrCodeDataUrl) return;
+    sounds.playClick();
     const link = document.createElement('a');
     link.download = `HackSeries2026-${pass.uniqueId}.png`;
     link.href = pass.qrCodeDataUrl;

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { DYPDPULogo } from '../components/CollegeLogos';
 import { api } from '../services/api';
+import { sounds } from '../utils/soundEffects';
 
 export const DigitalPassPage = ({ uniqueId, onBack, onShowToast }) => {
   const [passData, setPassData] = useState(null);
@@ -41,6 +42,7 @@ export const DigitalPassPage = ({ uniqueId, onBack, onShowToast }) => {
 
   const handleDownload = () => {
     if (!passData) return;
+    sounds.playClick();
     const link = document.createElement('a');
     link.download = `HackSeries2026-${passData.uniqueId}.png`;
     link.href = passData.qrCodeDataUrl;
@@ -56,6 +58,7 @@ export const DigitalPassPage = ({ uniqueId, onBack, onShowToast }) => {
 
   const handleSendWhatsApp = () => {
     if (!passData) return;
+    sounds.playClick();
     const passUrl = window.location.href;
     const message = `🎟️ *HackSeries 2026 Digital Entry Pass*\n\n` +
       `👤 *Attendee:* ${passData.name}\n` +
@@ -82,6 +85,7 @@ export const DigitalPassPage = ({ uniqueId, onBack, onShowToast }) => {
   };
 
   const handlePrint = () => {
+    sounds.playClick();
     window.print();
   };
 
