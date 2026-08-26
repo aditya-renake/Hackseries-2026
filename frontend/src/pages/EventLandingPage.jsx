@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { DYPDPULogo, ACESLogo } from '../components/CollegeLogos';
 import { ConstellationBackground } from '../components/ConstellationBackground';
+import { GallerySection } from '../components/GallerySection';
 import { api } from '../services/api';
 
 export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
@@ -382,8 +383,11 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
         </div>
       </section>
 
+      {/* Gallery Section from Hackseries-02 */}
+      <GallerySection />
+
       {/* Minimal Footer */}
-      <footer style={{ borderTop: '1px solid #ecd9c6', paddingTop: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', position: 'relative', zIndex: 1 }}>
+      <footer style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <img
             src="/dypdpu-logo.png"

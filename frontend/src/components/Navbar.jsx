@@ -69,6 +69,14 @@ export const Navbar = ({ currentView, setCurrentView, user, onLogout }) => {
           </a>
 
           <a
+            href="#gallery-section"
+            className="pill-nav-item"
+            style={{ textDecoration: 'none' }}
+          >
+            GALLERY
+          </a>
+
+          <a
             href="#lookup-section"
             className="pill-nav-item"
             style={{ textDecoration: 'none' }}
