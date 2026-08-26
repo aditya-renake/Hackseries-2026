@@ -54,6 +54,33 @@ export const DigitalPassPage = ({ uniqueId, onBack, onShowToast }) => {
     }
   };
 
+  const handleSendWhatsApp = () => {
+    if (!passData) return;
+    const passUrl = window.location.href;
+    const message = `🎟️ *HackSeries 2026 Digital Entry Pass*\n\n` +
+      `👤 *Attendee:* ${passData.name}\n` +
+      `🎫 *Pass ID:* ${passData.uniqueId}\n` +
+      `🎟️ *Ticket Type:* ${passData.ticketType}\n` +
+      `🏛️ *Venue:* Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune\n` +
+      `📅 *Dates:* October 16–18, 2026 (Check-in 07:30 AM IST)\n\n` +
+      `🔗 *Open Verified QR Pass:* ${passUrl}\n\n` +
+      `⚡ Present this QR pass at the entrance scanner for express check-in.`;
+
+    const phoneParam = passData.phone ? passData.phone.replace(/[^0-9]/g, '') : '';
+    const whatsappUrl = phoneParam && phoneParam.length >= 10
+      ? `https://api.whatsapp.com/send?phone=${phoneParam}&text=${encodeURIComponent(message)}`
+      : `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+
+    window.open(whatsappUrl, '_blank');
+    if (onShowToast) {
+      onShowToast({
+        type: 'success',
+        title: 'Opening WhatsApp 📱',
+        message: 'Pass details and QR verification link ready on WhatsApp.',
+      });
+    }
+  };
+
   const handlePrint = () => {
     window.print();
   };
@@ -101,7 +128,7 @@ export const DigitalPassPage = ({ uniqueId, onBack, onShowToast }) => {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ fontSize: '16px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>HACKSERIES 2026</span>
-                  <span className="badge badge-dyp" style={{ fontSize: '9px', padding: '1px 6px' }}>ACES DIT</span>
+                  <span className="badge badge-dyp" style={{ fontSize: '9px', padding: '1px 6px' }}>DIT PUNE</span>
                 </div>
                 <div style={{ fontSize: '9px', color: '#d1a550', fontWeight: '800', marginTop: '1px' }}>DR. D. Y. PATIL INSTITUTE OF TECHNOLOGY (DYPDPU)</div>
               </div>
@@ -175,13 +202,23 @@ export const DigitalPassPage = ({ uniqueId, onBack, onShowToast }) => {
       </div>
 
       {/* Action Buttons */}
-      <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-        <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleDownload}>
-          <Download size={16} /> Save QR Image
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
+        <button 
+          className="btn" 
+          style={{ background: '#25D366', color: '#ffffff', fontWeight: '800', width: '100%', padding: '12px 20px', boxShadow: '0 4px 16px rgba(37, 211, 102, 0.35)' }}
+          onClick={handleSendWhatsApp}
+        >
+          <Smartphone size={16} /> Get Pass on WhatsApp
         </button>
-        <button className="btn btn-secondary" onClick={handlePrint}>
-          <Printer size={16} /> Print Badge
-        </button>
+
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleDownload}>
+            <Download size={16} /> Save QR Image
+          </button>
+          <button className="btn btn-secondary" onClick={handlePrint}>
+            <Printer size={16} /> Print Badge
+          </button>
+        </div>
       </div>
 
     </div>

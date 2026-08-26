@@ -17,7 +17,10 @@ import {
   Calendar,
   Layers,
   Terminal,
-  Activity
+  Activity,
+  Smartphone,
+  QrCode,
+  Download
 } from 'lucide-react';
 import { DYPDPULogo, ACESLogo } from '../components/CollegeLogos';
 import { ConstellationBackground } from '../components/ConstellationBackground';
@@ -225,22 +228,23 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
 
       </section>
 
-      {/* Instant Digital Pass Retrieval Search */}
-      <section id="lookup-section" style={{ maxWidth: '760px', margin: '0 auto 60px auto', position: 'relative', zIndex: 1 }}>
-        <div className="glass-card" style={{ padding: '30px', border: '1px solid rgba(209, 165, 80, 0.4)', background: 'linear-gradient(145deg, #0e1320 0%, #080b12 100%)' }}>
-          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+      {/* Instant Digital Pass Retrieval Search & Demo Pass Preview */}
+      <section id="lookup-section" style={{ maxWidth: '820px', margin: '0 auto 60px auto', position: 'relative', zIndex: 1 }}>
+        <div className="glass-card" style={{ padding: '32px', border: '1px solid rgba(209, 165, 80, 0.4)', background: 'linear-gradient(145deg, #0e1320 0%, #080b12 100%)' }}>
+          
+          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
             <div className="cyber-node-badge" style={{ marginBottom: '8px' }}>
               <span>⚡</span> PASS ACCESS PORTAL
             </div>
-            <h3 style={{ fontSize: '20px', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.3px' }}>
+            <h3 style={{ fontSize: '22px', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.3px' }}>
               Already Registered? Access Your Pass
             </h3>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Enter your registered email or Pass ID to view and download your verified entry QR pass.
+              Enter your registered email or Pass ID to view your HMAC-signed entry QR pass.
             </p>
           </div>
 
-          <form onSubmit={handleLookup} style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <form onSubmit={handleLookup} style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '28px' }}>
             <input
               type="text"
               className="input-control"
@@ -254,6 +258,89 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
               <Search size={15} /> {isLookingUp ? 'Searching...' : 'Retrieve Pass'}
             </button>
           </form>
+
+          {/* Interactive Demo Pass Preview Card */}
+          <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '800', color: '#f7d070' }}>
+                <Sparkles size={14} color="#f7d070" /> SAMPLE PASS PREVIEW
+              </div>
+              <span style={{ fontSize: '11px', color: 'var(--text-dim)' }}>Generated automatically after Google Form completion</span>
+            </div>
+
+            {/* Holographic Sample Pass Ticket */}
+            <div className="holo-ticket" style={{ maxWidth: '440px', margin: '0 auto', boxShadow: '0 10px 40px rgba(0,0,0,0.6)' }}>
+              <div className="holo-inner" style={{ padding: '20px' }}>
+                
+                {/* Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <DYPDPULogo height={20} />
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: '900', color: '#fff' }}>HACKSERIES 2026</div>
+                      <div style={{ fontSize: '9px', color: '#d1a550', fontWeight: '800' }}>DIT PUNE (DYPDPU)</div>
+                    </div>
+                  </div>
+                  <span className="badge badge-emerald" style={{ fontSize: '10px' }}>ALL-ACCESS PASS</span>
+                </div>
+
+                {/* Attendee Name */}
+                <div style={{ textAlign: 'center', margin: '12px 0' }}>
+                  <div style={{ fontSize: '20px', fontWeight: '900', color: '#ffffff' }}>
+                    Aditya Renake <span style={{ fontSize: '11px', color: '#f7d070', fontWeight: '700' }}>(Demo Pass)</span>
+                  </div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>aditya.renake@outlook.com</div>
+                </div>
+
+                {/* QR Code Container */}
+                <div style={{ textAlign: 'center', margin: '14px 0' }}>
+                  <div style={{ background: '#ffffff', padding: '12px', borderRadius: '14px', display: 'inline-block', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
+                    <img
+                      src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=HS26-DEMO99-SAMPLE"
+                      alt="Sample QR Pass"
+                      style={{ width: '150px', height: '150px', display: 'block' }}
+                    />
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: '#f7d070', fontWeight: '900', marginTop: '10px' }}>
+                    HS26-DEMO99
+                  </div>
+                  <div style={{ fontSize: '10px', color: '#10b981', marginTop: '3px', fontWeight: '700' }}>
+                    🛡️ HMAC-SHA256 Cryptographic Signature Verified
+                  </div>
+                </div>
+
+                {/* Action button on Demo Pass: Get on WhatsApp */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const message = `🎟️ *HackSeries 2026 Digital Entry Pass*\n\n` +
+                      `👤 *Attendee:* Aditya Renake\n` +
+                      `🎫 *Pass ID:* HS26-DEMO99\n` +
+                      `🎟️ *Ticket Type:* Hacker (All-Access Pass)\n` +
+                      `🏛️ *Venue:* Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune\n` +
+                      `📅 *Dates:* October 16–18, 2026 (Check-in 07:30 AM IST)\n\n` +
+                      `🔗 *Pass Link:* ${window.location.origin}\n\n` +
+                      `⚡ Show your QR pass at the entrance scanner for express check-in.`;
+                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`, '_blank');
+                    if (onShowToast) {
+                      onShowToast({
+                        type: 'success',
+                        title: 'Opening WhatsApp 📱',
+                        message: 'Demo pass details prepared for WhatsApp delivery.',
+                      });
+                    }
+                  }}
+                  className="btn"
+                  style={{ background: '#25D366', color: '#ffffff', fontWeight: '800', width: '100%', padding: '10px', marginTop: '10px', fontSize: '13px' }}
+                >
+                  <Smartphone size={15} /> Get Pass on WhatsApp
+                </button>
+
+              </div>
+            </div>
+
+          </div>
+
         </div>
       </section>
 

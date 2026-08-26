@@ -10,7 +10,8 @@ import {
   Calendar, 
   MapPin, 
   Users, 
-  RefreshCw 
+  RefreshCw,
+  Smartphone 
 } from 'lucide-react';
 import { DYPDPULogo } from './CollegeLogos';
 import { api } from '../services/api';
@@ -40,6 +41,32 @@ export const PassPreviewModal = ({ registrant, onClose, onShowToast, onRefresh }
       });
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleSendWhatsApp = () => {
+    const passUrl = publicPassUrl;
+    const message = `🎟️ *HackSeries 2026 Digital Entry Pass*\n\n` +
+      `👤 *Attendee:* ${registrant.name}\n` +
+      `🎫 *Pass ID:* ${registrant.uniqueId}\n` +
+      `🎟️ *Ticket Type:* ${registrant.ticketType}\n` +
+      `🏛️ *Venue:* Dr. D. Y. Patil Institute of Technology (DIT), Pimpri, Pune\n` +
+      `📅 *Dates:* October 16–18, 2026 (Check-in 07:30 AM IST)\n\n` +
+      `🔗 *View Verified QR Pass:* ${passUrl}\n\n` +
+      `⚡ Show this QR code at the gate scanner for express entry.`;
+
+    const phoneParam = registrant.phone ? registrant.phone.replace(/[^0-9]/g, '') : '';
+    const whatsappUrl = phoneParam && phoneParam.length >= 10
+      ? `https://api.whatsapp.com/send?phone=${phoneParam}&text=${encodeURIComponent(message)}`
+      : `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+
+    window.open(whatsappUrl, '_blank');
+    if (onShowToast) {
+      onShowToast({
+        type: 'success',
+        title: 'Opening WhatsApp 📱',
+        message: 'Pass details ready on WhatsApp.',
+      });
     }
   };
 
@@ -137,16 +164,26 @@ export const PassPreviewModal = ({ registrant, onClose, onShowToast, onRefresh }
           </div>
 
           {/* Action Buttons */}
-          <div style={{ display: 'flex', gap: '10px', marginTop: '20px', flexWrap: 'wrap' }}>
-            <button
-              className="btn btn-primary"
-              style={{ flex: 1 }}
-              onClick={handleSendEmail}
-              disabled={isSending}
-            >
-              {isSending ? <RefreshCw size={15} className="spin" /> : <Send size={15} />}
-              <span>{registrant.emailSent ? 'Resend Pass Email' : 'Send Pass Email'}</span>
-            </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <button
+                className="btn btn-primary"
+                style={{ flex: 1 }}
+                onClick={handleSendEmail}
+                disabled={isSending}
+              >
+                {isSending ? <RefreshCw size={15} className="spin" /> : <Send size={15} />}
+                <span>{registrant.emailSent ? 'Resend Email' : 'Send Email'}</span>
+              </button>
+
+              <button
+                className="btn"
+                style={{ background: '#25D366', color: '#ffffff', fontWeight: '800', flex: 1 }}
+                onClick={handleSendWhatsApp}
+              >
+                <Smartphone size={15} /> Send WhatsApp
+              </button>
+            </div>
 
             <button className="btn btn-secondary" onClick={handleDownloadQR} title="Download QR PNG">
               <Download size={15} /> Download
