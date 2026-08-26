@@ -9,7 +9,6 @@ import registrantRoutes from './routes/registrant.routes.js';
 import checkinRoutes from './routes/checkin.routes.js';
 import emailRoutes from './routes/email.routes.js';
 import eventRoutes from './routes/event.routes.js';
-import paymentRoutes from './routes/payment.routes.js';
 
 dotenv.config();
 
@@ -57,8 +56,6 @@ app.use('/api/email', emailRoutes);
 app.use('/email', emailRoutes);
 app.use('/api/event', eventRoutes);
 app.use('/event', eventRoutes);
-app.use('/api/payment', paymentRoutes);
-app.use('/payment', paymentRoutes);
 
 // Health check
 app.get(['/api/health', '/health', '/api'], (req, res) => {

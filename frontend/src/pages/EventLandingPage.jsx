@@ -24,9 +24,11 @@ import { ConstellationBackground } from '../components/ConstellationBackground';
 import { GallerySection } from '../components/GallerySection';
 import { api } from '../services/api';
 
-export const EventLandingPage = ({ onNavigateToPass, onNavigateToRegister, onShowToast }) => {
+export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
   const [lookupInput, setLookupInput] = useState('');
   const [isLookingUp, setIsLookingUp] = useState(false);
+
+  const googleFormUrl = 'https://forms.gle/U24ip7E6NqtbZkiT9';
 
   const tracks = [
     {
@@ -173,14 +175,24 @@ export const EventLandingPage = ({ onNavigateToPass, onNavigateToRegister, onSho
           </div>
         </div>
 
-        {/* Action Button & Cyber Coords Box */}
+        {/* Action Buttons & Cyber Coords Box */}
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '14px', flexWrap: 'wrap', marginBottom: '44px' }}>
-          <button
-            onClick={() => onNavigateToRegister(true)}
+          <a
+            href={googleFormUrl}
+            target="_blank"
+            rel="noreferrer"
             className="btn-initialize"
           >
-            <Power size={16} /> INITIALIZE REGISTRATION <ExternalLink size={13} />
-          </button>
+            <Power size={16} /> Register via Google Form <ExternalLink size={13} />
+          </a>
+
+          <a
+            href="#lookup-section"
+            className="btn btn-secondary"
+            style={{ padding: '12px 24px', border: '1px solid rgba(209, 165, 80, 0.4)' }}
+          >
+            <Search size={15} color="var(--dyp-gold)" /> Retrieve My Digital Pass
+          </a>
 
           <div className="cyber-coords-box">
             <div>COORD: <strong style={{ color: '#f7d070' }}>18.6256° N, 73.8122° E</strong></div>

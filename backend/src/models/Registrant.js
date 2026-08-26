@@ -53,41 +53,6 @@ const registrantSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed,
       default: {},
     },
-    // Payment Gateway Details
-    paymentStatus: {
-      type: String,
-      enum: ['pending', 'paid', 'free', 'failed'],
-      default: 'paid',
-      index: true,
-    },
-    paymentId: {
-      type: String,
-      default: '',
-    },
-    orderId: {
-      type: String,
-      default: '',
-    },
-    paymentAmount: {
-      type: Number,
-      default: 299,
-    },
-    paymentCurrency: {
-      type: String,
-      default: 'INR',
-    },
-    paymentMethod: {
-      type: String,
-      default: 'UPI',
-    },
-    paymentSignature: {
-      type: String,
-      default: '',
-    },
-    paymentTimestamp: {
-      type: Date,
-      default: Date.now,
-    },
     // Zero Forged QR Code Fields (HMAC-SHA256 digital signature)
     qrPayload: {
       type: String,
@@ -113,20 +78,6 @@ const registrantSchema = new mongoose.Schema(
     emailSendCount: {
       type: Number,
       default: 0,
-    },
-    // WhatsApp Notification Tracking (From: 9890829874)
-    whatsappSent: {
-      type: Boolean,
-      default: false,
-      index: true,
-    },
-    whatsappSentAt: {
-      type: Date,
-      default: null,
-    },
-    whatsappSender: {
-      type: String,
-      default: '9890829874',
     },
     checkedIn: {
       type: Boolean,

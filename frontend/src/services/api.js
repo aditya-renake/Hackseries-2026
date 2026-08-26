@@ -95,14 +95,6 @@ export const api = {
       const res = await fetch(`${API_BASE}/registrants/pass/${encodeURIComponent(idOrEmail)}`);
       return handleResponse(res);
     },
-    register: async (formData) => {
-      const res = await fetch(`${API_BASE}/registrants/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      return handleResponse(res);
-    },
     simulateGoogleFormWebhook: async (payload) => {
       const res = await fetch(`${API_BASE}/registrants/webhook`, {
         method: 'POST',
@@ -170,26 +162,6 @@ export const api = {
       const res = await fetch(`${API_BASE}/event`, {
         method: 'PUT',
         headers: getHeaders(),
-        body: JSON.stringify(data),
-      });
-      return handleResponse(res);
-    },
-  },
-
-  // Payment Gateway API
-  payment: {
-    createOrder: async (data) => {
-      const res = await fetch(`${API_BASE}/payment/create-order`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      return handleResponse(res);
-    },
-    verifyPayment: async (data) => {
-      const res = await fetch(`${API_BASE}/payment/verify-payment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
       return handleResponse(res);

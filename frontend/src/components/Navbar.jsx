@@ -36,16 +36,6 @@ export const Navbar = ({ currentView, setCurrentView, user, onLogout }) => {
             HOME
           </button>
 
-          <button
-            className={`pill-nav-item ${currentView === 'register' ? 'active' : ''}`}
-            onClick={() => {
-              window.open('/register', '_blank');
-            }}
-            style={{ color: '#f7d070', fontWeight: '800' }}
-          >
-            ⚡ REGISTER
-          </button>
-
           <a
             href="#about-section"
             className="pill-nav-item"
