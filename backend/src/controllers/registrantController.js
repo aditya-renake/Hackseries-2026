@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { registrantRepo } from '../models/registrantRepo.js';
+import { configRepo } from '../models/configRepo.js';
 import { createQRPayload, generatePassSignature, generateQRCodeDataUrl } from '../services/qrService.js';
+import { sendRegistrationReceivedEmail } from '../services/emailService.js';
 
 /**
  * List registrants with search, filter, and pagination (optimized via DynamoDB).
@@ -115,13 +117,20 @@ export const handleWebhookSubmission = async (req, res) => {
       checkedIn: false,
     });
 
-    console.log(`📥 [HACKSERIES WEBHOOK] Registered in DynamoDB: ${newRegistrant.name} (${newRegistrant.email}) -> Pass ID: ${uniqueId}`);
+    console.log(`📥 [HACKSERIES WEBHOOK] Registered in Firestore: ${newRegistrant.name} (${newRegistrant.email}) -> Pass ID: ${uniqueId}`);
+
+    // Asynchronously dispatch instant "Registration Received • Details Under Verification" email
+    configRepo.getConfig()
+      .then((cfg) => sendRegistrationReceivedEmail(newRegistrant, cfg))
+      .then(() => console.log(`📧 [AUTO-DISPATCH] Registration acknowledgement email delivered to ${newRegistrant.email}`))
+      .catch((mailErr) => console.warn(`⚠️ [AUTO-DISPATCH NOTICE] Registration ack email error: ${mailErr.message}`));
 
     res.status(201).json({
       success: true,
-      message: 'Registrant created successfully from Google Form webhook',
+      message: 'Registrant created successfully & verification email dispatched',
       data: newRegistrant,
       isNew: true,
+      ackEmailDispatched: true,
     });
   } catch (error) {
     console.error('❌ Webhook error:', error);

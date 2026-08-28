@@ -675,3 +675,192 @@ export const sendCheckinConfirmationEmail = async (registrant, eventConfig = {})
   }
 };
 
+/**
+ * Builds the "Registration Received • Details Under Verification" HTML email template
+ */
+export const buildRegistrationReceivedEmailHtml = ({
+  attendeeName,
+  uniqueId,
+  ticketType = 'Hacker Pass',
+  teamName,
+  track,
+  institution,
+  eventName = 'HackSeries 2026',
+  eventDate = 'September 2026',
+  eventVenue = 'Dr. D. Y. Patil Institute of Technology (DYPDPU), Pimpri, Pune',
+}) => {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration Received — ${eventName}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #030712; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #f9fafb;">
+  <div style="max-width: 600px; margin: 30px auto; background-color: #0b0f19; border: 1px solid rgba(209, 165, 80, 0.4); border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);">
+
+    <!-- Header Banner -->
+    <div style="background: linear-gradient(135deg, #7a1518 0%, #b22b2f 50%, #d1a550 100%); padding: 32px 24px; text-align: center; border-bottom: 2px solid #f7d070;">
+      <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.15em; color: #f7d070; text-transform: uppercase; margin-bottom: 6px;">
+        ACES • DR. D. Y. PATIL INSTITUTE OF TECHNOLOGY
+      </div>
+      <h1 style="margin: 0; font-size: 26px; font-weight: 900; color: #ffffff; letter-spacing: -0.5px;">
+        ${eventName}
+      </h1>
+      <div style="display: inline-block; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(247, 208, 112, 0.6); padding: 5px 14px; border-radius: 9999px; margin-top: 12px; font-size: 12px; font-weight: 700; color: #f7d070;">
+        ⚡ REGISTRATION APPLICATION RECEIVED
+      </div>
+    </div>
+
+    <!-- Body Content -->
+    <div style="padding: 32px 24px;">
+
+      <p style="font-size: 18px; font-weight: 800; color: #ffffff; margin: 0 0 12px 0;">
+        Hello <span style="color: #f7d070;">${attendeeName}</span>,
+      </p>
+
+      <p style="font-size: 14px; line-height: 1.6; color: #cbd5e1; margin: 0 0 20px 0;">
+        Thank you for registering for <strong>${eventName}</strong> at <strong>${eventVenue}</strong>. We have successfully received your registration details via Google Form.
+      </p>
+
+      <!-- Verification Status Callout -->
+      <div style="background: linear-gradient(135deg, rgba(209, 165, 80, 0.12) 0%, rgba(178, 43, 47, 0.08) 100%); border: 1px solid rgba(209, 165, 80, 0.45); border-radius: 12px; padding: 18px; margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span style="font-size: 16px;">⏳</span>
+          <span style="font-size: 14px; font-weight: 800; color: #f7d070; text-transform: uppercase; letter-spacing: 0.05em;">
+            Status: Details Under Verification
+          </span>
+        </div>
+        <p style="margin: 0; font-size: 13px; color: #e2e8f0; line-height: 1.6;">
+          Our Operations & Technical Team is currently reviewing and verifying your submission. Once verified, your official <strong>Cryptographically Signed Digital Holographic Pass with Gate QR Code</strong> will be dispatched to this email address.
+        </p>
+      </div>
+
+      <!-- Application Details Table -->
+      <div style="background-color: #060913; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+        <div style="font-size: 11px; font-weight: 800; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 8px;">
+          📋 Application Summary
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+          <tr>
+            <td style="padding: 6px 0; color: #9ca3af; width: 40%;">Application Ref:</td>
+            <td style="padding: 6px 0; color: #f7d070; font-weight: 800; font-family: monospace;">${uniqueId}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #9ca3af;">Participant Name:</td>
+            <td style="padding: 6px 0; color: #ffffff; font-weight: 700;">${attendeeName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #9ca3af;">Pass Category:</td>
+            <td style="padding: 6px 0; color: #22d3ee; font-weight: 700;">${ticketType}</td>
+          </tr>
+          ${teamName ? `
+          <tr>
+            <td style="padding: 6px 0; color: #9ca3af;">Team Name:</td>
+            <td style="padding: 6px 0; color: #ffffff; font-weight: 700;">${teamName}</td>
+          </tr>` : ''}
+          ${track ? `
+          <tr>
+            <td style="padding: 6px 0; color: #9ca3af;">Assigned Track:</td>
+            <td style="padding: 6px 0; color: #4ade80; font-weight: 700;">${track}</td>
+          </tr>` : ''}
+          ${institution ? `
+          <tr>
+            <td style="padding: 6px 0; color: #9ca3af;">College / Institution:</td>
+            <td style="padding: 6px 0; color: #ffffff;">${institution}</td>
+          </tr>` : ''}
+          <tr>
+            <td style="padding: 6px 0; color: #9ca3af;">Event Venue:</td>
+            <td style="padding: 6px 0; color: #ffffff;">${eventVenue}</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- What to Expect Next -->
+      <div style="background-color: #070b14; border: 1px solid rgba(34, 211, 238, 0.2); border-radius: 12px; padding: 18px; margin-bottom: 24px;">
+        <div style="font-size: 13px; font-weight: 800; color: #22d3ee; margin-bottom: 12px;">
+          🚀 What Happens Next?
+        </div>
+        <div style="font-size: 12px; color: #cbd5e1; line-height: 1.8;">
+          <div>1️⃣ <strong>Review</strong>: Operations team verifies details & team allocations.</div>
+          <div>2️⃣ <strong>Pass Delivery</strong>: You will receive an email with your official QR Entry Pass.</div>
+          <div>3️⃣ <strong>Gate Check-In</strong>: Show your digital pass on your phone at DYP DPU campus for instant entry & hacker kit!</div>
+        </div>
+      </div>
+
+      <!-- Support Notice -->
+      <p style="font-size: 12px; color: #9ca3af; line-height: 1.5; margin: 0;">
+        If you have any questions or need to correct your registration details, feel free to reply directly to this email or reach out to our Helpdesk at <a href="mailto:tigeradi1504@gmail.com" style="color: #f7d070; text-decoration: none;">tigeradi1504@gmail.com</a>.
+      </p>
+
+    </div>
+
+    <!-- Footer -->
+    <div style="background-color: #06080e; border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 20px 24px; text-align: center; font-size: 11px; color: #6b7280;">
+      <p style="margin: 0 0 6px 0; font-weight: 700; color: #9ca3af;">HackSeries 2026 • Association of Computer Engineering Students (ACES)</p>
+      <p style="margin: 0 0 6px 0;">Dr. D. Y. Patil Institute of Technology, Pimpri, Pune (DYPDPU)</p>
+      <p style="margin: 0;">
+        Lead Operations: <strong>Aditya Renake</strong> • 
+        <a href="https://instagram.com/where.aditya" style="color: #f7d070; text-decoration: none;">Instagram</a> • 
+        <a href="https://github.com/aditya-renake" style="color: #22d3ee; text-decoration: none;">GitHub</a>
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>
+  `;
+};
+
+/**
+ * Dispatches the "Registration Received • Details Under Verification" acknowledgement email
+ */
+export const sendRegistrationReceivedEmail = async (registrant, eventConfig = {}) => {
+  try {
+    const mailTransporter = await getTransporter();
+
+    const eventName = eventConfig.eventName || 'HackSeries 2026';
+    const eventDate = eventConfig.eventDate || 'September 2026';
+    const eventVenue = eventConfig.eventVenue || 'Dr. D. Y. Patil Institute of Technology (DYPDPU), Pimpri, Pune';
+    const senderEmail = process.env.SMTP_USER || 'tigeradi1504@gmail.com';
+
+    const html = buildRegistrationReceivedEmailHtml({
+      attendeeName: registrant.name,
+      uniqueId: registrant.uniqueId,
+      ticketType: registrant.ticketType,
+      teamName: registrant.teamName,
+      track: registrant.track,
+      institution: registrant.institution,
+      eventName,
+      eventDate,
+      eventVenue,
+    });
+
+    const subject = `⏳ We've Received Your Registration — ${eventName} (Ref: ${registrant.uniqueId})`;
+    const fromAddress = process.env.EMAIL_FROM || `"HackSeries 2026" <${senderEmail}>`;
+
+    const mailOptions = {
+      from: fromAddress,
+      to: registrant.email,
+      replyTo: process.env.REPLY_TO || senderEmail,
+      subject,
+      html,
+    };
+
+    const info = await mailTransporter.sendMail(mailOptions);
+    console.log(`✅ [REGISTRATION ACK EMAIL] Verification acknowledgement sent to ${registrant.email} (MessageID: ${info.messageId})`);
+
+    return {
+      success: true,
+      messageId: info.messageId,
+      recipient: registrant.email,
+    };
+  } catch (err) {
+    console.error(`❌ [REGISTRATION ACK EMAIL ERROR] Failed sending ack email to ${registrant?.email}:`, err.message);
+    throw err;
+  }
+};
+
+
