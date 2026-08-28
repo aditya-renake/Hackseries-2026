@@ -9,8 +9,9 @@ import { sendAutoCheckinMessage } from '../services/messagingService.js';
  */
 export const scanCheckin = async (req, res) => {
   try {
-    const { qrPayload, manualCode } = req.body;
+    const { qrPayload, manualCode, photo, photoBase64 } = req.body;
     const rawInput = (qrPayload || manualCode || '').trim();
+    const livePhoto = photo || photoBase64 || null;
 
     if (!rawInput) {
       return res.status(400).json({
@@ -86,15 +87,20 @@ export const scanCheckin = async (req, res) => {
     const staffName = req.user ? req.user.name : (req.body.scannedBy || 'Gate Scanner');
     const checkedInAt = new Date().toISOString();
 
-    const updated = await registrantRepo.update(registrant.uniqueId, {
+    const updateFields = {
       checkedIn: true,
       checkedInAt,
       checkedInBy: staffName,
-    });
+    };
+    if (livePhoto) {
+      updateFields.checkedInPhoto = livePhoto;
+    }
 
-    console.log(`✅ [CHECK-IN APPROVED] ${updated.name} (${updated.uniqueId}) checked in by ${staffName}`);
+    const updated = await registrantRepo.update(registrant.uniqueId, updateFields);
 
-    // Asynchronously dispatch instant Check-in Confirmation Email
+    console.log(`✅ [CHECK-IN APPROVED] ${updated.name} (${updated.uniqueId}) checked in by ${staffName} (Live Photo: ${Boolean(livePhoto)})`);
+
+    // Asynchronously dispatch instant Check-in Confirmation Email with live photo
     configRepo.getConfig()
       .then((cfg) => sendCheckinConfirmationEmail(updated, cfg))
       .then(() => console.log(`📧 [AUTO-DISPATCH] Check-in confirmation email delivered to ${updated.email}`))
@@ -109,7 +115,8 @@ export const scanCheckin = async (req, res) => {
       success: true,
       status: 'SUCCESS',
       emailNotificationSent: true,
-      message: `✅ Check-in Approved: Welcome to HackSeries 2026, ${updated.name}! Confirmation email & WhatsApp alert dispatched.`,
+      hasLivePhoto: Boolean(livePhoto),
+      message: `✅ Check-in Approved: Welcome to HackSeries 2026, ${updated.name}! Live photo verified & confirmation email dispatched.`,
       registrant: {
         _id: updated.uniqueId,
         uniqueId: updated.uniqueId,
@@ -120,6 +127,7 @@ export const scanCheckin = async (req, res) => {
         teamName: updated.teamName,
         track: updated.track,
         institution: updated.institution,
+        checkedInPhoto: updated.checkedInPhoto,
         checkedIn: true,
         checkedInAt: updated.checkedInAt,
         checkedInBy: staffName,

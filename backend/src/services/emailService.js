@@ -478,6 +478,7 @@ export const buildCheckinConfirmationEmailHtml = ({
   institution,
   checkedInAt,
   checkedInBy,
+  hasLivePhoto = false,
   eventName = 'HackSeries 2026',
   eventVenue = 'Dr. D. Y. Patil Institute of Technology (DYPDPU), Pimpri, Pune',
   clientUrl = 'http://localhost:5173',
@@ -531,6 +532,19 @@ export const buildCheckinConfirmationEmailHtml = ({
       <p style="font-size: 14px; line-height: 1.5; color: #9ca3af; margin: 0 0 16px 0;">
         Your digital holographic entry pass has been successfully scanned and verified at the gate entrance. You are officially registered on-site and ready to hack!
       </p>
+
+      ${hasLivePhoto ? `
+      <!-- Live Gate Entry Snapshot Card -->
+      <div style="background: #0e1424; border: 1px solid rgba(34, 197, 94, 0.35); border-radius: 12px; padding: 18px; margin: 20px 0; text-align: center;">
+        <div style="font-size: 11px; font-weight: 800; color: #4ade80; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">
+          📷 VERIFIED GATE ENTRY SNAPSHOT
+        </div>
+        <img src="cid:gatephoto" alt="Gate Check-In Snapshot" style="max-width: 280px; width: 100%; height: auto; border-radius: 10px; border: 2px solid #22c55e; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: block; margin: 0 auto;" />
+        <div style="font-size: 11px; color: #9ca3af; margin-top: 10px;">
+          Verified live on-site at Dr. D. Y. Patil Institute of Technology (DIT), Pune
+        </div>
+      </div>
+      ` : ''}
 
       <!-- Checkin Summary Card -->
       <div class="card">
@@ -606,6 +620,19 @@ export const sendCheckinConfirmationEmail = async (registrant, eventConfig = {})
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
     const senderEmail = process.env.SMTP_USER || 'tigeradi1504@gmail.com';
 
+    const attachments = [];
+    let hasLivePhoto = false;
+
+    if (registrant.checkedInPhoto && typeof registrant.checkedInPhoto === 'string' && registrant.checkedInPhoto.startsWith('data:image')) {
+      const base64Data = registrant.checkedInPhoto.split(';base64,').pop();
+      attachments.push({
+        filename: `gate-snapshot-${registrant.uniqueId}.jpg`,
+        content: Buffer.from(base64Data, 'base64'),
+        cid: 'gatephoto',
+      });
+      hasLivePhoto = true;
+    }
+
     const html = buildCheckinConfirmationEmailHtml({
       attendeeName: registrant.name,
       uniqueId: registrant.uniqueId,
@@ -615,6 +642,7 @@ export const sendCheckinConfirmationEmail = async (registrant, eventConfig = {})
       institution: registrant.institution,
       checkedInAt: registrant.checkedInAt || new Date().toISOString(),
       checkedInBy: registrant.checkedInBy || 'Gate Staff',
+      hasLivePhoto,
       eventName,
       eventVenue,
       clientUrl,
@@ -629,15 +657,17 @@ export const sendCheckinConfirmationEmail = async (registrant, eventConfig = {})
       replyTo: process.env.REPLY_TO || senderEmail,
       subject,
       html,
+      attachments,
     };
 
     const info = await mailTransporter.sendMail(mailOptions);
-    console.log(`✅ [CHECK-IN EMAIL DELIVERED] Confirmation sent to ${registrant.email} (MessageID: ${info.messageId})`);
+    console.log(`✅ [CHECK-IN EMAIL DELIVERED] Confirmation sent to ${registrant.email} (MessageID: ${info.messageId}, withPhoto: ${hasLivePhoto})`);
 
     return {
       success: true,
       messageId: info.messageId,
       recipient: registrant.email,
+      hasLivePhoto,
     };
   } catch (err) {
     console.error(`❌ [CHECK-IN EMAIL ERROR] Failed sending checkin email to ${registrant?.email}:`, err.message);

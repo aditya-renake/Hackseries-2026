@@ -137,7 +137,23 @@ export const QRScanner = ({ onScanComplete, onShowToast }) => {
     if (!codeString || isProcessing) return;
     setIsProcessing(true);
 
-    // 1. Play scan beep and pause camera scanner immediately so user only scans once
+    // 1. Capture live camera snapshot of attendee
+    let livePhoto = null;
+    try {
+      const videoEl = document.querySelector('#qr-reader video');
+      if (videoEl && videoEl.videoWidth > 0 && videoEl.videoHeight > 0) {
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.min(videoEl.videoWidth, 640);
+        canvas.height = Math.round((canvas.width / videoEl.videoWidth) * videoEl.videoHeight);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+        livePhoto = canvas.toDataURL('image/jpeg', 0.82);
+      }
+    } catch (photoErr) {
+      console.warn('Could not capture frame snapshot:', photoErr);
+    }
+
+    // 2. Play scan beep and pause camera scanner immediately so user only scans once
     sounds.playScanBeep();
     if (html5QrCodeRef.current && html5QrCodeRef.current.isScanning) {
       try {
@@ -154,6 +170,7 @@ export const QRScanner = ({ onScanComplete, onShowToast }) => {
 
       const response = await api.checkin.scan({
         qrPayload: codeString,
+        photo: livePhoto,
         scannedBy: staffName,
       });
 
@@ -409,6 +426,33 @@ export const QRScanner = ({ onScanComplete, onShowToast }) => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Live Photo Verification Snapshot */}
+                  {popupModalResult.attendee.checkedInPhoto && (
+                    <div style={{ background: '#090d18', padding: '14px', borderRadius: '12px', border: '1px solid rgba(34, 197, 94, 0.3)', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                      <img
+                        src={popupModalResult.attendee.checkedInPhoto}
+                        alt="Live Gate Entry Snapshot"
+                        style={{
+                          width: '72px',
+                          height: '72px',
+                          borderRadius: '10px',
+                          objectFit: 'cover',
+                          border: '2px solid #22c55e',
+                          boxShadow: '0 4px 14px rgba(34, 197, 94, 0.35)'
+                        }}
+                      />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '800', color: '#4ade80' }}>
+                          <Camera size={14} />
+                          <span>Live Gate Photo Captured</span>
+                        </div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                          Embedded in confirmation email & recorded in Operations Dashboard.
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Team & Track Details */}
                   {(popupModalResult.attendee.teamName || popupModalResult.attendee.track || popupModalResult.attendee.college) && (

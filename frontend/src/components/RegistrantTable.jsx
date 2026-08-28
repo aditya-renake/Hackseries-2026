@@ -17,7 +17,9 @@ import {
   Building2,
   Users,
   CheckSquare,
-  Square
+  Square,
+  Camera,
+  Image
 } from 'lucide-react';
 import { api } from '../services/api';
 import { sounds } from '../utils/soundEffects';
@@ -37,6 +39,7 @@ export const RegistrantTable = ({
 }) => {
   const [sendingId, setSendingId] = useState(null);
   const [togglingId, setTogglingId] = useState(null);
+  const [selectedPhotoReg, setSelectedPhotoReg] = useState(null);
 
   const visibleIds = registrants.map((r) => r.uniqueId || r._id);
   const isAllVisibleSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
@@ -256,15 +259,50 @@ export const RegistrantTable = ({
                       )}
                     </td>
 
-                    {/* Check-in status */}
+                    {/* Check-in status with Live Photo Avatar */}
                     <td style={{ padding: '14px 16px' }}>
                       {reg.checkedIn ? (
-                        <div>
-                          <span className="badge badge-emerald" style={{ gap: '4px' }}>
-                            <CheckCircle2 size={12} /> CHECKED IN
-                          </span>
-                          <div style={{ fontSize: '10px', color: 'var(--text-dim)', marginTop: '4px' }}>
-                            {reg.checkedInAt ? new Date(reg.checkedInAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Gate Check-in'}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          {reg.checkedInPhoto && (
+                            <div 
+                              onClick={() => {
+                                sounds.playClick();
+                                setSelectedPhotoReg(reg);
+                              }}
+                              title="Click to view live gate entry snapshot"
+                              style={{
+                                cursor: 'pointer',
+                                position: 'relative',
+                                display: 'inline-block'
+                              }}
+                            >
+                              <img
+                                src={reg.checkedInPhoto}
+                                alt="Gate Snapshot"
+                                style={{
+                                  width: '38px',
+                                  height: '38px',
+                                  borderRadius: '8px',
+                                  objectFit: 'cover',
+                                  border: '2px solid #22c55e',
+                                  boxShadow: '0 2px 8px rgba(34, 197, 94, 0.4)',
+                                  transition: 'transform 0.15s ease'
+                                }}
+                                onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.15)')}
+                                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                              />
+                              <div style={{ position: 'absolute', bottom: '-2px', right: '-2px', background: '#22c55e', borderRadius: '50%', padding: '2px', display: 'flex' }}>
+                                <Camera size={8} color="#000" />
+                              </div>
+                            </div>
+                          )}
+                          <div>
+                            <span className="badge badge-emerald" style={{ gap: '4px' }}>
+                              <CheckCircle2 size={12} /> CHECKED IN
+                            </span>
+                            <div style={{ fontSize: '10px', color: 'var(--text-dim)', marginTop: '4px' }}>
+                              {reg.checkedInAt ? new Date(reg.checkedInAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Gate Check-in'}
+                            </div>
                           </div>
                         </div>
                       ) : (
@@ -452,6 +490,60 @@ export const RegistrantTable = ({
           </div>
         </div>
       )}
+
+      {/* Full-Size Live Gate Snapshot Modal */}
+      {selectedPhotoReg && (
+        <div className="modal-overlay" onClick={() => setSelectedPhotoReg(null)}>
+          <div 
+            className="modal-content" 
+            onClick={(e) => e.stopPropagation()} 
+            style={{ maxWidth: '440px', padding: '0', overflow: 'hidden', border: '2px solid #22c55e', boxShadow: '0 20px 60px rgba(34, 197, 94, 0.4)' }}
+          >
+            <div style={{ background: '#0b0f19', padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Camera size={16} color="#22c55e" />
+                <span style={{ fontSize: '15px', fontWeight: '800', color: '#fff' }}>Live Gate Entry Photo</span>
+              </div>
+              <button className="btn btn-ghost btn-sm" onClick={() => setSelectedPhotoReg(null)} style={{ padding: '4px', borderRadius: '50%' }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ padding: '20px', textAlign: 'center' }}>
+              <img
+                src={selectedPhotoReg.checkedInPhoto}
+                alt="Live Gate Snapshot"
+                style={{
+                  width: '100%',
+                  maxHeight: '340px',
+                  objectFit: 'contain',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.6)'
+                }}
+              />
+
+              <div style={{ marginTop: '16px', textAlign: 'left', background: '#060913', padding: '14px', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
+                <div style={{ fontSize: '16px', fontWeight: '800', color: '#fff' }}>{selectedPhotoReg.name}</div>
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{selectedPhotoReg.email}</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: '#f7d070', fontWeight: '700' }}>{selectedPhotoReg.uniqueId}</span>
+                  <span style={{ fontSize: '11px', color: '#4ade80', fontWeight: '700' }}>
+                    Checked in {selectedPhotoReg.checkedInAt ? new Date(selectedPhotoReg.checkedInAt).toLocaleTimeString() : 'at Gate'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ padding: '12px 20px', background: '#080c16', borderTop: '1px solid rgba(255,255,255,0.06)', textAlign: 'right' }}>
+              <button className="btn btn-secondary btn-sm" onClick={() => setSelectedPhotoReg(null)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
