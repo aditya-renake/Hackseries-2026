@@ -117,32 +117,24 @@ export const Navbar = ({ currentView, setCurrentView, user, onLogout }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {user && (
             <>
-              {/* Personalized Operator Badge */}
+              {/* Personalized Operator Badge for All Admins */}
               <div 
                 className="hide-on-mobile"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '4px',
-                  padding: '4px 10px',
+                  gap: '5px',
+                  padding: '4px 12px',
                   borderRadius: '9999px',
-                  background: (user.username === 'adityarenake' || user.email === 'tigeradi1504@gmail.com')
-                    ? 'linear-gradient(135deg, rgba(247, 208, 112, 0.25) 0%, rgba(209, 165, 80, 0.15) 100%)'
-                    : 'rgba(34, 211, 238, 0.15)',
-                  border: (user.username === 'adityarenake' || user.email === 'tigeradi1504@gmail.com')
-                    ? '1px solid rgba(247, 208, 112, 0.5)'
-                    : '1px solid rgba(34, 211, 238, 0.3)',
+                  background: 'linear-gradient(135deg, rgba(247, 208, 112, 0.25) 0%, rgba(209, 165, 80, 0.15) 100%)',
+                  border: '1px solid rgba(247, 208, 112, 0.5)',
                   fontSize: '11px',
                   fontWeight: '800',
-                  color: (user.username === 'adityarenake' || user.email === 'tigeradi1504@gmail.com') ? '#f7d070' : '#22d3ee',
-                  boxShadow: (user.username === 'adityarenake' || user.email === 'tigeradi1504@gmail.com') ? '0 0 10px rgba(247, 208, 112, 0.3)' : 'none',
+                  color: '#f7d070',
+                  boxShadow: '0 0 12px rgba(247, 208, 112, 0.35)',
                 }}
               >
-                {(user.username === 'adityarenake' || user.email === 'tigeradi1504@gmail.com') ? (
-                  <Crown size={12} color="#f7d070" />
-                ) : (
-                  <ShieldCheck size={12} color="#22d3ee" />
-                )}
+                <Crown size={12} color="#f7d070" />
                 <span>{user.name ? user.name.split(' ')[0] : 'Admin'}</span>
               </div>
 

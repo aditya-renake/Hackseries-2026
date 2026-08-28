@@ -140,19 +140,16 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
   const username = currentUser?.username?.toLowerCase() || '';
   const email = currentUser?.email?.toLowerCase() || '';
   const name = currentUser?.name || '';
-  const isLeadOperations = username === 'adityarenake' || email === 'tigeradi1504@gmail.com' || name.toLowerCase().includes('aditya');
   
   let adminDisplayName = name;
-  let roleTitle = 'OPERATIONS ADMIN';
-  if (isLeadOperations) {
+  if (username === 'adityarenake' || email === 'tigeradi1504@gmail.com' || name.toLowerCase().includes('aditya')) {
     adminDisplayName = 'Aditya Renake';
-    roleTitle = 'LEAD OPERATIONS • SUPER ADMIN';
   } else if (username === 'sohamchitnis' || name.toLowerCase().includes('soham')) {
     adminDisplayName = 'Soham Chitnis';
-    roleTitle = 'OPERATIONS ADMIN';
   } else if (username === 'haritirawal' || name.toLowerCase().includes('hariti')) {
     adminDisplayName = 'Hariti Rawal';
-    roleTitle = 'OPERATIONS ADMIN';
+  } else if (!adminDisplayName) {
+    adminDisplayName = 'Operations Admin';
   }
 
   return (
@@ -215,12 +212,10 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
         </div>
       </div>
 
-      {/* Personalized Admin Greeting Banner with Special Access Button */}
+      {/* Personalized Admin Greeting Banner with Full Super Admin Access for All */}
       <div style={{
-        background: isLeadOperations 
-          ? 'linear-gradient(90deg, rgba(209, 165, 80, 0.14) 0%, rgba(178, 43, 47, 0.1) 50%, rgba(6, 8, 14, 0.85) 100%)' 
-          : 'linear-gradient(90deg, rgba(34, 211, 238, 0.1) 0%, rgba(16, 185, 129, 0.08) 100%)',
-        border: isLeadOperations ? '1px solid rgba(209, 165, 80, 0.4)' : '1px solid rgba(34, 211, 238, 0.25)',
+        background: 'linear-gradient(90deg, rgba(209, 165, 80, 0.16) 0%, rgba(178, 43, 47, 0.12) 50%, rgba(6, 8, 14, 0.85) 100%)',
+        border: '1px solid rgba(209, 165, 80, 0.45)',
         borderRadius: '14px',
         padding: '16px 20px',
         marginBottom: '24px',
@@ -229,45 +224,41 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '14px',
-        boxShadow: isLeadOperations ? '0 8px 30px rgba(209, 165, 80, 0.15)' : '0 6px 20px rgba(0, 0, 0, 0.3)'
+        boxShadow: '0 8px 30px rgba(209, 165, 80, 0.18)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div style={{
             width: '42px',
             height: '42px',
             borderRadius: '12px',
-            background: isLeadOperations 
-              ? 'linear-gradient(135deg, #f7d070 0%, #d1a550 100%)' 
-              : 'linear-gradient(135deg, #22c55e 0%, #06b6d4 100%)',
+            background: 'linear-gradient(135deg, #f7d070 0%, #d1a550 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: '#000',
-            boxShadow: isLeadOperations ? '0 0 16px rgba(247, 208, 112, 0.5)' : '0 0 12px rgba(34, 197, 94, 0.4)'
+            boxShadow: '0 0 16px rgba(247, 208, 112, 0.6)'
           }}>
-            {isLeadOperations ? <Crown size={22} strokeWidth={2.5} /> : <ShieldCheck size={22} />}
+            <Crown size={22} strokeWidth={2.5} />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <span style={{ fontSize: '18px', fontWeight: '900', color: '#fff' }}>
                 Welcome back, {adminDisplayName}! 👋
               </span>
-              <span className={isLeadOperations ? 'badge badge-gold' : 'badge badge-cyan'} style={{ fontSize: '10px', padding: '3px 8px' }}>
-                {roleTitle}
+              <span className="badge badge-gold" style={{ fontSize: '10px', padding: '3px 8px' }}>
+                👑 LEAD OPERATIONS • SUPER ADMIN
               </span>
             </div>
             <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
-              {isLeadOperations 
-                ? '⚡ Lead Operations Sovereign Access • Live Broadcasts, Instant VIP Pass Issuer & Full Backup' 
-                : '🛡️ Operations Admin Console • Attendee Gate Check-In & Verification Authority'}
+              ⚡ Full Sovereign Control Room Access • Live Pass Broadcasts, Instant VIP Pass Issuer & Full Database Backup
             </div>
           </div>
         </div>
 
-        {/* Special Access button for Lead Operations */}
+        {/* Special Access button for All Admins */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button
-            className={isLeadOperations ? 'btn btn-gold btn-sm' : 'btn btn-secondary btn-sm'}
+            className="btn btn-gold btn-sm"
             onClick={() => {
               sounds.playClick();
               setShowSuperAdminModal(true);
@@ -278,11 +269,11 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              boxShadow: isLeadOperations ? '0 0 14px rgba(209, 165, 80, 0.4)' : undefined
+              boxShadow: '0 0 14px rgba(209, 165, 80, 0.4)'
             }}
           >
             <Crown size={14} />
-            <span>{isLeadOperations ? '👑 Special Access Command' : '👑 Operations Tools'}</span>
+            <span>👑 Special Access Command</span>
           </button>
         </div>
       </div>
