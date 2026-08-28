@@ -126,15 +126,14 @@ export const Navbar = ({ currentView, setCurrentView, user, onLogout }) => {
                   gap: '5px',
                   padding: '4px 12px',
                   borderRadius: '9999px',
-                  background: 'linear-gradient(135deg, rgba(247, 208, 112, 0.25) 0%, rgba(209, 165, 80, 0.15) 100%)',
-                  border: '1px solid rgba(247, 208, 112, 0.5)',
+                  background: 'rgba(34, 211, 238, 0.15)',
+                  border: '1px solid rgba(34, 211, 238, 0.35)',
                   fontSize: '11px',
                   fontWeight: '800',
-                  color: '#f7d070',
-                  boxShadow: '0 0 12px rgba(247, 208, 112, 0.35)',
+                  color: '#22d3ee',
                 }}
               >
-                <Crown size={12} color="#f7d070" />
+                <ShieldCheck size={12} color="#22d3ee" />
                 <span>{user.name ? user.name.split(' ')[0] : 'Admin'}</span>
               </div>
 

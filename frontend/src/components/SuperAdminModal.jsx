@@ -150,25 +150,25 @@ export const SuperAdminModal = ({
         onClick={(e) => e.stopPropagation()} 
         style={{ 
           maxWidth: '820px', 
-          border: '2px solid #d1a550', 
-          boxShadow: '0 20px 80px rgba(209, 165, 80, 0.35)',
+          border: '2px solid rgba(34, 211, 238, 0.4)', 
+          boxShadow: '0 20px 80px rgba(0, 0, 0, 0.7), 0 0 30px rgba(34, 211, 238, 0.2)',
           background: 'linear-gradient(145deg, #090d18 0%, #03060f 100%)'
         }}
       >
         
         {/* Modal Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 26px', borderBottom: '1px solid rgba(209, 165, 80, 0.3)', background: 'linear-gradient(90deg, rgba(209, 165, 80, 0.15) 0%, transparent 100%)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 26px', borderBottom: '1px solid rgba(34, 211, 238, 0.2)', background: 'linear-gradient(90deg, rgba(34, 211, 238, 0.12) 0%, transparent 100%)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, #f7d070 0%, #d1a550 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', boxShadow: '0 0 16px rgba(247, 208, 112, 0.5)' }}>
-              <Crown size={20} strokeWidth={2.5} />
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, #22c55e 0%, #06b6d4 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#030712', boxShadow: '0 0 14px rgba(34, 197, 94, 0.4)' }}>
+              <Zap size={20} strokeWidth={2.5} />
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '18px', fontWeight: '900', color: '#fff' }}>Lead Operations Sovereign Command</span>
-                <span className="badge badge-gold" style={{ fontSize: '10px' }}>SPECIAL ACCESS</span>
+                <span style={{ fontSize: '18px', fontWeight: '900', color: '#fff' }}>Operations Command Center</span>
+                <span className="badge badge-cyan" style={{ fontSize: '10px' }}>ADMIN TOOLS</span>
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                Authorized Operator: <strong style={{ color: '#f7d070' }}>{currentUser?.name || 'Aditya Renake'}</strong> (Lead Operations)
+                Active Operator: <strong style={{ color: '#22d3ee' }}>{currentUser?.name || 'Operations Admin'}</strong>
               </div>
             </div>
           </div>

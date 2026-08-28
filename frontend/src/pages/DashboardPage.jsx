@@ -212,10 +212,10 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
         </div>
       </div>
 
-      {/* Personalized Admin Greeting Banner with Full Super Admin Access for All */}
+      {/* Personalized Admin Greeting Banner (Uniform for All Admins) */}
       <div style={{
-        background: 'linear-gradient(90deg, rgba(209, 165, 80, 0.16) 0%, rgba(178, 43, 47, 0.12) 50%, rgba(6, 8, 14, 0.85) 100%)',
-        border: '1px solid rgba(209, 165, 80, 0.45)',
+        background: 'linear-gradient(90deg, rgba(34, 211, 238, 0.12) 0%, rgba(34, 197, 94, 0.08) 50%, rgba(6, 8, 14, 0.85) 100%)',
+        border: '1px solid rgba(34, 211, 238, 0.3)',
         borderRadius: '14px',
         padding: '16px 20px',
         marginBottom: '24px',
@@ -224,41 +224,41 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '14px',
-        boxShadow: '0 8px 30px rgba(209, 165, 80, 0.18)'
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div style={{
             width: '42px',
             height: '42px',
             borderRadius: '12px',
-            background: 'linear-gradient(135deg, #f7d070 0%, #d1a550 100%)',
+            background: 'linear-gradient(135deg, #22c55e 0%, #06b6d4 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#000',
-            boxShadow: '0 0 16px rgba(247, 208, 112, 0.6)'
+            color: '#030712',
+            boxShadow: '0 0 14px rgba(34, 197, 94, 0.45)'
           }}>
-            <Crown size={22} strokeWidth={2.5} />
+            <ShieldCheck size={22} strokeWidth={2.2} />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <span style={{ fontSize: '18px', fontWeight: '900', color: '#fff' }}>
                 Welcome back, {adminDisplayName}! 👋
               </span>
-              <span className="badge badge-gold" style={{ fontSize: '10px', padding: '3px 8px' }}>
-                👑 LEAD OPERATIONS • SUPER ADMIN
+              <span className="badge badge-cyan" style={{ fontSize: '10px', padding: '3px 8px' }}>
+                OPERATIONS ADMIN
               </span>
             </div>
             <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
-              ⚡ Full Sovereign Control Room Access • Live Pass Broadcasts, Instant VIP Pass Issuer & Full Database Backup
+              Live Google Forms Sync • Real-Time Gate Check-In & Attendee Pass Management
             </div>
           </div>
         </div>
 
-        {/* Special Access button for All Admins */}
+        {/* Operations Command Button (Universal for All Admins) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button
-            className="btn btn-gold btn-sm"
+            className="btn btn-cyan btn-sm"
             onClick={() => {
               sounds.playClick();
               setShowSuperAdminModal(true);
@@ -268,12 +268,11 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
               fontSize: '12px',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              boxShadow: '0 0 14px rgba(209, 165, 80, 0.4)'
+              gap: '6px'
             }}
           >
-            <Crown size={14} />
-            <span>👑 Special Access Command</span>
+            <Zap size={14} />
+            <span>Operations Command Center</span>
           </button>
         </div>
       </div>
