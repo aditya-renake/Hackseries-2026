@@ -2,6 +2,7 @@ import { registrantRepo } from '../models/registrantRepo.js';
 import { configRepo } from '../models/configRepo.js';
 import { verifyQRPayload } from '../services/qrService.js';
 import { sendCheckinConfirmationEmail } from '../services/emailService.js';
+import { sendAutoCheckinMessage } from '../services/messagingService.js';
 
 /**
  * Gate Check-In Scanner Processor with Zero Forged QR Code Verification
@@ -99,11 +100,16 @@ export const scanCheckin = async (req, res) => {
       .then(() => console.log(`📧 [AUTO-DISPATCH] Check-in confirmation email delivered to ${updated.email}`))
       .catch((mailErr) => console.warn(`⚠️ [AUTO-DISPATCH NOTICE] Check-in confirmation email: ${mailErr.message}`));
 
+    // Asynchronously dispatch instant WhatsApp / SMS Notification
+    sendAutoCheckinMessage(updated)
+      .then((msgRes) => console.log(`📱 [AUTO-DISPATCH] Check-in message result for ${updated.name}:`, msgRes.provider))
+      .catch((msgErr) => console.warn(`⚠️ [AUTO-DISPATCH NOTICE] Check-in message error: ${msgErr.message}`));
+
     res.json({
       success: true,
       status: 'SUCCESS',
       emailNotificationSent: true,
-      message: `✅ Check-in Approved: Welcome to HackSeries 2026, ${updated.name}! Confirmation email sent to ${updated.email}.`,
+      message: `✅ Check-in Approved: Welcome to HackSeries 2026, ${updated.name}! Confirmation email & WhatsApp alert dispatched.`,
       registrant: {
         _id: updated.uniqueId,
         uniqueId: updated.uniqueId,

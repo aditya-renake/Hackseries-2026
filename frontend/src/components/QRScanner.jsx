@@ -433,22 +433,50 @@ export const QRScanner = ({ onScanComplete, onShowToast }) => {
                     </div>
                   )}
 
-                  {/* Auto-Dispatched Email Confirmation Badge */}
+                  {/* Auto-Dispatched Email & WhatsApp Alert Banner */}
                   {popupModalResult.status === 'SUCCESS' && (
-                    <div style={{ background: 'rgba(34, 197, 94, 0.08)', border: '1px solid rgba(34, 197, 94, 0.25)', borderRadius: '10px', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#4ade80' }}>
-                        <Mail size={14} />
-                        <span>Welcome email auto-dispatched to <strong>{popupModalResult.attendee.email}</strong></span>
+                    <div style={{ background: '#070b14', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '12px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#4ade80' }}>
+                          <Mail size={15} />
+                          <span>Check-in email auto-sent to <strong>{popupModalResult.attendee.email}</strong></span>
+                        </div>
+                        <span className="badge badge-emerald" style={{ fontSize: '10px' }}>AUTO-DELIVERED</span>
                       </div>
-                      <a
-                        href={`https://wa.me/?text=${encodeURIComponent(`🎉 Hey ${popupModalResult.attendee.name}! You are officially checked in to HackSeries 2026 at DIT Pune! Pass ID: ${popupModalResult.attendee.uniqueId}. See you at the arena! 🚀`)}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="btn btn-secondary btn-sm"
-                        style={{ padding: '4px 8px', fontSize: '11px', gap: '4px', textDecoration: 'none' }}
-                      >
-                        <MessageSquare size={12} color="#25D366" /> Share WhatsApp Alert
-                      </a>
+
+                      {/* WhatsApp Direct Action */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                        <div style={{ fontSize: '11px', color: 'var(--text-dim)' }}>
+                          📱 Lead Operations Dispatch: <strong>Aditya Renake</strong> (9890829874)
+                        </div>
+                        <a
+                          href={(() => {
+                            const rawPhone = popupModalResult.attendee.phone || '';
+                            const digits = rawPhone.replace(/\D/g, '');
+                            const waPhone = digits.length === 10 ? `91${digits}` : digits;
+                            const waText = encodeURIComponent(
+                              `🎉 *Welcome to HackSeries 2026!* ✅\n\nHey *${popupModalResult.attendee.name}*, your gate entry pass (*${popupModalResult.attendee.uniqueId}*) has been verified at Dr. D. Y. Patil Institute of Technology (DIT), Pune!\n\n📶 *WiFi:* DIT_HACKSERIES_GUEST (Pass: HackSeries@2026)\n👕 *Swag Kit & Food Coupon:* Collect at Desk 2\n🎟️ *Live Pass & Schedule:* ${window.location.origin}/pass/${popupModalResult.attendee.uniqueId}\n\nLead Operations: *Aditya Renake* (+91 9890829874)`
+                            );
+                            return waPhone ? `https://api.whatsapp.com/send?phone=${waPhone}&text=${waText}` : `https://wa.me/?text=${waText}`;
+                          })()}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="btn btn-secondary btn-sm"
+                          style={{
+                            background: 'rgba(37, 211, 102, 0.15)',
+                            border: '1px solid rgba(37, 211, 102, 0.4)',
+                            color: '#4ade80',
+                            padding: '6px 12px',
+                            fontSize: '12px',
+                            fontWeight: '700',
+                            gap: '6px',
+                            textDecoration: 'none'
+                          }}
+                        >
+                          <MessageSquare size={13} color="#25D366" />
+                          <span>{popupModalResult.attendee.phone ? `Send WhatsApp to ${popupModalResult.attendee.phone}` : 'Share WhatsApp Alert'}</span>
+                        </a>
+                      </div>
                     </div>
                   )}
 
