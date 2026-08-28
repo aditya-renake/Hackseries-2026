@@ -44,7 +44,7 @@ export const EmailTemplateModal = ({ config, onClose, onShowToast, onSaveConfig 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', borderBottom: '1px solid var(--border-subtle)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Mail size={18} color="#22c55e" />
-            <span style={{ fontSize: '16px', fontWeight: '800', color: '#fff' }}>Pass Email Template & Outlook Settings</span>
+            <span style={{ fontSize: '16px', fontWeight: '800', color: '#fff' }}>Pass Email Template & Sender Configuration</span>
           </div>
           <button className="btn btn-ghost btn-sm" onClick={onClose}>
             <X size={18} />
@@ -73,8 +73,16 @@ export const EmailTemplateModal = ({ config, onClose, onShowToast, onSaveConfig 
             <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               
               {/* Sender Info Notice */}
-              <div style={{ background: 'rgba(34, 197, 94, 0.06)', border: '1px solid rgba(34, 197, 94, 0.2)', borderRadius: '10px', padding: '12px 16px', fontSize: '12px', color: 'var(--text-muted)' }}>
-                <strong style={{ color: '#22c55e' }}>Dispatched Via:</strong> aditya.renake@outlook.com (Outlook SMTP Engine)
+              <div style={{ background: 'rgba(34, 197, 94, 0.08)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '12px', padding: '14px 18px', fontSize: '12px', color: '#cbd5e1' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <div>
+                    <strong style={{ color: '#4ade80' }}>Active Sender:</strong> tigeradi1504@gmail.com (Gmail SMTP Engine)
+                  </div>
+                  <span className="badge badge-emerald" style={{ fontSize: '10px' }}>ACTIVE</span>
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                  To change the sender email, simply update <code>SMTP_USER</code> and <code>SMTP_PASS</code> in Vercel Environment Variables.
+                </div>
               </div>
 
               <div>
