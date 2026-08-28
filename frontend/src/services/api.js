@@ -17,7 +17,14 @@ const handleResponse = async (res) => {
     localStorage.removeItem('hs_auth_user');
   }
 
-  const data = await res.json().catch(() => ({ success: false, message: 'Server response error' }));
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    data = { success: false, message: `Server returned status ${res.status}: ${text.slice(0, 120) || res.statusText || 'Unknown error'}` };
+  }
+
   if (!res.ok) {
     throw new Error(data.message || `Request failed with status ${res.status}`);
   }
