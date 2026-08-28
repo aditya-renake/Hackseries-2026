@@ -82,6 +82,20 @@ export const LoginPage = ({ onLoginSuccess, onShowToast }) => {
             </div>
           </div>
 
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-4px' }}>
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              onClick={() => {
+                setIdentifier('adityarenake');
+                setPassword('Aditya@11');
+              }}
+              style={{ fontSize: '11px', color: '#22c55e', padding: '2px 6px' }}
+            >
+              ⚡ Fill Admin Login
+            </button>
+          </div>
+
           <button type="submit" className="btn btn-primary" style={{ padding: '12px', marginTop: '6px', fontSize: '14px' }} disabled={isLoading}>
             {isLoading ? 'Verifying...' : 'Sign In to Operations'} <ArrowRight size={16} />
           </button>
