@@ -44,16 +44,19 @@ html, body {
   width: 100%;
 }
 
-/* Rich Ambient Background with Fine Matrix Grid & Radial Glow Mesh */
+/* High-Impact Cyber Ambient Background with Crisp Matrix Grid & Radial Glows */
 body {
+  background-color: var(--bg-primary);
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(178, 43, 47, 0.28) 0%, transparent 65%),
-    radial-gradient(circle 600px at 15% 25%, rgba(209, 165, 80, 0.12) 0%, transparent 50%),
-    radial-gradient(circle 600px at 85% 65%, rgba(178, 43, 47, 0.14) 0%, transparent 55%),
-    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(6, 182, 212, 0.08) 0%, transparent 70%);
-  background-size: 36px 36px, 36px 36px, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+    radial-gradient(circle at 50% 50%, rgba(34, 211, 238, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(178, 43, 47, 0.45) 0%, transparent 65%),
+    radial-gradient(circle 700px at 10% 20%, rgba(209, 165, 80, 0.22) 0%, transparent 55%),
+    radial-gradient(circle 800px at 90% 40%, rgba(34, 211, 238, 0.2) 0%, transparent 60%),
+    radial-gradient(circle 750px at 20% 80%, rgba(16, 185, 129, 0.16) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 60% at 50% 100%, rgba(178, 43, 47, 0.3) 0%, transparent 70%);
+  background-size: 32px 32px, 32px 32px, 32px 32px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
   background-attachment: fixed;
 }
 
@@ -465,6 +468,156 @@ body {
 @keyframes slideIn {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
+}
+
+/* ========================================================
+   FLOATING AMBIENT GLOW ORBS & CYBER PARTICLES EVERYWHERE
+   ======================================================== */
+
+.bg-floating-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.55;
+  will-change: transform;
+}
+
+.orb-1 {
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(178, 43, 47, 0.4) 0%, rgba(209, 165, 80, 0.2) 50%, transparent 75%);
+  top: -100px;
+  left: 5%;
+  animation: floatOrb1 24s ease-in-out infinite alternate;
+}
+
+.orb-2 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.35) 0%, rgba(16, 185, 129, 0.15) 50%, transparent 75%);
+  top: 30%;
+  right: -100px;
+  animation: floatOrb2 28s ease-in-out infinite alternate;
+}
+
+.orb-3 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(209, 165, 80, 0.35) 0%, rgba(178, 43, 47, 0.2) 50%, transparent 75%);
+  bottom: -50px;
+  left: 20%;
+  animation: floatOrb3 22s ease-in-out infinite alternate;
+}
+
+.orb-4 {
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.28) 0%, rgba(34, 211, 238, 0.15) 50%, transparent 75%);
+  top: 60%;
+  left: -80px;
+  animation: floatOrb4 26s ease-in-out infinite alternate;
+}
+
+.orb-5 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(247, 208, 112, 0.25) 0%, transparent 70%);
+  top: 15%;
+  right: 25%;
+  animation: floatOrb1 20s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes floatOrb1 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(80px, 120px, 0) scale(1.15); }
+  100% { transform: translate3d(-60px, 60px, 0) scale(0.9); }
+}
+
+@keyframes floatOrb2 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-100px, 90px, 0) scale(1.1); }
+  100% { transform: translate3d(70px, -80px, 0) scale(0.95); }
+}
+
+@keyframes floatOrb3 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-80px, -110px, 0) scale(1.18); }
+  100% { transform: translate3d(90px, -40px, 0) scale(0.88); }
+}
+
+@keyframes floatOrb4 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(110px, -70px, 0) scale(1.12); }
+  100% { transform: translate3d(-50px, 80px, 0) scale(0.92); }
+}
+
+/* Floating Cyber Particles */
+.cyber-particles-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.cyber-floating-particle {
+  position: absolute;
+  bottom: -20px;
+  border-radius: 50%;
+  box-shadow: 0 0 12px currentColor;
+  animation: floatParticleUp linear infinite;
+  opacity: 0.6;
+}
+
+.particle-0 { width: 4px; height: 4px; background: #22d3ee; color: #22d3ee; }
+.particle-1 { width: 5px; height: 5px; background: #f7d070; color: #f7d070; }
+.particle-2 { width: 3px; height: 3px; background: #10b981; color: #10b981; }
+.particle-3 { width: 6px; height: 6px; background: #b22b2f; color: #b22b2f; }
+.particle-4 { width: 4px; height: 4px; background: #38bdf8; color: #38bdf8; }
+.particle-5 { width: 5px; height: 5px; background: #fbbf24; color: #fbbf24; }
+
+@keyframes floatParticleUp {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.8;
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(40px, -110vh, 0) scale(1.3);
+    opacity: 0;
+  }
+}
+
+/* Subtle Animated Cyber Scanline */
+.bg-cyber-scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.4) 30%, rgba(247, 208, 112, 0.6) 50%, rgba(178, 43, 47, 0.4) 70%, transparent 100%);
+  opacity: 0.4;
+  animation: cyberScanline 9s linear infinite;
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.6);
+}
+
+@keyframes cyberScanline {
+  0% { transform: translateY(-10px); }
+  100% { transform: translateY(105vh); }
+}
+
+/* Enhanced Interactive Hover Polish on Cards & Widgets */
+.glass-card, .stat-card, .table-container {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease !important;
+}
+
+.glass-card:hover, .stat-card:hover {
+  transform: translateY(-3px) scale(1.008);
+  border-color: rgba(34, 211, 238, 0.35) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(34, 211, 238, 0.15) !important;
 }
 
 /* Mobile & Responsive Rules */

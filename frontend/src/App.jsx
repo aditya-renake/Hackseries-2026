@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
+import { InteractiveBackground } from './components/InteractiveBackground';
 import { EventLandingPage } from './pages/EventLandingPage';
 import { DigitalPassPage } from './pages/DigitalPassPage';
 import { DashboardPage } from './pages/DashboardPage';
@@ -67,7 +68,9 @@ export function App() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      {/* High-Impact Interactive Ambient Floating Background Everywhere */}
+      <InteractiveBackground />
       
       {/* Top Navbar */}
       <Navbar
