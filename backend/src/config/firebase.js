@@ -105,18 +105,35 @@ export const initFirebase = () => {
 
     // 1. Check for Service Account JSON string in environment variable
     if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-      let serviceAccount;
+      let serviceAccount = null;
       if (typeof process.env.FIREBASE_SERVICE_ACCOUNT === 'string') {
-        serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+        let raw = process.env.FIREBASE_SERVICE_ACCOUNT.trim();
+        if ((raw.startsWith("'") && raw.endsWith("'")) || (raw.startsWith('"') && raw.endsWith('"'))) {
+          raw = raw.slice(1, -1).trim();
+        }
+        try {
+          serviceAccount = JSON.parse(raw);
+        } catch (e1) {
+          try {
+            // Handle unescaped newlines or literal \n
+            serviceAccount = JSON.parse(raw.replace(/[\r\n\t]/g, ' '));
+          } catch (e2) {
+            console.error('❌ Failed to parse FIREBASE_SERVICE_ACCOUNT JSON:', e1.message);
+          }
+        }
       } else {
         serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
       }
-      initializeApp({
-        credential: cert(serviceAccount),
-      });
-      console.log('✅ Connected to Google Cloud Firestore (via FIREBASE_SERVICE_ACCOUNT).');
-      dbInstance = getAdminFirestore();
-      return dbInstance;
+
+      if (serviceAccount && serviceAccount.private_key) {
+        serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+        initializeApp({
+          credential: cert(serviceAccount),
+        });
+        console.log('✅ Connected to Google Cloud Firestore (via FIREBASE_SERVICE_ACCOUNT).');
+        dbInstance = getAdminFirestore();
+        return dbInstance;
+      }
     }
 
     // 2. Check for individual Project ID, Client Email & Private Key
