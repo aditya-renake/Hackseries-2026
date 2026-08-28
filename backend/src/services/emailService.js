@@ -465,3 +465,183 @@ export const sendBulkPassEmails = async (registrants, eventConfig, onProgress) =
 
   return results;
 };
+
+/**
+ * Builds the instant Gate Check-In Confirmation Email HTML
+ */
+export const buildCheckinConfirmationEmailHtml = ({
+  attendeeName,
+  uniqueId,
+  ticketType,
+  teamName,
+  track,
+  institution,
+  checkedInAt,
+  checkedInBy,
+  eventName = 'HackSeries 2026',
+  eventVenue = 'Dr. D. Y. Patil Institute of Technology (DYPDPU), Pimpri, Pune',
+  clientUrl = 'http://localhost:5173',
+}) => {
+  const passUrl = `${clientUrl}/pass/${uniqueId}`;
+  const formattedTime = checkedInAt
+    ? new Date(checkedInAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' }) + ' IST'
+    : 'Just now';
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to HackSeries 2026 — You are Checked In!</title>
+  <style>
+    body { margin: 0; padding: 0; background-color: #030712; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #e5e7eb; }
+    .email-container { max-width: 600px; margin: 20px auto; background-color: #0b0f19; border: 1px solid #1f293d; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
+    .header { background: linear-gradient(135deg, #052e16 0%, #022c22 50%, #030712 100%); padding: 32px 24px; text-align: center; border-bottom: 2px solid #22c55e; }
+    .tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); margin-bottom: 12px; }
+    .h1 { font-size: 26px; font-weight: 900; color: #ffffff; margin: 0 0 8px 0; letter-spacing: -0.5px; }
+    .subtitle { font-size: 14px; color: #9ca3af; margin: 0; }
+    .content { padding: 32px 24px; }
+    .greeting { font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 12px; }
+    .card { background: #0e1424; border: 1px solid #1e293b; border-radius: 12px; padding: 20px; margin: 20px 0; }
+    .badge-emerald { background: #064e3b; color: #34d399; border: 1px solid #059669; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 13px; }
+    .info-label { color: #9ca3af; }
+    .info-value { color: #ffffff; font-weight: 700; text-align: right; }
+    .btn { display: block; width: fit-content; margin: 24px auto 0 auto; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: #ffffff !important; text-decoration: none; padding: 14px 28px; border-radius: 10px; font-weight: 800; font-size: 14px; text-align: center; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); }
+    .guide-box { background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 10px; padding: 16px; margin-top: 20px; }
+    .guide-title { color: #22d3ee; font-size: 13px; font-weight: 800; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .guide-item { font-size: 12px; color: #cbd5e1; margin-bottom: 6px; line-height: 1.4; }
+    .footer { background-color: #060913; padding: 24px; text-align: center; font-size: 11px; color: #6b7280; border-top: 1px solid #1f293d; }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    
+    <!-- Header -->
+    <div class="header">
+      <div class="tag">GATE ACCESS VERIFIED ✅</div>
+      <h1 class="h1">You Are Checked In!</h1>
+      <p class="subtitle">Welcome to ${eventName} • ACES, DIT Pune</p>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <div class="greeting">Hey ${attendeeName}, welcome to the arena! 🚀</div>
+      <p style="font-size: 14px; line-height: 1.5; color: #9ca3af; margin: 0 0 16px 0;">
+        Your digital holographic entry pass has been successfully scanned and verified at the gate entrance. You are officially registered on-site and ready to hack!
+      </p>
+
+      <!-- Checkin Summary Card -->
+      <div class="card">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 6px 0; color: #9ca3af; font-size: 13px;">Pass ID:</td>
+            <td style="padding: 6px 0; color: #f7d070; font-family: monospace; font-size: 14px; font-weight: 800; text-align: right;">${uniqueId}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #9ca3af; font-size: 13px;">Check-In Time:</td>
+            <td style="padding: 6px 0; color: #4ade80; font-size: 13px; font-weight: 700; text-align: right;">${formattedTime}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #9ca3af; font-size: 13px;">Pass Tier:</td>
+            <td style="padding: 6px 0; color: #ffffff; font-size: 13px; font-weight: 700; text-align: right;">${ticketType}</td>
+          </tr>
+          ${teamName ? `
+          <tr>
+            <td style="padding: 6px 0; color: #9ca3af; font-size: 13px;">Team Name:</td>
+            <td style="padding: 6px 0; color: #22d3ee; font-size: 13px; font-weight: 700; text-align: right;">${teamName}</td>
+          </tr>
+          ` : ''}
+          ${track ? `
+          <tr>
+            <td style="padding: 6px 0; color: #9ca3af; font-size: 13px;">Problem Track:</td>
+            <td style="padding: 6px 0; color: #f7d070; font-size: 13px; font-weight: 700; text-align: right;">${track}</td>
+          </tr>
+          ` : ''}
+          <tr>
+            <td style="padding: 6px 0; color: #9ca3af; font-size: 13px;">Venue:</td>
+            <td style="padding: 6px 0; color: #ffffff; font-size: 12px; font-weight: 600; text-align: right;">${eventVenue}</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Hacker Quick Start Kit -->
+      <div class="guide-box">
+        <div class="guide-title">⚡ Hacker Onboarding Quick-Guide</div>
+        <div class="guide-item">📶 <strong>High-Speed WiFi:</strong> Connect to <code>DIT_HACKSERIES_GUEST</code> (Password: <code>HackSeries@2026</code>)</div>
+        <div class="guide-item">👕 <strong>Swag & Food Kit:</strong> Collect your participant badge & food coupon wristband at Desk 2.</div>
+        <div class="guide-item">⚡ <strong>Workstation & Power:</strong> Dedicated lab blocks 401-408 with continuous high-speed LAN & power ports.</div>
+        <div class="guide-item">🆘 <strong>24x7 Help Desk:</strong> Reach out to volunteers wearing the ACES HackSeries badge at the Central Control Desk.</div>
+      </div>
+
+      <!-- Live Pass Button -->
+      <a href="${passUrl}" class="btn" target="_blank">
+        🎟️ View Your Live Digital Pass & Schedule
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p style="margin: 0 0 6px 0; font-weight: 700; color: #9ca3af;">HackSeries 2026 • Association of Computer Engineering Students (ACES)</p>
+      <p style="margin: 0 0 6px 0;">Dr. D. Y. Patil Institute of Technology, Pimpri, Pune (DYPDPU)</p>
+      <p style="margin: 0;">Lead Operations: <strong>Aditya Renake</strong> (<a href="mailto:tigeradi1504@gmail.com" style="color: #f7d070; text-decoration: none;">tigeradi1504@gmail.com</a>)</p>
+    </div>
+
+  </div>
+</body>
+</html>
+  `;
+};
+
+/**
+ * Sends check-in confirmation email automatically upon gate QR scan
+ */
+export const sendCheckinConfirmationEmail = async (registrant, eventConfig = {}) => {
+  try {
+    const mailTransporter = await getTransporter();
+
+    const eventName = eventConfig.eventName || 'HackSeries 2026';
+    const eventVenue = eventConfig.eventVenue || 'Dr. D. Y. Patil Institute of Technology (DYPDPU), Pimpri, Pune';
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    const senderEmail = process.env.SMTP_USER || 'tigeradi1504@gmail.com';
+
+    const html = buildCheckinConfirmationEmailHtml({
+      attendeeName: registrant.name,
+      uniqueId: registrant.uniqueId,
+      ticketType: registrant.ticketType,
+      teamName: registrant.teamName,
+      track: registrant.track,
+      institution: registrant.institution,
+      checkedInAt: registrant.checkedInAt || new Date().toISOString(),
+      checkedInBy: registrant.checkedInBy || 'Gate Staff',
+      eventName,
+      eventVenue,
+      clientUrl,
+    });
+
+    const subject = `🎉 Welcome to ${eventName}! You are Checked In ✅ [${registrant.uniqueId}]`;
+    const fromAddress = process.env.EMAIL_FROM || `"HackSeries 2026" <${senderEmail}>`;
+
+    const mailOptions = {
+      from: fromAddress,
+      to: registrant.email,
+      replyTo: process.env.REPLY_TO || senderEmail,
+      subject,
+      html,
+    };
+
+    const info = await mailTransporter.sendMail(mailOptions);
+    console.log(`✅ [CHECK-IN EMAIL DELIVERED] Confirmation sent to ${registrant.email} (MessageID: ${info.messageId})`);
+
+    return {
+      success: true,
+      messageId: info.messageId,
+      recipient: registrant.email,
+    };
+  } catch (err) {
+    console.error(`❌ [CHECK-IN EMAIL ERROR] Failed sending checkin email to ${registrant?.email}:`, err.message);
+    throw err;
+  }
+};
+

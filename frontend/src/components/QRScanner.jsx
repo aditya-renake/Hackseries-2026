@@ -18,7 +18,9 @@ import {
   Clock,
   ArrowRight,
   Sparkles,
-  Smartphone
+  Smartphone,
+  Mail,
+  MessageSquare
 } from 'lucide-react';
 import { api } from '../services/api';
 import { sounds } from '../utils/soundEffects';
@@ -428,6 +430,25 @@ export const QRScanner = ({ onScanComplete, onShowToast }) => {
                           </div>
                         </div>
                       )}
+                    </div>
+                  )}
+
+                  {/* Auto-Dispatched Email Confirmation Badge */}
+                  {popupModalResult.status === 'SUCCESS' && (
+                    <div style={{ background: 'rgba(34, 197, 94, 0.08)', border: '1px solid rgba(34, 197, 94, 0.25)', borderRadius: '10px', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#4ade80' }}>
+                        <Mail size={14} />
+                        <span>Welcome email auto-dispatched to <strong>{popupModalResult.attendee.email}</strong></span>
+                      </div>
+                      <a
+                        href={`https://wa.me/?text=${encodeURIComponent(`🎉 Hey ${popupModalResult.attendee.name}! You are officially checked in to HackSeries 2026 at DIT Pune! Pass ID: ${popupModalResult.attendee.uniqueId}. See you at the arena! 🚀`)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn btn-secondary btn-sm"
+                        style={{ padding: '4px 8px', fontSize: '11px', gap: '4px', textDecoration: 'none' }}
+                      >
+                        <MessageSquare size={12} color="#25D366" /> Share WhatsApp Alert
+                      </a>
                     </div>
                   )}
 

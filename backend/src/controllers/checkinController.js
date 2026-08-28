@@ -1,5 +1,7 @@
 import { registrantRepo } from '../models/registrantRepo.js';
+import { configRepo } from '../models/configRepo.js';
 import { verifyQRPayload } from '../services/qrService.js';
+import { sendCheckinConfirmationEmail } from '../services/emailService.js';
 
 /**
  * Gate Check-In Scanner Processor with Zero Forged QR Code Verification
@@ -91,10 +93,17 @@ export const scanCheckin = async (req, res) => {
 
     console.log(`✅ [CHECK-IN APPROVED] ${updated.name} (${updated.uniqueId}) checked in by ${staffName}`);
 
+    // Asynchronously dispatch instant Check-in Confirmation Email
+    configRepo.getConfig()
+      .then((cfg) => sendCheckinConfirmationEmail(updated, cfg))
+      .then(() => console.log(`📧 [AUTO-DISPATCH] Check-in confirmation email delivered to ${updated.email}`))
+      .catch((mailErr) => console.warn(`⚠️ [AUTO-DISPATCH NOTICE] Check-in confirmation email: ${mailErr.message}`));
+
     res.json({
       success: true,
       status: 'SUCCESS',
-      message: `✅ Check-in Approved: Welcome to HackSeries 2026, ${updated.name}!`,
+      emailNotificationSent: true,
+      message: `✅ Check-in Approved: Welcome to HackSeries 2026, ${updated.name}! Confirmation email sent to ${updated.email}.`,
       registrant: {
         _id: updated.uniqueId,
         uniqueId: updated.uniqueId,
