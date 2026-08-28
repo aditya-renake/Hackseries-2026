@@ -101,27 +101,44 @@ export const staffRepo = {
   },
 
   /**
-   * Seed default admin user (adityarenake / Aditya@11) if none exists
+   * Seed default admin and staff users (adityarenake, sohamchitnis, haritirawal)
    */
   async seedDefaultAdmin() {
     try {
-      const existing = await this.findByUsername('adityarenake');
-      if (!existing) {
-        console.log('👑 [Firestore] Seeding default admin account (adityarenake)...');
-        await this.createStaff({
+      const staffList = [
+        {
           username: 'adityarenake',
           email: 'tigeradi1504@gmail.com',
           name: 'Aditya Renake',
           password: 'Aditya@11',
           role: 'admin',
-        });
-        console.log('✅ [Firestore] Default admin created successfully.');
-      } else if (existing.email !== 'tigeradi1504@gmail.com') {
-        const collection = this.getCollection();
-        await collection.doc('adityarenake').set({ email: 'tigeradi1504@gmail.com' }, { merge: true });
+        },
+        {
+          username: 'sohamchitnis',
+          email: 'sohamchitnis@hackseries.org',
+          name: 'Soham Chitnis',
+          password: 'Soham@11',
+          role: 'admin',
+        },
+        {
+          username: 'haritirawal',
+          email: 'haritirawal@hackseries.org',
+          name: 'Hariti Rawal',
+          password: 'Hariti@11',
+          role: 'admin',
+        },
+      ];
+
+      for (const staff of staffList) {
+        const existing = await this.findByUsername(staff.username);
+        if (!existing) {
+          console.log(`👑 [Firestore] Seeding staff user (${staff.username})...`);
+          await this.createStaff(staff);
+          console.log(`✅ [Firestore] User ${staff.username} created successfully.`);
+        }
       }
     } catch (e) {
-      console.warn('⚠️ [Firestore] Admin seed notice:', e.message);
+      console.warn('⚠️ [Firestore] Staff seed notice:', e.message);
     }
   },
 };

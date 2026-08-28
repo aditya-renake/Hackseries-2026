@@ -52,7 +52,7 @@ export const LoginPage = ({ onLoginSuccess, onShowToast }) => {
               <input
                 type="text"
                 className="input-control"
-                placeholder="adityarenake"
+                placeholder="Enter username or email"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 style={{ paddingLeft: '38px' }}
@@ -71,7 +71,7 @@ export const LoginPage = ({ onLoginSuccess, onShowToast }) => {
               <input
                 type="password"
                 className="input-control"
-                placeholder="••••••••"
+                placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 style={{ paddingLeft: '38px' }}
@@ -80,20 +80,6 @@ export const LoginPage = ({ onLoginSuccess, onShowToast }) => {
               />
               <Lock size={16} color="#6b7280" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
             </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-4px' }}>
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm"
-              onClick={() => {
-                setIdentifier('adityarenake');
-                setPassword('Aditya@11');
-              }}
-              style={{ fontSize: '11px', color: '#22c55e', padding: '2px 6px' }}
-            >
-              ⚡ Fill Admin Login
-            </button>
           </div>
 
           <button type="submit" className="btn btn-primary" style={{ padding: '12px', marginTop: '6px', fontSize: '14px' }} disabled={isLoading}>
