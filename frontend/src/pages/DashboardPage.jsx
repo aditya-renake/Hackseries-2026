@@ -14,7 +14,8 @@ import {
   Zap,
   ShieldCheck,
   QrCode,
-  CheckSquare
+  CheckSquare,
+  Crown
 } from 'lucide-react';
 import { api } from '../services/api';
 import { StatCard } from '../components/StatCard';
@@ -23,6 +24,7 @@ import { PassPreviewModal } from '../components/PassPreviewModal';
 import { WebhookGuideModal } from '../components/WebhookGuideModal';
 import { EmailTemplateModal } from '../components/EmailTemplateModal';
 import { BulkEmailModal } from '../components/BulkEmailModal';
+import { SuperAdminModal } from '../components/SuperAdminModal';
 import { sounds } from '../utils/soundEffects';
 
 export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
@@ -57,6 +59,7 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
   const [showWebhookGuide, setShowWebhookGuide] = useState(false);
   const [showEmailTemplate, setShowEmailTemplate] = useState(false);
   const [showBulkEmail, setShowBulkEmail] = useState(false);
+  const [showSuperAdminModal, setShowSuperAdminModal] = useState(false);
   const [eventConfig, setEventConfig] = useState(null);
 
   // Fetch Data
@@ -133,11 +136,30 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
     selectedIds.includes(r.uniqueId || r._id)
   );
 
+  const currentUser = api.auth.getUser();
+  const username = currentUser?.username?.toLowerCase() || '';
+  const email = currentUser?.email?.toLowerCase() || '';
+  const name = currentUser?.name || '';
+  const isLeadOperations = username === 'adityarenake' || email === 'tigeradi1504@gmail.com' || name.toLowerCase().includes('aditya');
+  
+  let adminDisplayName = name;
+  let roleTitle = 'OPERATIONS ADMIN';
+  if (isLeadOperations) {
+    adminDisplayName = 'Aditya Renake';
+    roleTitle = 'LEAD OPERATIONS • SUPER ADMIN';
+  } else if (username === 'sohamchitnis' || name.toLowerCase().includes('soham')) {
+    adminDisplayName = 'Soham Chitnis';
+    roleTitle = 'OPERATIONS ADMIN';
+  } else if (username === 'haritirawal' || name.toLowerCase().includes('hariti')) {
+    adminDisplayName = 'Hariti Rawal';
+    roleTitle = 'OPERATIONS ADMIN';
+  }
+
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px' }}>
       
       {/* Header Title & Top Actions */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '20px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <h1 style={{ fontSize: '26px', fontWeight: '900', color: '#fff', letterSpacing: '-0.5px' }}>Operations Control Room</h1>
@@ -189,6 +211,78 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
 
           <button className="btn btn-ghost btn-sm" onClick={() => fetchData(pagination.page)} title="Refresh Data">
             <RefreshCw size={15} className={loading ? 'spin' : ''} />
+          </button>
+        </div>
+      </div>
+
+      {/* Personalized Admin Greeting Banner with Special Access Button */}
+      <div style={{
+        background: isLeadOperations 
+          ? 'linear-gradient(90deg, rgba(209, 165, 80, 0.14) 0%, rgba(178, 43, 47, 0.1) 50%, rgba(6, 8, 14, 0.85) 100%)' 
+          : 'linear-gradient(90deg, rgba(34, 211, 238, 0.1) 0%, rgba(16, 185, 129, 0.08) 100%)',
+        border: isLeadOperations ? '1px solid rgba(209, 165, 80, 0.4)' : '1px solid rgba(34, 211, 238, 0.25)',
+        borderRadius: '14px',
+        padding: '16px 20px',
+        marginBottom: '24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '14px',
+        boxShadow: isLeadOperations ? '0 8px 30px rgba(209, 165, 80, 0.15)' : '0 6px 20px rgba(0, 0, 0, 0.3)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{
+            width: '42px',
+            height: '42px',
+            borderRadius: '12px',
+            background: isLeadOperations 
+              ? 'linear-gradient(135deg, #f7d070 0%, #d1a550 100%)' 
+              : 'linear-gradient(135deg, #22c55e 0%, #06b6d4 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#000',
+            boxShadow: isLeadOperations ? '0 0 16px rgba(247, 208, 112, 0.5)' : '0 0 12px rgba(34, 197, 94, 0.4)'
+          }}>
+            {isLeadOperations ? <Crown size={22} strokeWidth={2.5} /> : <ShieldCheck size={22} />}
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '18px', fontWeight: '900', color: '#fff' }}>
+                Welcome back, {adminDisplayName}! 👋
+              </span>
+              <span className={isLeadOperations ? 'badge badge-gold' : 'badge badge-cyan'} style={{ fontSize: '10px', padding: '3px 8px' }}>
+                {roleTitle}
+              </span>
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
+              {isLeadOperations 
+                ? '⚡ Lead Operations Sovereign Access • Live Broadcasts, Instant VIP Pass Issuer & Full Backup' 
+                : '🛡️ Operations Admin Console • Attendee Gate Check-In & Verification Authority'}
+            </div>
+          </div>
+        </div>
+
+        {/* Special Access button for Lead Operations */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button
+            className={isLeadOperations ? 'btn btn-gold btn-sm' : 'btn btn-secondary btn-sm'}
+            onClick={() => {
+              sounds.playClick();
+              setShowSuperAdminModal(true);
+            }}
+            style={{
+              padding: '8px 16px',
+              fontSize: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              boxShadow: isLeadOperations ? '0 0 14px rgba(209, 165, 80, 0.4)' : undefined
+            }}
+          >
+            <Crown size={14} />
+            <span>{isLeadOperations ? '👑 Special Access Command' : '👑 Operations Tools'}</span>
           </button>
         </div>
       </div>
@@ -342,6 +436,19 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
           onShowToast={onShowToast}
           onRefresh={() => fetchData(pagination.page)}
           onClearSelection={handleClearSelection}
+        />
+      )}
+
+      {showSuperAdminModal && (
+        <SuperAdminModal
+          currentUser={currentUser}
+          eventConfig={eventConfig}
+          onClose={() => setShowSuperAdminModal(false)}
+          onShowToast={onShowToast}
+          onRefreshData={() => {
+            fetchData(pagination.page);
+            api.event.getConfig().then((res) => setEventConfig(res.data)).catch(() => {});
+          }}
         />
       )}
 

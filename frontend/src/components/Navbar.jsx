@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { QrCode, LayoutDashboard, Globe, LogOut, Lock, Menu, X, ShieldCheck } from 'lucide-react';
+import { QrCode, LayoutDashboard, Globe, LogOut, Lock, Menu, X, ShieldCheck, Crown } from 'lucide-react';
 import { DYPDPULogo } from './CollegeLogos';
 
 export const Navbar = ({ currentView, setCurrentView, user, onLogout }) => {
@@ -113,17 +113,48 @@ export const Navbar = ({ currentView, setCurrentView, user, onLogout }) => {
           )}
         </nav>
 
-        {/* User Signout or Mobile Hamburger */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        {/* User Badge, Signout or Mobile Hamburger */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {user && (
-            <button
-              className="pill-nav-item hide-on-mobile"
-              onClick={onLogout}
-              title="Sign Out"
-              style={{ color: '#b22b2f', padding: '6px 10px' }}
-            >
-              <LogOut size={13} />
-            </button>
+            <>
+              {/* Personalized Operator Badge */}
+              <div 
+                className="hide-on-mobile"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '4px 10px',
+                  borderRadius: '9999px',
+                  background: (user.username === 'adityarenake' || user.email === 'tigeradi1504@gmail.com')
+                    ? 'linear-gradient(135deg, rgba(247, 208, 112, 0.25) 0%, rgba(209, 165, 80, 0.15) 100%)'
+                    : 'rgba(34, 211, 238, 0.15)',
+                  border: (user.username === 'adityarenake' || user.email === 'tigeradi1504@gmail.com')
+                    ? '1px solid rgba(247, 208, 112, 0.5)'
+                    : '1px solid rgba(34, 211, 238, 0.3)',
+                  fontSize: '11px',
+                  fontWeight: '800',
+                  color: (user.username === 'adityarenake' || user.email === 'tigeradi1504@gmail.com') ? '#f7d070' : '#22d3ee',
+                  boxShadow: (user.username === 'adityarenake' || user.email === 'tigeradi1504@gmail.com') ? '0 0 10px rgba(247, 208, 112, 0.3)' : 'none',
+                }}
+              >
+                {(user.username === 'adityarenake' || user.email === 'tigeradi1504@gmail.com') ? (
+                  <Crown size={12} color="#f7d070" />
+                ) : (
+                  <ShieldCheck size={12} color="#22d3ee" />
+                )}
+                <span>{user.name ? user.name.split(' ')[0] : 'Admin'}</span>
+              </div>
+
+              <button
+                className="pill-nav-item hide-on-mobile"
+                onClick={onLogout}
+                title="Sign Out"
+                style={{ color: '#b22b2f', padding: '6px 10px' }}
+              >
+                <LogOut size={13} />
+              </button>
+            </>
           )}
 
           {/* Mobile Menu Toggle Button */}
