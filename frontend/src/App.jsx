@@ -127,9 +127,12 @@ export function App() {
       {/* Footer */}
       <footer style={{ background: '#030712', borderTop: '1px solid var(--border-subtle)', padding: '24px', textAlign: 'center', fontSize: '12px', color: 'var(--text-dim)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span>© 2026 <strong>HackSeries</strong> • Lead Operations: <strong style={{ color: '#ffffff' }}>Aditya Renake</strong></span>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginLeft: '4px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <span>© 2026 <strong>HackSeries</strong> • Lead Operations:</span>
+            
+            {/* Aditya Renake */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <strong style={{ color: '#ffffff' }}>Aditya Renake</strong>
               <a 
                 href="https://instagram.com/where.aditya" 
                 target="_blank" 
@@ -142,15 +145,60 @@ export function App() {
                   justifyContent: 'center',
                   background: 'rgba(225, 48, 108, 0.12)',
                   border: '1px solid rgba(225, 48, 108, 0.25)',
-                  padding: '4px',
-                  borderRadius: '6px',
+                  padding: '3px',
+                  borderRadius: '5px',
                   textDecoration: 'none'
                 }}
               >
-                <Instagram size={13} />
+                <Instagram size={12} />
               </a>
               <a 
                 href="https://github.com/aditya-renake" 
+                target="_blank" 
+                rel="noreferrer" 
+                title="GitHub: @aditya-renake"
+                style={{
+                  color: '#ffffff',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  padding: '3px',
+                  borderRadius: '5px',
+                  textDecoration: 'none'
+                }}
+              >
+                <Github size={12} />
+              </a>
+            </div>
+
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
+
+            {/* Soham Chitnis */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <strong style={{ color: '#ffffff' }}>Soham Chitnis</strong>
+              <a 
+                href="https://instagram.com/soham_chitnis" 
+                target="_blank" 
+                rel="noreferrer" 
+                title="Instagram Profile"
+                style={{
+                  color: '#e1306c',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(225, 48, 108, 0.12)',
+                  border: '1px solid rgba(225, 48, 108, 0.25)',
+                  padding: '3px',
+                  borderRadius: '5px',
+                  textDecoration: 'none'
+                }}
+              >
+                <Instagram size={12} />
+              </a>
+              <a 
+                href="https://github.com/sohamchitnis" 
                 target="_blank" 
                 rel="noreferrer" 
                 title="GitHub Profile"
@@ -161,14 +209,60 @@ export function App() {
                   justifyContent: 'center',
                   background: 'rgba(255, 255, 255, 0.08)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
-                  padding: '4px',
-                  borderRadius: '6px',
+                  padding: '3px',
+                  borderRadius: '5px',
                   textDecoration: 'none'
                 }}
               >
-                <Github size={13} />
+                <Github size={12} />
               </a>
             </div>
+
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
+
+            {/* Hariti Rawal */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <strong style={{ color: '#ffffff' }}>Hariti Rawal</strong>
+              <a 
+                href="https://instagram.com/hariti_rawal" 
+                target="_blank" 
+                rel="noreferrer" 
+                title="Instagram Profile"
+                style={{
+                  color: '#e1306c',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(225, 48, 108, 0.12)',
+                  border: '1px solid rgba(225, 48, 108, 0.25)',
+                  padding: '3px',
+                  borderRadius: '5px',
+                  textDecoration: 'none'
+                }}
+              >
+                <Instagram size={12} />
+              </a>
+              <a 
+                href="https://github.com/haritirawal" 
+                target="_blank" 
+                rel="noreferrer" 
+                title="GitHub Profile"
+                style={{
+                  color: '#ffffff',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  padding: '3px',
+                  borderRadius: '5px',
+                  textDecoration: 'none'
+                }}
+              >
+                <Github size={12} />
+              </a>
+            </div>
+
           </div>
           <div style={{ display: 'flex', gap: '16px' }}>
             <span>🔒 Zero-Forgery HMAC Engine</span>
