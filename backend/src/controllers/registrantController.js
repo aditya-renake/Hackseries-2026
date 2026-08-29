@@ -49,9 +49,13 @@ export const getRegistrants = async (req, res) => {
  */
 export const handleWebhookSubmission = async (req, res) => {
   try {
-    // 1. Check if this is a Google Sheets row edit / status update event
-    if (req.body.action === 'update_status' || (req.body.email && req.body.verificationStatus !== undefined) || (req.body.email && req.body.verified !== undefined)) {
-      const cleanEmail = String(req.body.email).toLowerCase().trim();
+    // 1. Check if this is explicitly a Google Sheets row edit / status update event
+    if (req.body.action === 'update_status') {
+      const cleanEmail = String(req.body.email || '').toLowerCase().trim();
+      if (!cleanEmail) {
+        return res.status(400).json({ success: false, message: 'Email is required for status update.' });
+      }
+
       const existing = await registrantRepo.findByEmail(cleanEmail);
       if (!existing) {
         return res.status(404).json({
@@ -89,14 +93,36 @@ export const handleWebhookSubmission = async (req, res) => {
       verificationStatus = 'Not Verified',
     } = req.body;
 
-    if (!name || !email) {
+    // Fallback extraction if name/email are inside formResponses or alternate casing
+    let attendeeName = name;
+    let attendeeEmail = email;
+
+    if (!attendeeName && formResponses) {
+      for (const [k, v] of Object.entries(formResponses)) {
+        if (k.toLowerCase().includes('name') && !k.toLowerCase().includes('team')) {
+          attendeeName = v;
+          break;
+        }
+      }
+    }
+
+    if (!attendeeEmail && formResponses) {
+      for (const [k, v] of Object.entries(formResponses)) {
+        if (k.toLowerCase().includes('email') || k.toLowerCase().includes('mail')) {
+          attendeeEmail = v;
+          break;
+        }
+      }
+    }
+
+    if (!attendeeName || !attendeeEmail) {
       return res.status(400).json({
         success: false,
         message: 'Name and Email are required fields from the form submission.',
       });
     }
 
-    const cleanEmail = email.toLowerCase().trim();
+    const cleanEmail = attendeeEmail.toLowerCase().trim();
 
     // Check if registrant already exists in Firestore
     let existing = await registrantRepo.findByEmail(cleanEmail);
@@ -131,7 +157,7 @@ export const handleWebhookSubmission = async (req, res) => {
 
     const newRegistrant = await registrantRepo.create({
       uniqueId,
-      name: name.trim(),
+      name: attendeeName.trim(),
       email: cleanEmail,
       phone: phone ? phone.trim() : '',
       ticketType,
@@ -143,6 +169,8 @@ export const handleWebhookSubmission = async (req, res) => {
       qrPayload,
       qrSignature: signature,
       qrCodeDataUrl,
+      verified: verified !== undefined ? verified : false,
+      verificationStatus: verificationStatus || 'Not Verified',
       emailSent: false,
       checkedIn: false,
     });
