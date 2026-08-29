@@ -134,10 +134,10 @@ export function App() {
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               <strong style={{ color: '#ffffff' }}>Soham Chitnis</strong>
               <a 
-                href="https://instagram.com/soham_chitnis" 
+                href="https://instagram.com/soham.so.what" 
                 target="_blank" 
                 rel="noreferrer" 
-                title="Instagram Profile"
+                title="Instagram: @soham.so.what"
                 style={{
                   color: '#e1306c',
                   display: 'inline-flex',
