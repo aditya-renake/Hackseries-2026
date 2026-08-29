@@ -112,32 +112,27 @@ export const handleWebhookSubmission = async (req, res) => {
     } = req.body;
 
     // Fallback extraction if name/email are inside formResponses or alternate casing
-    let attendeeName = name;
-    let attendeeEmail = email;
+    let attendeeName = name || '';
+    let attendeeEmail = email || '';
 
-    if (!attendeeName && formResponses) {
-      for (const [k, v] of Object.entries(formResponses)) {
-        if (k.toLowerCase().includes('name') && !k.toLowerCase().includes('team')) {
-          attendeeName = v;
-          break;
-        }
+    // Deep search all body and formResponses keys for email and name
+    const combinedObj = { ...(formResponses || {}), ...(req.body || {}) };
+    for (const [k, v] of Object.entries(combinedObj)) {
+      if (!v || typeof v !== 'string' || !v.trim()) continue;
+      const kLower = k.toLowerCase().trim();
+      if (!attendeeEmail && (kLower.includes('email') || kLower.includes('mail') || (v.includes('@') && v.includes('.')))) {
+        attendeeEmail = v.trim();
+      }
+      if (!attendeeName && (kLower.includes('name') || kLower.includes('candidate') || kLower.includes('student') || kLower.includes('participant')) && !kLower.includes('team')) {
+        attendeeName = v.trim();
       }
     }
 
-    if (!attendeeEmail && formResponses) {
-      for (const [k, v] of Object.entries(formResponses)) {
-        if (k.toLowerCase().includes('email') || k.toLowerCase().includes('mail')) {
-          attendeeEmail = v;
-          break;
-        }
-      }
+    if (!attendeeEmail) {
+      attendeeEmail = `hacker.${Date.now()}@hackseries.org`;
     }
-
-    if (!attendeeName || !attendeeEmail) {
-      return res.status(400).json({
-        success: false,
-        message: 'Name and Email are required fields from the form submission.',
-      });
+    if (!attendeeName) {
+      attendeeName = attendeeEmail.split('@')[0] || 'HackSeries Participant';
     }
 
     const cleanEmail = attendeeEmail.toLowerCase().trim();

@@ -149,6 +149,14 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkedInFilter, emailSentFilter, verifiedFilter, trackFilter, ticketFilter]);
 
+  // Live Auto-Polling (Pulls new Google Form submissions into dashboard every 4 seconds)
+  useEffect(() => {
+    const pollTimer = setInterval(() => {
+      fetchData(pagination.page, true);
+    }, 4000);
+    return () => clearInterval(pollTimer);
+  }, [fetchData, pagination.page]);
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     fetchData(1);
