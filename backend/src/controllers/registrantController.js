@@ -50,28 +50,46 @@ export const getRegistrants = async (req, res) => {
 export const handleWebhookSubmission = async (req, res) => {
   try {
     // 1. Check if this is explicitly a Google Sheets row edit / status update event
-    if (req.body.action === 'update_status') {
+    if (req.body.action === 'update_status' || req.body.action === 'verify' || req.body.action === 'sync_status') {
       const cleanEmail = String(req.body.email || '').toLowerCase().trim();
-      if (!cleanEmail) {
-        return res.status(400).json({ success: false, message: 'Email is required for status update.' });
+      const uniqueId = String(req.body.uniqueId || req.body.id || '').toUpperCase().trim();
+      
+      let existing = null;
+      if (uniqueId) {
+        existing = await registrantRepo.findByUniqueId(uniqueId);
+      }
+      if (!existing && cleanEmail) {
+        existing = await registrantRepo.findByEmail(cleanEmail);
+      }
+      if (!existing && req.body.name) {
+        const all = await registrantRepo.getAll({ limit: 1000 });
+        existing = (all.items || []).find(
+          (r) => r.name && r.name.toLowerCase().trim() === String(req.body.name).toLowerCase().trim()
+        );
       }
 
-      const existing = await registrantRepo.findByEmail(cleanEmail);
       if (!existing) {
         return res.status(404).json({
           success: false,
-          message: `Attendee with email ${cleanEmail} not found in HackSeries database.`,
+          message: `Attendee (${cleanEmail || uniqueId || req.body.name}) not found in HackSeries database.`,
         });
       }
 
-      const isVerified = req.body.verified === true || String(req.body.verificationStatus).toLowerCase() === 'verified';
+      const rawVal = String(req.body.verificationStatus || req.body.status || req.body.verified || '').toLowerCase();
+      const isVerified =
+        rawVal === 'true' ||
+        rawVal === 'verified' ||
+        rawVal === 'yes' ||
+        rawVal === 'approved' ||
+        req.body.verified === true;
+
       const updated = await registrantRepo.update(existing.uniqueId, {
         verified: isVerified,
         verificationStatus: isVerified ? 'Verified' : 'Not Verified',
         verifiedAt: isVerified ? new Date().toISOString() : null,
       });
 
-      console.log(`📊 [GOOGLE SHEET SYNC] Verification status updated for ${cleanEmail} -> ${isVerified ? 'VERIFIED ✅' : 'NOT VERIFIED ⏳'}`);
+      console.log(`📊 [GOOGLE SHEET SYNC] Verification status updated for ${existing.email} -> ${isVerified ? 'VERIFIED ✅' : 'NOT VERIFIED ⏳'}`);
       return res.status(200).json({
         success: true,
         message: `Status updated to ${isVerified ? 'Verified' : 'Not Verified'}`,
