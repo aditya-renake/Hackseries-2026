@@ -9,13 +9,51 @@ let transporter = null;
 export const getTransporter = async () => {
   if (transporter) return transporter;
 
-  const user = (process.env.SMTP_USER || 'tigeradi1504@gmail.com').trim();
-  const pass = (process.env.SMTP_PASS || '').trim();
+  const resendApiKey = (process.env.RESEND_API_KEY || '').trim();
+  const sendgridApiKey = (process.env.SENDGRID_API_KEY || '').trim();
   const customHost = (process.env.SMTP_HOST || '').trim();
+  let user = (process.env.SMTP_USER || 'tigeradi1504@gmail.com').trim();
+  let pass = (process.env.SMTP_PASS || '').trim();
 
+  // 1. Auto-detect Resend
+  if (resendApiKey || pass.startsWith('re_') || customHost.includes('resend.com') || user.toLowerCase() === 'resend') {
+    const activeResendKey = resendApiKey || pass;
+    transporter = nodemailer.createTransport({
+      host: 'smtp.resend.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: 'resend',
+        pass: activeResendKey,
+      },
+      tls: { rejectUnauthorized: false },
+      connectionTimeout: 15000,
+    });
+    console.log('⚡ Configured High-Speed Resend SMTP Mailer (Auto-Detected)');
+    return transporter;
+  }
+
+  // 2. Auto-detect SendGrid
+  if (sendgridApiKey || pass.startsWith('SG.') || customHost.includes('sendgrid.net') || user.toLowerCase() === 'apikey') {
+    const activeSendgridKey = sendgridApiKey || pass;
+    transporter = nodemailer.createTransport({
+      host: 'smtp.sendgrid.net',
+      port: 587,
+      secure: false,
+      auth: {
+        user: 'apikey',
+        pass: activeSendgridKey,
+      },
+      tls: { rejectUnauthorized: false },
+      connectionTimeout: 15000,
+    });
+    console.log('⚡ Configured SendGrid SMTP Mailer (Auto-Detected)');
+    return transporter;
+  }
+
+  // 3. Gmail & Custom SMTP
   if (pass && pass !== '') {
     const isGmail = user.includes('@gmail.com') || customHost.includes('gmail') || (!customHost && !user.includes('@outlook'));
-    const isResend = customHost.includes('resend.com') || user.toLowerCase() === 'resend';
     const isOutlook = user.includes('@outlook.') || user.includes('@hotmail.') || user.includes('@live.');
     
     let host = customHost;
@@ -24,7 +62,6 @@ export const getTransporter = async () => {
 
     if (!host) {
       if (isGmail) host = 'smtp.gmail.com';
-      else if (isResend) host = 'smtp.resend.com';
       else if (isOutlook) host = 'smtp-mail.outlook.com';
       else host = 'smtp.gmail.com';
     }
@@ -49,8 +86,9 @@ export const getTransporter = async () => {
     }
 
     transporter = nodemailer.createTransport(transportConfig);
-    console.log(`📧 Configured SMTP transporter (${isGmail ? 'Gmail' : isResend ? 'Resend' : host}) for: ${user}`);
-  } else {
+    console.log(`📧 Configured SMTP transporter (${isGmail ? 'Gmail' : host}) for: ${user}`);
+    return transporter;
+  }
     // Ethereal / Simulated Mailer for zero-setup local dev
     try {
       const testAccount = await nodemailer.createTestAccount();
