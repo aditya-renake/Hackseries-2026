@@ -9,6 +9,7 @@ import {
   deleteRegistrant,
   exportCSV,
   toggleVerification,
+  bulkVerifyRegistrants,
 } from '../controllers/registrantController.js';
 import { requireAuth, requireAdmin } from '../middleware/auth.js';
 
@@ -23,6 +24,7 @@ router.get('/pass/:idOrEmail', getPublicPass);
 // Protected Staff / Admin Routes
 router.get('/', requireAuth, getRegistrants);
 router.get('/export/csv', requireAuth, exportCSV);
+router.post('/bulk-verify', requireAuth, bulkVerifyRegistrants);
 router.get('/:id', requireAuth, getRegistrantById);
 router.post('/', requireAuth, createRegistrant);
 router.post('/:id/generate-qr', requireAuth, regenerateQR);

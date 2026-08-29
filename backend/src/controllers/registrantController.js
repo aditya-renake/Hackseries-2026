@@ -362,25 +362,63 @@ export const deleteRegistrant = async (req, res) => {
 export const toggleVerification = async (req, res) => {
   try {
     const { id } = req.params;
+    const { verified } = req.body || {};
     const registrant = await registrantRepo.findByIdOrEmail(id);
     if (!registrant) {
       return res.status(404).json({ success: false, message: 'Registrant not found' });
     }
 
-    const nextVerified = !registrant.verified;
+    const nextVerified = verified !== undefined ? Boolean(verified) : !registrant.verified;
     const updated = await registrantRepo.update(registrant.uniqueId, {
       verified: nextVerified,
       verificationStatus: nextVerified ? 'Verified' : 'Not Verified',
       verifiedAt: nextVerified ? new Date().toISOString() : null,
     });
 
-    res.json({
+    return res.json({
       success: true,
       message: `Registrant ${updated.name} marked as ${nextVerified ? 'Verified ✅' : 'Not Verified ⏳'}`,
       data: updated,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to toggle verification status', error: error.message });
+    return res.status(500).json({ success: false, message: 'Failed to update verification status', error: error.message });
+  }
+};
+
+/**
+ * Bulk verify or unverify multiple attendees simultaneously
+ */
+export const bulkVerifyRegistrants = async (req, res) => {
+  try {
+    const { ids, verified = true } = req.body || {};
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ success: false, message: 'Array of attendee IDs is required' });
+    }
+
+    const isVerified = Boolean(verified);
+    const updatePayload = {
+      verified: isVerified,
+      verificationStatus: isVerified ? 'Verified' : 'Not Verified',
+      verifiedAt: isVerified ? new Date().toISOString() : null,
+    };
+
+    const results = await Promise.all(
+      ids.map(async (id) => {
+        try {
+          return await registrantRepo.update(id, updatePayload);
+        } catch {
+          return null;
+        }
+      })
+    );
+
+    return res.json({
+      success: true,
+      message: `Successfully marked ${results.filter(Boolean).length} attendees as ${isVerified ? 'Verified' : 'Not Verified'}`,
+      updatedCount: results.filter(Boolean).length,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed bulk verification', error: error.message });
   }
 };
 

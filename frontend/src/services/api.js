@@ -91,10 +91,19 @@ export const api = {
       });
       return handleResponse(res);
     },
-    toggleVerification: async (id) => {
+    toggleVerification: async (id, verified) => {
       const res = await fetch(`${API_BASE}/registrants/${id}/verify`, {
         method: 'PATCH',
         headers: getHeaders(),
+        body: JSON.stringify(verified !== undefined ? { verified } : {}),
+      });
+      return handleResponse(res);
+    },
+    bulkVerify: async (ids, verified = true) => {
+      const res = await fetch(`${API_BASE}/registrants/bulk-verify`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ ids, verified }),
       });
       return handleResponse(res);
     },

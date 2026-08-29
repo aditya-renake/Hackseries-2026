@@ -37,38 +37,110 @@ export const RegistrantTable = ({
   onViewPass,
   onShowToast,
 }) => {
+  const [localRegistrants, setLocalRegistrants] = useState(registrants);
   const [sendingId, setSendingId] = useState(null);
   const [togglingId, setTogglingId] = useState(null);
   const [selectedPhotoReg, setSelectedPhotoReg] = useState(null);
+  const [isBulkVerifying, setIsBulkVerifying] = useState(false);
 
-  const visibleIds = registrants.map((r) => r.uniqueId || r._id);
+  React.useEffect(() => {
+    setLocalRegistrants(registrants);
+  }, [registrants]);
+
+  const visibleIds = localRegistrants.map((r) => r.uniqueId || r._id);
   const isAllVisibleSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
   const isSomeVisibleSelected = visibleIds.some((id) => selectedIds.includes(id)) && !isAllVisibleSelected;
 
-  const [verifyingId, setVerifyingId] = useState(null);
+  // Zero-Lag Optimistic Dropdown Verification Handler
+  const handleDropdownVerify = async (reg, isVerified) => {
+    const regId = reg.uniqueId || reg._id;
+    sounds.playClick();
 
-  // Toggle Verification status from dashboard
-  const handleToggleVerify = async (reg) => {
+    // 1. Optimistically update local state immediately (0ms lag)
+    setLocalRegistrants((prev) =>
+      prev.map((r) =>
+        (r.uniqueId || r._id) === regId
+          ? {
+              ...r,
+              verified: isVerified,
+              verificationStatus: isVerified ? 'Verified' : 'Not Verified',
+            }
+          : r
+      )
+    );
+
+    if (isVerified) sounds.playSuccess();
+    else sounds.playWarning();
+
+    // 2. Fire background API request
     try {
-      setVerifyingId(reg.uniqueId || reg._id);
-      sounds.playClick();
-      const res = await api.registrants.toggleVerification(reg.uniqueId || reg._id);
-      sounds.playSuccess();
+      await api.registrants.toggleVerification(regId, isVerified);
       onShowToast({
         type: 'success',
-        title: res.data?.verified ? 'Attendee Verified! ✅' : 'Verification Pending ⏳',
-        message: `${reg.name} marked as ${res.data?.verified ? 'Verified (Ready for Pass)' : 'Not Verified'}`,
+        title: isVerified ? 'Attendee Verified! ✅' : 'Verification Pending ⏳',
+        message: `${reg.name} is now marked as ${isVerified ? 'Verified' : 'Not Verified'}.`,
       });
-      onRefresh();
+      // Optionally trigger background refresh
+      if (onRefresh) onRefresh();
+    } catch (err) {
+      sounds.playError();
+      // Revert optimistic update on failure
+      setLocalRegistrants((prev) =>
+        prev.map((r) =>
+          (r.uniqueId || r._id) === regId
+            ? { ...r, verified: !isVerified, verificationStatus: !isVerified ? 'Verified' : 'Not Verified' }
+            : r
+        )
+      );
+      onShowToast({
+        type: 'error',
+        title: 'Status Update Failed',
+        message: err.message,
+      });
+    }
+  };
+
+  // Bulk Verification Handler (Mark All Selected as Verified/Pending)
+  const handleBulkVerify = async (isVerified) => {
+    if (!selectedIds || selectedIds.length === 0) return;
+    sounds.playClick();
+    setIsBulkVerifying(true);
+
+    // 1. Optimistically update all selected items in local state immediately (0ms lag)
+    setLocalRegistrants((prev) =>
+      prev.map((r) =>
+        selectedIds.includes(r.uniqueId || r._id)
+          ? {
+              ...r,
+              verified: isVerified,
+              verificationStatus: isVerified ? 'Verified' : 'Not Verified',
+            }
+          : r
+      )
+    );
+
+    if (isVerified) sounds.playSuccess();
+    else sounds.playWarning();
+
+    try {
+      const res = await api.registrants.bulkVerify(selectedIds, isVerified);
+      onShowToast({
+        type: 'success',
+        title: isVerified ? 'Bulk Verification Complete! ✅' : 'Bulk Marked Pending ⏳',
+        message: res.message || `Updated ${selectedIds.length} attendees.`,
+      });
+      if (onClearSelection) onClearSelection();
+      if (onRefresh) onRefresh();
     } catch (err) {
       sounds.playError();
       onShowToast({
         type: 'error',
-        title: 'Verification Update Failed',
+        title: 'Bulk Update Failed',
         message: err.message,
       });
+      if (onRefresh) onRefresh();
     } finally {
-      setVerifyingId(null);
+      setIsBulkVerifying(false);
     }
   };
 
@@ -176,6 +248,140 @@ export const RegistrantTable = ({
   return (
     <div className="glass-panel" style={{ overflow: 'hidden', position: 'relative' }}>
       
+      {/* Sleek Floating Bulk Action Bar */}
+      {selectedIds.length > 0 && (
+        <div
+          style={{
+            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+            borderBottom: '1px solid rgba(34, 197, 94, 0.35)',
+            padding: '12px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span
+              style={{
+                background: 'rgba(34, 197, 94, 0.2)',
+                color: '#4ade80',
+                border: '1px solid rgba(34, 197, 94, 0.4)',
+                padding: '4px 10px',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontWeight: '800',
+              }}
+            >
+              ✓ {selectedIds.length} Selected
+            </span>
+            <span style={{ fontSize: '13px', color: '#cbd5e1', fontWeight: '600' }}>
+              Bulk Operations:
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            {/* Bulk Mark as Verified */}
+            <button
+              onClick={() => handleBulkVerify(true)}
+              disabled={isBulkVerifying}
+              style={{
+                background: 'linear-gradient(135deg, #15803d 0%, #16a34a 100%)',
+                color: '#ffffff',
+                border: 'none',
+                padding: '7px 14px',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontWeight: '800',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 10px rgba(34, 197, 94, 0.3)',
+              }}
+              title="Mark all selected attendees as Verified in 1 click"
+            >
+              <CheckCircle2 size={14} />
+              <span>Bulk Verify ({selectedIds.length})</span>
+            </button>
+
+            {/* Bulk Mark as Pending */}
+            <button
+              onClick={() => handleBulkVerify(false)}
+              disabled={isBulkVerifying}
+              style={{
+                background: 'rgba(245, 158, 11, 0.15)',
+                color: '#fbbf24',
+                border: '1px solid rgba(245, 158, 11, 0.4)',
+                padding: '7px 12px',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+              title="Mark all selected attendees as Pending"
+            >
+              <Clock size={14} />
+              <span>Mark Pending</span>
+            </button>
+
+            {/* Bulk Dispatch Email Passes */}
+            {onOpenBulkEmail && (
+              <button
+                onClick={() => {
+                  sounds.playClick();
+                  onOpenBulkEmail();
+                }}
+                style={{
+                  background: 'linear-gradient(135deg, #0284c7 0%, #2563eb 100%)',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '7px 14px',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  fontWeight: '800',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 10px rgba(37, 99, 235, 0.3)',
+                }}
+              >
+                <Send size={14} />
+                <span>Bulk Email Passes</span>
+              </button>
+            )}
+
+            {/* Clear Selection */}
+            {onClearSelection && (
+              <button
+                onClick={() => {
+                  sounds.playClick();
+                  onClearSelection();
+                }}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  color: '#94a3b8',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  padding: '7px 10px',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                }}
+              >
+                ✕ Clear
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
           <thead>
@@ -199,7 +405,7 @@ export const RegistrantTable = ({
               </th>
 
               <th style={{ padding: '14px 16px' }}>Hacker / Attendee</th>
-              <th style={{ padding: '14px 16px' }}>Verification</th>
+              <th style={{ padding: '14px 16px' }}>Verification Status</th>
               <th style={{ padding: '14px 16px' }}>Pass ID</th>
               <th style={{ padding: '14px 16px' }}>Tier & Track</th>
               <th style={{ padding: '14px 16px' }}>Check-in Status</th>
@@ -208,7 +414,7 @@ export const RegistrantTable = ({
             </tr>
           </thead>
           <tbody>
-            {registrants.length === 0 ? (
+            {localRegistrants.length === 0 ? (
               <tr>
                 <td colSpan={8} style={{ padding: '48px 20px', textAlign: 'center', color: 'var(--text-dim)' }}>
                   <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '4px' }}>No Registrants Found</div>
@@ -216,7 +422,7 @@ export const RegistrantTable = ({
                 </td>
               </tr>
             ) : (
-              registrants.map((reg) => {
+              localRegistrants.map((reg) => {
                 const regId = reg.uniqueId || reg._id;
                 const isSelected = selectedIds.includes(regId);
 
@@ -262,30 +468,52 @@ export const RegistrantTable = ({
                       )}
                     </td>
 
-                    {/* Verification Status (Synced with Google Sheets) */}
+                    {/* Verification Status (Zero-Lag Dropdown) */}
                     <td style={{ padding: '14px 16px' }}>
-                      <button
-                        onClick={() => handleToggleVerify(reg)}
-                        disabled={verifyingId === regId}
-                        style={{
-                          background: reg.verified ? 'rgba(34, 197, 94, 0.15)' : 'rgba(245, 158, 11, 0.12)',
-                          border: reg.verified ? '1px solid rgba(34, 197, 94, 0.4)' : '1px solid rgba(245, 158, 11, 0.35)',
-                          color: reg.verified ? '#4ade80' : '#fbbf24',
-                          padding: '4px 10px',
-                          borderRadius: '9999px',
-                          fontSize: '11px',
-                          fontWeight: '800',
-                          cursor: 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '5px',
-                          transition: 'all 0.15s ease'
-                        }}
-                        title="Click to toggle verification status (syncs with Google Sheets dropdown!)"
-                      >
-                        {reg.verified ? <CheckCircle2 size={12} color="#22c55e" /> : <Clock size={12} color="#f59e0b" />}
-                        <span>{reg.verified ? 'VERIFIED' : 'PENDING'}</span>
-                      </button>
+                      <div style={{ position: 'relative', display: 'inline-block' }}>
+                        <select
+                          value={reg.verified ? 'Verified' : 'Pending'}
+                          onChange={(e) => handleDropdownVerify(reg, e.target.value === 'Verified')}
+                          style={{
+                            appearance: 'none',
+                            WebkitAppearance: 'none',
+                            MozAppearance: 'none',
+                            background: reg.verified ? 'rgba(34, 197, 94, 0.18)' : 'rgba(245, 158, 11, 0.15)',
+                            border: reg.verified ? '1px solid rgba(34, 197, 94, 0.5)' : '1px solid rgba(245, 158, 11, 0.45)',
+                            color: reg.verified ? '#4ade80' : '#fbbf24',
+                            padding: '6px 28px 6px 12px',
+                            borderRadius: '8px',
+                            fontSize: '11px',
+                            fontWeight: '800',
+                            cursor: 'pointer',
+                            outline: 'none',
+                            transition: 'all 0.15s ease',
+                            boxShadow: reg.verified ? '0 0 10px rgba(34, 197, 94, 0.15)' : 'none',
+                          }}
+                          title="Instant status dropdown (syncs 2-way with Google Sheets!)"
+                        >
+                          <option value="Verified" style={{ background: '#0f172a', color: '#4ade80', fontWeight: '700' }}>
+                            ✅ Verified
+                          </option>
+                          <option value="Pending" style={{ background: '#0f172a', color: '#fbbf24', fontWeight: '700' }}>
+                            ⏳ Pending
+                          </option>
+                        </select>
+                        <span
+                          style={{
+                            position: 'absolute',
+                            right: '10px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            pointerEvents: 'none',
+                            fontSize: '9px',
+                            color: reg.verified ? '#4ade80' : '#fbbf24',
+                            fontWeight: '900',
+                          }}
+                        >
+                          ▼
+                        </span>
+                      </div>
                     </td>
 
                     {/* Pass ID with anti-forgery indicator */}
