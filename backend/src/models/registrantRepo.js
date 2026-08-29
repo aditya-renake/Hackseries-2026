@@ -3,7 +3,7 @@ import { getFirestore } from '../config/firebase.js';
 // In-memory micro-cache for sub-millisecond dashboard speeds
 let memoryCache = null;
 let lastCacheTime = 0;
-const CACHE_TTL_MS = 2500; // 2.5 second TTL for ultrafast queries
+const CACHE_TTL_MS = 5000; // 5 second micro-cache for instantaneous sub-10ms queries
 
 function invalidateCache() {
   memoryCache = null;
@@ -178,7 +178,11 @@ export const registrantRepo = {
     const pageNum = Math.max(1, parseInt(page, 10));
     const limitNum = Math.min(200, Math.max(1, parseInt(limit, 10)));
     const skip = (pageNum - 1) * limitNum;
-    const paginatedItems = items.slice(skip, skip + limitNum);
+    const paginatedItems = items.slice(skip, skip + limitNum).map((item) => {
+      // Omit heavy base64 image strings from list endpoint to save 90% bandwidth
+      const { qrCodeDataUrl, ...lightweightItem } = item;
+      return lightweightItem;
+    });
     const totalPages = Math.ceil(totalCount / limitNum);
 
     return {

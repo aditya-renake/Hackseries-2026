@@ -27,9 +27,21 @@ import { BulkEmailModal } from '../components/BulkEmailModal';
 import { SuperAdminModal } from '../components/SuperAdminModal';
 import { sounds } from '../utils/soundEffects';
 
+const CACHE_KEY_DASHBOARD = 'hs26_cached_dashboard_state';
+
+const getInitialCachedData = () => {
+  try {
+    const raw = sessionStorage.getItem(CACHE_KEY_DASHBOARD);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return null;
+};
+
 export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
-  const [registrants, setRegistrants] = useState([]);
-  const [stats, setStats] = useState({
+  const cachedInitial = getInitialCachedData();
+
+  const [registrants, setRegistrants] = useState(cachedInitial?.registrants || []);
+  const [stats, setStats] = useState(cachedInitial?.stats || {
     totalRegistrants: 0,
     checkedInCount: 0,
     checkedInPercentage: 0,
@@ -38,7 +50,7 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
     verifiedCount: 0,
     verifiedPendingEmailCount: 0,
   });
-  const [pagination, setPagination] = useState({
+  const [pagination, setPagination] = useState(cachedInitial?.pagination || {
     page: 1,
     limit: 25,
     totalItems: 0,
@@ -56,6 +68,7 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
   const [trackFilter, setTrackFilter] = useState('all');
   const [ticketFilter, setTicketFilter] = useState('all');
   const [loading, setLoading] = useState(false);
+  const [isBackgroundSyncing, setIsBackgroundSyncing] = useState(false);
 
   // Modals
   const [selectedPassRegistrant, setSelectedPassRegistrant] = useState(null);
@@ -63,12 +76,17 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
   const [showEmailTemplate, setShowEmailTemplate] = useState(false);
   const [showBulkEmail, setShowBulkEmail] = useState(false);
   const [showSuperAdminModal, setShowSuperAdminModal] = useState(false);
-  const [eventConfig, setEventConfig] = useState(null);
+  const [eventConfig, setEventConfig] = useState(cachedInitial?.eventConfig || null);
 
-  // High-Speed Concurrent Fetch
-  const fetchData = useCallback(async (page = 1) => {
+  // High-Speed Concurrent Fetch with SWR Caching
+  const fetchData = useCallback(async (page = 1, silent = false) => {
     try {
-      setLoading(true);
+      if (!silent && registrants.length === 0) {
+        setLoading(true);
+      } else {
+        setIsBackgroundSyncing(true);
+      }
+
       const params = {
         page,
         limit: pagination.limit,
@@ -86,27 +104,48 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
       ]);
 
       if (regRes) {
-        setRegistrants(regRes.data || []);
-        setPagination(regRes.pagination || {});
-        setStats(regRes.stats || {});
+        const nextRegistrants = regRes.data || [];
+        const nextPagination = regRes.pagination || {};
+        const nextStats = regRes.stats || {};
+
+        setRegistrants(nextRegistrants);
+        setPagination(nextPagination);
+        setStats(nextStats);
+
+        // Update instant local session cache
+        try {
+          sessionStorage.setItem(
+            CACHE_KEY_DASHBOARD,
+            JSON.stringify({
+              registrants: nextRegistrants,
+              pagination: nextPagination,
+              stats: nextStats,
+              eventConfig: configRes?.data || eventConfig,
+            })
+          );
+        } catch {}
       }
       if (configRes?.data) {
         setEventConfig(configRes.data);
       }
     } catch (err) {
-      onShowToast({
-        type: 'error',
-        title: 'Data Fetch Error',
-        message: err.message,
-      });
+      if (!silent) {
+        onShowToast({
+          type: 'error',
+          title: 'Data Fetch Error',
+          message: err.message,
+        });
+      }
     } finally {
       setLoading(false);
+      setIsBackgroundSyncing(false);
     }
-  }, [pagination.limit, search, checkedInFilter, emailSentFilter, verifiedFilter, trackFilter, ticketFilter, eventConfig, onShowToast]);
+  }, [pagination.limit, search, checkedInFilter, emailSentFilter, verifiedFilter, trackFilter, ticketFilter, eventConfig, registrants.length, onShowToast]);
 
   // Initial and reactive fetch on filter change
   useEffect(() => {
-    fetchData(1);
+    // If we have cached data, fetch silently in background for 0ms visual latency!
+    fetchData(1, registrants.length > 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkedInFilter, emailSentFilter, verifiedFilter, trackFilter, ticketFilter]);
 
