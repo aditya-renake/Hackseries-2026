@@ -130,52 +130,7 @@ export function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <span>© 2026 <strong>HackSeries</strong> • Lead Operations:</span>
             
-            {/* Aditya Renake */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-              <strong style={{ color: '#ffffff' }}>Aditya Renake</strong>
-              <a 
-                href="https://instagram.com/where.aditya" 
-                target="_blank" 
-                rel="noreferrer" 
-                title="Instagram: @where.aditya"
-                style={{
-                  color: '#e1306c',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'rgba(225, 48, 108, 0.12)',
-                  border: '1px solid rgba(225, 48, 108, 0.25)',
-                  padding: '3px',
-                  borderRadius: '5px',
-                  textDecoration: 'none'
-                }}
-              >
-                <Instagram size={12} />
-              </a>
-              <a 
-                href="https://github.com/aditya-renake" 
-                target="_blank" 
-                rel="noreferrer" 
-                title="GitHub: @aditya-renake"
-                style={{
-                  color: '#ffffff',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  padding: '3px',
-                  borderRadius: '5px',
-                  textDecoration: 'none'
-                }}
-              >
-                <Github size={12} />
-              </a>
-            </div>
-
-            <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
-
-            {/* Soham Chitnis */}
+            {/* 1. Soham Chitnis */}
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               <strong style={{ color: '#ffffff' }}>Soham Chitnis</strong>
               <a 
@@ -220,7 +175,52 @@ export function App() {
 
             <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
 
-            {/* Hariti Rawal */}
+            {/* 2. Aditya Renake */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <strong style={{ color: '#ffffff' }}>Aditya Renake</strong>
+              <a 
+                href="https://instagram.com/where.aditya" 
+                target="_blank" 
+                rel="noreferrer" 
+                title="Instagram: @where.aditya"
+                style={{
+                  color: '#e1306c',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(225, 48, 108, 0.12)',
+                  border: '1px solid rgba(225, 48, 108, 0.25)',
+                  padding: '3px',
+                  borderRadius: '5px',
+                  textDecoration: 'none'
+                }}
+              >
+                <Instagram size={12} />
+              </a>
+              <a 
+                href="https://github.com/aditya-renake" 
+                target="_blank" 
+                rel="noreferrer" 
+                title="GitHub: @aditya-renake"
+                style={{
+                  color: '#ffffff',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  padding: '3px',
+                  borderRadius: '5px',
+                  textDecoration: 'none'
+                }}
+              >
+                <Github size={12} />
+              </a>
+            </div>
+
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
+
+            {/* 3. Hariti Rawal */}
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               <strong style={{ color: '#ffffff' }}>Hariti Rawal</strong>
               <a 
