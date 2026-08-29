@@ -26,23 +26,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// Firebase Firestore Initialization Middleware
-let dbInitialized = false;
-export const ensureFirestoreReady = async (req, res, next) => {
-  try {
-    if (!dbInitialized) {
-      initFirebase();
-      await staffRepo.seedDefaultAdmin();
-      dbInitialized = true;
-    }
-    if (next) next();
-  } catch (err) {
-    console.error('Firestore initialization notice:', err.message);
-    if (next) next();
-  }
-};
+// Initialize Google Cloud Firestore
+initFirebase();
 
-app.use(ensureFirestoreReady);
+// Asynchronously ensure staff users exist in background without blocking requests
+staffRepo.seedDefaultAdmin().catch(() => {});
 
 // Mount Routes
 app.use('/api/auth', authRoutes);
