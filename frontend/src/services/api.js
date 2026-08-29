@@ -159,7 +159,7 @@ export const api = {
     },
   },
 
-  // Event Config API
+  // Event Config & Telemetry API
   event: {
     getConfig: async () => {
       const res = await fetch(`${API_BASE}/event`);
@@ -170,6 +170,12 @@ export const api = {
         method: 'PUT',
         headers: getHeaders(),
         body: JSON.stringify(data),
+      });
+      return handleResponse(res);
+    },
+    getDatabaseTelemetry: async () => {
+      const res = await fetch(`${API_BASE}/event/database-telemetry`, {
+        headers: getHeaders(),
       });
       return handleResponse(res);
     },

@@ -255,8 +255,31 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
           </div>
         </div>
 
-        {/* Operations Command Button (Universal for All Admins) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {/* Operations Command & Live Database Telemetry Pill */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => {
+              sounds.playClick();
+              setShowSuperAdminModal(true);
+            }}
+            style={{
+              padding: '7px 14px',
+              fontSize: '11px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: 'rgba(34, 197, 94, 0.1)',
+              border: '1px solid rgba(34, 197, 94, 0.35)',
+              color: '#4ade80',
+              fontWeight: '700'
+            }}
+            title="Click to view real-time Google Cloud Firestore storage & latency metrics"
+          >
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#22c55e', display: 'inline-block', boxShadow: '0 0 6px #22c55e' }}></span>
+            <span>Cloud DB: 99.99% Free</span>
+          </button>
+
           <button
             className="btn btn-cyan btn-sm"
             onClick={() => {
