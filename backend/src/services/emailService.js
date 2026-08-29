@@ -89,28 +89,28 @@ export const getTransporter = async () => {
     console.log(`📧 Configured SMTP transporter (${isGmail ? 'Gmail' : host}) for: ${user}`);
     return transporter;
   }
-    // Ethereal / Simulated Mailer for zero-setup local dev
-    try {
-      const testAccount = await nodemailer.createTestAccount();
-      transporter = nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
-        port: 587,
-        secure: false,
-        auth: {
-          user: testAccount.user,
-          pass: testAccount.pass,
-        },
-      });
-      console.log(`📧 Zero-config mailer initialized (Ethereal test mailbox: ${testAccount.user})`);
-    } catch (err) {
-      console.warn('⚠️ Falling back to mock logger mailer:', err.message);
-      transporter = {
-        sendMail: async (mailOptions) => {
-          console.log(`📨 [SIMULATED EMAIL] From: ${mailOptions.from} | To: ${mailOptions.to} | Subject: ${mailOptions.subject}`);
-          return { messageId: 'hackseries-simulated-' + Date.now(), simulated: true };
-        },
-      };
-    }
+
+  // 4. Ethereal / Simulated Mailer for zero-setup local dev
+  try {
+    const testAccount = await nodemailer.createTestAccount();
+    transporter = nodemailer.createTransport({
+      host: 'smtp.ethereal.email',
+      port: 587,
+      secure: false,
+      auth: {
+        user: testAccount.user,
+        pass: testAccount.pass,
+      },
+    });
+    console.log(`📧 Zero-config mailer initialized (Ethereal test mailbox: ${testAccount.user})`);
+  } catch (err) {
+    console.warn('⚠️ Falling back to mock logger mailer:', err.message);
+    transporter = {
+      sendMail: async (mailOptions) => {
+        console.log(`📨 [SIMULATED EMAIL] From: ${mailOptions.from} | To: ${mailOptions.to} | Subject: ${mailOptions.subject}`);
+        return { messageId: 'hackseries-simulated-' + Date.now(), simulated: true };
+      },
+    };
   }
 
   return transporter;
