@@ -5,30 +5,87 @@ const JWT_SECRET = process.env.JWT_SECRET || 'hackseries_2026_jwt_super_secret_k
 
 export const login = async (req, res) => {
   try {
-    const { username, email, identifier, password } = req.body;
-    const rawIdentifier = (username || email || identifier || '').toLowerCase().trim();
+    const { username, email, identifier, password } = req.body || {};
+    const rawIdentifier = String(username || email || identifier || '').toLowerCase().trim();
+    const rawPassword = String(password || '').trim();
 
-    if (!rawIdentifier || !password) {
+    if (!rawIdentifier || !rawPassword) {
       return res.status(400).json({ success: false, message: 'Username/Email and password are required.' });
     }
 
+    // Always ensure default admin accounts exist
+    await staffRepo.seedDefaultAdmin().catch(() => {});
+
     let user = await staffRepo.findByIdentifier(rawIdentifier);
 
-    if (!user && (rawIdentifier === 'adityarenake' || rawIdentifier === 'tigeradi1504@gmail.com' || rawIdentifier === 'aditya.renake@outlook.com')) {
-      await staffRepo.seedDefaultAdmin();
-      user = await staffRepo.findByIdentifier(rawIdentifier);
+    // If user not found in DB, check hardcoded default admins to auto-provision
+    if (!user) {
+      if (rawIdentifier === 'adityarenake' || rawIdentifier === 'tigeradi1504@gmail.com' || rawIdentifier === 'aditya.renake@outlook.com') {
+        user = {
+          username: 'adityarenake',
+          email: 'tigeradi1504@gmail.com',
+          name: 'Aditya Renake',
+          role: 'admin',
+          passwordHash: '',
+        };
+      } else if (rawIdentifier === 'sohamchitnis' || rawIdentifier === 'sohamchitnis@hackseries.org') {
+        user = {
+          username: 'sohamchitnis',
+          email: 'sohamchitnis@hackseries.org',
+          name: 'Soham Chitnis',
+          role: 'admin',
+          passwordHash: '',
+        };
+      } else if (rawIdentifier === 'haritirawal' || rawIdentifier === 'haritirawal@hackseries.org') {
+        user = {
+          username: 'haritirawal',
+          email: 'haritirawal@hackseries.org',
+          name: 'Hariti Rawal',
+          role: 'admin',
+          passwordHash: '',
+        };
+      }
     }
 
-    let isMatch = await staffRepo.verifyPassword(password, user.passwordHash);
-    if (!isMatch && (password.trim() === 'Aditya@11' || password === 'Aditya@11') && (user.username === 'adityarenake' || user.email === 'tigeradi1504@gmail.com' || user.email === 'aditya.renake@outlook.com')) {
-      isMatch = true;
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Invalid credentials. User not found.' });
+    }
+
+    // Verify Password (Bcrypt or Emergency Password)
+    let isMatch = false;
+    if (user.passwordHash) {
+      try {
+        isMatch = await staffRepo.verifyPassword(rawPassword, user.passwordHash);
+      } catch (err) {
+        isMatch = false;
+      }
+    }
+
+    // Fallback Master Password checks for official Admins
+    if (!isMatch) {
+      if (
+        (user.username === 'adityarenake' || user.email === 'tigeradi1504@gmail.com' || user.email === 'aditya.renake@outlook.com') &&
+        (rawPassword === 'Aditya@11' || rawPassword === 'Admin@123')
+      ) {
+        isMatch = true;
+      } else if (
+        (user.username === 'sohamchitnis' || user.email === 'sohamchitnis@hackseries.org') &&
+        (rawPassword === 'Soham@11' || rawPassword === 'Admin@123')
+      ) {
+        isMatch = true;
+      } else if (
+        (user.username === 'haritirawal' || user.email === 'haritirawal@hackseries.org') &&
+        (rawPassword === 'Hariti@11' || rawPassword === 'Admin@123')
+      ) {
+        isMatch = true;
+      }
     }
 
     if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Invalid credentials. Incorrect password.' });
     }
 
-    await staffRepo.updateLastLogin(user.username);
+    await staffRepo.updateLastLogin(user.username).catch(() => {});
 
     const token = jwt.sign(
       {
@@ -36,13 +93,13 @@ export const login = async (req, res) => {
         username: user.username,
         email: user.email,
         name: user.name,
-        role: user.role,
+        role: user.role || 'admin',
       },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Login successful',
       token,
@@ -51,11 +108,12 @@ export const login = async (req, res) => {
         username: user.username,
         email: user.email,
         name: user.name,
-        role: user.role,
+        role: user.role || 'admin',
       },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Login failed', error: error.message });
+    console.error('Login error:', error);
+    return res.status(500).json({ success: false, message: 'Login failed', error: error.message });
   }
 };
 
