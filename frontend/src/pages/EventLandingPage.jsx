@@ -670,10 +670,10 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
             <strong style={{ color: '#ffffff', fontWeight: '800' }}>Hariti Rawal</strong>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               <a 
-                href="https://instagram.com/hariti_rawal" 
+                href="https://instagram.com/_rawalh_" 
                 target="_blank" 
                 rel="noreferrer" 
-                title="Instagram Profile"
+                title="Instagram: @_rawalh_"
                 style={{
                   color: '#e1306c',
                   display: 'inline-flex',
@@ -689,10 +689,10 @@ export const EventLandingPage = ({ onNavigateToPass, onShowToast }) => {
                 <Instagram size={13} />
               </a>
               <a 
-                href="https://github.com/haritirawal" 
+                href="https://github.com/Hari-228" 
                 target="_blank" 
                 rel="noreferrer" 
-                title="GitHub Profile"
+                title="GitHub: @Hari-228"
                 style={{
                   color: '#ffffff',
                   display: 'inline-flex',

@@ -224,10 +224,10 @@ export function App() {
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               <strong style={{ color: '#ffffff' }}>Hariti Rawal</strong>
               <a 
-                href="https://instagram.com/hariti_rawal" 
+                href="https://instagram.com/_rawalh_" 
                 target="_blank" 
                 rel="noreferrer" 
-                title="Instagram Profile"
+                title="Instagram: @_rawalh_"
                 style={{
                   color: '#e1306c',
                   display: 'inline-flex',
@@ -243,10 +243,10 @@ export function App() {
                 <Instagram size={12} />
               </a>
               <a 
-                href="https://github.com/haritirawal" 
+                href="https://github.com/Hari-228" 
                 target="_blank" 
                 rel="noreferrer" 
-                title="GitHub Profile"
+                title="GitHub: @Hari-228"
                 style={{
                   color: '#ffffff',
                   display: 'inline-flex',
