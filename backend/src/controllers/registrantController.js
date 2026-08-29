@@ -49,6 +49,32 @@ export const getRegistrants = async (req, res) => {
  */
 export const handleWebhookSubmission = async (req, res) => {
   try {
+    // 1. Check if this is a Google Sheets row edit / status update event
+    if (req.body.action === 'update_status' || (req.body.email && req.body.verificationStatus !== undefined) || (req.body.email && req.body.verified !== undefined)) {
+      const cleanEmail = String(req.body.email).toLowerCase().trim();
+      const existing = await registrantRepo.findByEmail(cleanEmail);
+      if (!existing) {
+        return res.status(404).json({
+          success: false,
+          message: `Attendee with email ${cleanEmail} not found in HackSeries database.`,
+        });
+      }
+
+      const isVerified = req.body.verified === true || String(req.body.verificationStatus).toLowerCase() === 'verified';
+      const updated = await registrantRepo.update(existing.uniqueId, {
+        verified: isVerified,
+        verificationStatus: isVerified ? 'Verified' : 'Not Verified',
+        verifiedAt: isVerified ? new Date().toISOString() : null,
+      });
+
+      console.log(`📊 [GOOGLE SHEET SYNC] Verification status updated for ${cleanEmail} -> ${isVerified ? 'VERIFIED ✅' : 'NOT VERIFIED ⏳'}`);
+      return res.status(200).json({
+        success: true,
+        message: `Status updated to ${isVerified ? 'Verified' : 'Not Verified'}`,
+        data: updated,
+      });
+    }
+
     const {
       name,
       email,
@@ -59,6 +85,8 @@ export const handleWebhookSubmission = async (req, res) => {
       githubUrl = '',
       institution = '',
       formResponses = {},
+      verified = false,
+      verificationStatus = 'Not Verified',
     } = req.body;
 
     if (!name || !email) {
@@ -70,7 +98,7 @@ export const handleWebhookSubmission = async (req, res) => {
 
     const cleanEmail = email.toLowerCase().trim();
 
-    // Check if registrant already exists in DynamoDB
+    // Check if registrant already exists in Firestore
     let existing = await registrantRepo.findByEmail(cleanEmail);
     if (existing) {
       const updated = await registrantRepo.update(existing.uniqueId, {
@@ -80,6 +108,8 @@ export const handleWebhookSubmission = async (req, res) => {
         track: track || existing.track,
         githubUrl: githubUrl ? githubUrl.trim() : existing.githubUrl,
         institution: institution ? institution.trim() : existing.institution,
+        verified: verified !== undefined ? verified : (existing.verified || false),
+        verificationStatus: verificationStatus || existing.verificationStatus || 'Not Verified',
       });
 
       return res.status(200).json({
@@ -299,6 +329,34 @@ export const deleteRegistrant = async (req, res) => {
 };
 
 /**
+ * Toggle verification status of an attendee from Admin Dashboard
+ */
+export const toggleVerification = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const registrant = await registrantRepo.findByIdOrEmail(id);
+    if (!registrant) {
+      return res.status(404).json({ success: false, message: 'Registrant not found' });
+    }
+
+    const nextVerified = !registrant.verified;
+    const updated = await registrantRepo.update(registrant.uniqueId, {
+      verified: nextVerified,
+      verificationStatus: nextVerified ? 'Verified' : 'Not Verified',
+      verifiedAt: nextVerified ? new Date().toISOString() : null,
+    });
+
+    res.json({
+      success: true,
+      message: `Registrant ${updated.name} marked as ${nextVerified ? 'Verified ✅' : 'Not Verified ⏳'}`,
+      data: updated,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Failed to toggle verification status', error: error.message });
+  }
+};
+
+/**
  * Export registrants to CSV format
  */
 export const exportCSV = async (req, res) => {
@@ -306,12 +364,13 @@ export const exportCSV = async (req, res) => {
     const result = await registrantRepo.getAll({ limit: 10000 });
     const registrants = result.items || [];
 
-    const headers = ['Unique ID', 'Name', 'Email', 'Phone', 'Ticket Type', 'Team Name', 'Track', 'Checked In', 'Checked In At', 'Checked In By', 'Pass Emailed', 'Created At'];
+    const headers = ['Unique ID', 'Name', 'Email', 'Phone', 'Verification Status', 'Ticket Type', 'Team Name', 'Track', 'Checked In', 'Checked In At', 'Checked In By', 'Pass Emailed', 'Created At'];
     const rows = registrants.map((r) => [
       r.uniqueId,
       `"${(r.name || '').replace(/"/g, '""')}"`,
       r.email,
       r.phone || '',
+      r.verified ? 'VERIFIED' : 'NOT VERIFIED',
       r.ticketType,
       `"${(r.teamName || '').replace(/"/g, '""')}"`,
       `"${(r.track || '').replace(/"/g, '""')}"`,

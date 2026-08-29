@@ -50,7 +50,7 @@ export const sendSinglePassEmail = async (req, res) => {
  */
 export const sendBulkEmails = async (req, res) => {
   try {
-    const { onlyPending = true, selectedIds } = req.body;
+    const { onlyPending = true, onlyVerified = false, selectedIds } = req.body;
 
     const allResult = await registrantRepo.getAll({ limit: 10000 });
     let registrants = allResult.items || [];
@@ -64,8 +64,13 @@ export const sendBulkEmails = async (req, res) => {
         idSet.has(String(r._id || '').toUpperCase().trim()) ||
         emailSet.has(String(r.email || '').toLowerCase().trim())
       );
-    } else if (onlyPending) {
-      registrants = registrants.filter((r) => !r.emailSent);
+    } else {
+      if (onlyVerified) {
+        registrants = registrants.filter((r) => r.verified === true || String(r.verificationStatus).toLowerCase() === 'verified');
+      }
+      if (onlyPending) {
+        registrants = registrants.filter((r) => !r.emailSent);
+      }
     }
 
     if (registrants.length === 0) {

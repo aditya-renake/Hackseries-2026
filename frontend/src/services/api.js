@@ -91,6 +91,13 @@ export const api = {
       });
       return handleResponse(res);
     },
+    toggleVerification: async (id) => {
+      const res = await fetch(`${API_BASE}/registrants/${id}/verify`, {
+        method: 'PATCH',
+        headers: getHeaders(),
+      });
+      return handleResponse(res);
+    },
     delete: async (id) => {
       const res = await fetch(`${API_BASE}/registrants/${id}`, {
         method: 'DELETE',

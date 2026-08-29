@@ -25,16 +25,21 @@ export const WebhookGuideModal = ({ onClose, onShowToast, onRefresh }) => {
   const webhookUrl = `${window.location.origin}/api/registrants/webhook`;
 
   const appsScriptCode = `/**
- * Google Apps Script for HackSeries 2026 Registration Intake
- * Add this to the Google Sheet linked to your Google Form:
- * Extensions -> Apps Script -> Paste code -> Set onFormSubmit Trigger!
+ * Google Apps Script for HackSeries 2026 Registration Intake & Verification Sync
+ * 1. Open your Google Sheet linked to Google Forms
+ * 2. Click Extensions -> Apps Script -> Paste this entire code
+ * 3. Triggers (⏰ Alarm clock icon on left) -> Add 2 Triggers:
+ *    - onFormSubmit (Event: On form submit)
+ *    - onEdit (Event: On edit)
  */
 
 const WEBHOOK_URL = "${webhookUrl}";
 
+/**
+ * Trigger 1: Runs automatically when a hacker submits the Google Form
+ */
 function onFormSubmit(e) {
   try {
-    // If triggered by form submit event e
     const itemResponses = e ? e.namedValues : null;
     
     let name = "Sample Hacker";
@@ -43,10 +48,10 @@ function onFormSubmit(e) {
     let ticketType = "Hacker Pass";
     let teamName = "";
     let track = "AI & Agentic Systems";
+    let institution = "";
     let formResponses = {};
 
     if (itemResponses) {
-      // Map common Google Form question headers
       for (const [key, valArray] of Object.entries(itemResponses)) {
         const val = valArray ? valArray[0] : "";
         const cleanKey = key.trim();
@@ -58,6 +63,7 @@ function onFormSubmit(e) {
         else if (lower.includes("phone") || lower.includes("contact")) phone = val;
         else if (lower.includes("team")) teamName = val;
         else if (lower.includes("track") || lower.includes("category")) track = val;
+        else if (lower.includes("college") || lower.includes("inst")) institution = val;
       }
     }
 
@@ -68,6 +74,7 @@ function onFormSubmit(e) {
       ticketType: ticketType,
       teamName: teamName,
       track: track,
+      institution: institution,
       formResponses: formResponses
     };
 
@@ -81,7 +88,66 @@ function onFormSubmit(e) {
     const response = UrlFetchApp.fetch(WEBHOOK_URL, options);
     Logger.log("HackSeries Webhook Response: " + response.getContentText());
   } catch (error) {
-    Logger.log("Error posting to HackSeries: " + error.toString());
+    Logger.log("Error onFormSubmit: " + error.toString());
+  }
+}
+
+/**
+ * Trigger 2: Runs automatically when you change 'Verified' / 'Not Verified' dropdown in Google Sheet!
+ */
+function onEdit(e) {
+  try {
+    if (!e || !e.range) return;
+    const range = e.range;
+    const sheet = range.getSheet();
+    const row = range.getRow();
+    const col = range.getColumn();
+    
+    // Ignore header row
+    if (row <= 1) return;
+
+    // Check edited column header name
+    const headerName = sheet.getRange(1, col).getValue().toString().toLowerCase().trim();
+    
+    if (headerName.includes("verif") || headerName.includes("status") || headerName.includes("approval")) {
+      const cellValue = range.getValue().toString().trim();
+      const isVerified = cellValue.toLowerCase() === "verified";
+
+      // Look for the Email column in Row 1
+      const lastCol = sheet.getLastColumn();
+      const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+      let emailCol = -1;
+      for (let i = 0; i < headers.length; i++) {
+        if (headers[i].toString().toLowerCase().includes("email")) {
+          emailCol = i + 1;
+          break;
+        }
+      }
+
+      if (emailCol > 0) {
+        const hackerEmail = sheet.getRange(row, emailCol).getValue().toString().trim();
+        if (hackerEmail) {
+          const payload = {
+            action: "update_status",
+            email: hackerEmail,
+            verified: isVerified,
+            verificationStatus: isVerified ? "Verified" : "Not Verified"
+          };
+
+          const options = {
+            method: "post",
+            contentType: "application/json",
+            payload: JSON.stringify(payload),
+            muteHttpExceptions: true
+          };
+
+          UrlFetchApp.fetch(WEBHOOK_URL, options);
+          Logger.log("✅ Updated verification for " + hackerEmail + " to: " + (isVerified ? "Verified" : "Not Verified"));
+        }
+      }
+    }
+  } catch (err) {
+    Logger.log("Error in onEdit sync: " + err.toString());
   }
 }
 `;

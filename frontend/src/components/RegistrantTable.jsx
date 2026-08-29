@@ -45,6 +45,33 @@ export const RegistrantTable = ({
   const isAllVisibleSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
   const isSomeVisibleSelected = visibleIds.some((id) => selectedIds.includes(id)) && !isAllVisibleSelected;
 
+  const [verifyingId, setVerifyingId] = useState(null);
+
+  // Toggle Verification status from dashboard
+  const handleToggleVerify = async (reg) => {
+    try {
+      setVerifyingId(reg.uniqueId || reg._id);
+      sounds.playClick();
+      const res = await api.registrants.toggleVerification(reg.uniqueId || reg._id);
+      sounds.playSuccess();
+      onShowToast({
+        type: 'success',
+        title: res.data?.verified ? 'Attendee Verified! ✅' : 'Verification Pending ⏳',
+        message: `${reg.name} marked as ${res.data?.verified ? 'Verified (Ready for Pass)' : 'Not Verified'}`,
+      });
+      onRefresh();
+    } catch (err) {
+      sounds.playError();
+      onShowToast({
+        type: 'error',
+        title: 'Verification Update Failed',
+        message: err.message,
+      });
+    } finally {
+      setVerifyingId(null);
+    }
+  };
+
   // 1-Click Send Pass Email to single attendee
   const handleSendEmail = async (reg) => {
     try {
@@ -172,6 +199,7 @@ export const RegistrantTable = ({
               </th>
 
               <th style={{ padding: '14px 16px' }}>Hacker / Attendee</th>
+              <th style={{ padding: '14px 16px' }}>Verification</th>
               <th style={{ padding: '14px 16px' }}>Pass ID</th>
               <th style={{ padding: '14px 16px' }}>Tier & Track</th>
               <th style={{ padding: '14px 16px' }}>Check-in Status</th>
@@ -182,7 +210,7 @@ export const RegistrantTable = ({
           <tbody>
             {registrants.length === 0 ? (
               <tr>
-                <td colSpan={7} style={{ padding: '48px 20px', textAlign: 'center', color: 'var(--text-dim)' }}>
+                <td colSpan={8} style={{ padding: '48px 20px', textAlign: 'center', color: 'var(--text-dim)' }}>
                   <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '4px' }}>No Registrants Found</div>
                   <p style={{ fontSize: '13px' }}>Google Form submissions will automatically appear here in real time via webhook.</p>
                 </td>
@@ -232,6 +260,32 @@ export const RegistrantTable = ({
                           <Users size={11} /> Team: {reg.teamName}
                         </div>
                       )}
+                    </td>
+
+                    {/* Verification Status (Synced with Google Sheets) */}
+                    <td style={{ padding: '14px 16px' }}>
+                      <button
+                        onClick={() => handleToggleVerify(reg)}
+                        disabled={verifyingId === regId}
+                        style={{
+                          background: reg.verified ? 'rgba(34, 197, 94, 0.15)' : 'rgba(245, 158, 11, 0.12)',
+                          border: reg.verified ? '1px solid rgba(34, 197, 94, 0.4)' : '1px solid rgba(245, 158, 11, 0.35)',
+                          color: reg.verified ? '#4ade80' : '#fbbf24',
+                          padding: '4px 10px',
+                          borderRadius: '9999px',
+                          fontSize: '11px',
+                          fontWeight: '800',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          transition: 'all 0.15s ease'
+                        }}
+                        title="Click to toggle verification status (syncs with Google Sheets dropdown!)"
+                      >
+                        {reg.verified ? <CheckCircle2 size={12} color="#22c55e" /> : <Clock size={12} color="#f59e0b" />}
+                        <span>{reg.verified ? 'VERIFIED' : 'PENDING'}</span>
+                      </button>
                     </td>
 
                     {/* Pass ID with anti-forgery indicator */}

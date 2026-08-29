@@ -8,6 +8,7 @@ import {
   regenerateQR,
   deleteRegistrant,
   exportCSV,
+  toggleVerification,
 } from '../controllers/registrantController.js';
 import { requireAuth, requireAdmin } from '../middleware/auth.js';
 
@@ -25,6 +26,7 @@ router.get('/export/csv', requireAuth, exportCSV);
 router.get('/:id', requireAuth, getRegistrantById);
 router.post('/', requireAuth, createRegistrant);
 router.post('/:id/generate-qr', requireAuth, regenerateQR);
+router.patch('/:id/verify', requireAuth, toggleVerification);
 router.delete('/:id', requireAuth, requireAdmin, deleteRegistrant);
 
 export default router;

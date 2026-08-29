@@ -95,6 +95,8 @@ export const registrantRepo = {
     const totalAll = items.length;
     const checkedInCount = items.filter((i) => i.checkedIn).length;
     const emailSentCount = items.filter((i) => i.emailSent).length;
+    const verifiedCount = items.filter((i) => i.verified === true || String(i.verificationStatus).toLowerCase() === 'verified').length;
+    const verifiedPendingEmailCount = items.filter((i) => (i.verified === true || String(i.verificationStatus).toLowerCase() === 'verified') && !i.emailSent).length;
 
     // Filters
     if (checkedIn !== undefined && checkedIn !== '') {
@@ -105,6 +107,11 @@ export const registrantRepo = {
     if (emailSent !== undefined && emailSent !== '') {
       const isSent = emailSent === 'true' || emailSent === true;
       items = items.filter((item) => Boolean(item.emailSent) === isSent);
+    }
+
+    if (verified !== undefined && verified !== '' && verified !== 'all') {
+      const isVer = verified === 'true' || verified === true;
+      items = items.filter((item) => (item.verified === true || String(item.verificationStatus).toLowerCase() === 'verified') === isVer);
     }
 
     if (ticketType && ticketType !== 'all') {
@@ -159,6 +166,8 @@ export const registrantRepo = {
         checkedInPercentage: totalAll > 0 ? Math.round((checkedInCount / totalAll) * 100) : 0,
         emailSentCount,
         pendingEmailCount: totalAll - emailSentCount,
+        verifiedCount,
+        verifiedPendingEmailCount,
       },
     };
   },

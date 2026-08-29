@@ -35,6 +35,8 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
     checkedInPercentage: 0,
     emailSentCount: 0,
     pendingEmailCount: 0,
+    verifiedCount: 0,
+    verifiedPendingEmailCount: 0,
   });
   const [pagination, setPagination] = useState({
     page: 1,
@@ -50,6 +52,7 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
   const [search, setSearch] = useState('');
   const [checkedInFilter, setCheckedInFilter] = useState('');
   const [emailSentFilter, setEmailSentFilter] = useState('');
+  const [verifiedFilter, setVerifiedFilter] = useState('');
   const [trackFilter, setTrackFilter] = useState('all');
   const [ticketFilter, setTicketFilter] = useState('all');
   const [loading, setLoading] = useState(false);
@@ -72,6 +75,7 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
         search,
         checkedIn: checkedInFilter,
         emailSent: emailSentFilter,
+        verified: verifiedFilter,
         track: trackFilter,
         ticketType: ticketFilter,
       };
@@ -353,6 +357,18 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
             <Search size={16} color="#6b7280" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
           </div>
 
+          {/* Verification Status filter */}
+          <select
+            className="input-control select-control"
+            style={{ width: '175px' }}
+            value={verifiedFilter}
+            onChange={(e) => setVerifiedFilter(e.target.value)}
+          >
+            <option value="">Verification: All</option>
+            <option value="true">✅ Verified Only</option>
+            <option value="false">⏳ Pending Review</option>
+          </select>
+
           {/* Check-in filter */}
           <select
             className="input-control select-control"
@@ -444,6 +460,8 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
         <BulkEmailModal
           pendingCount={stats.pendingEmailCount}
           totalCount={stats.totalRegistrants}
+          verifiedCount={stats.verifiedCount}
+          verifiedPendingCount={stats.verifiedPendingEmailCount}
           selectedRegistrants={selectedRegistrantsList}
           onClose={() => setShowBulkEmail(false)}
           onShowToast={onShowToast}

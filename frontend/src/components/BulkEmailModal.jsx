@@ -4,22 +4,27 @@ import { api } from '../services/api';
 import { sounds } from '../utils/soundEffects';
 
 export const BulkEmailModal = ({
-  pendingCount,
-  totalCount,
+  pendingCount = 0,
+  totalCount = 0,
+  verifiedCount = 0,
+  verifiedPendingCount = 0,
   selectedRegistrants = [],
   onClose,
   onShowToast,
   onRefresh,
   onClearSelection,
 }) => {
-  // Target Mode: 'selected' | 'pending' | 'all'
+  // Target Mode: 'verified_pending' | 'verified_all' | 'selected' | 'pending' | 'all'
   const hasSelected = selectedRegistrants && selectedRegistrants.length > 0;
-  const [targetMode, setTargetMode] = useState(hasSelected ? 'selected' : 'pending');
+  const initialMode = hasSelected ? 'selected' : (verifiedPendingCount > 0 ? 'verified_pending' : 'pending');
+  const [targetMode, setTargetMode] = useState(initialMode);
   const [isSending, setIsSending] = useState(false);
   const [progress, setProgress] = useState(null);
 
   const getTargetCount = () => {
     if (targetMode === 'selected') return selectedRegistrants.length;
+    if (targetMode === 'verified_pending') return verifiedPendingCount;
+    if (targetMode === 'verified_all') return verifiedCount;
     if (targetMode === 'pending') return pendingCount;
     return totalCount;
   };
@@ -31,8 +36,8 @@ export const BulkEmailModal = ({
       sounds.playWarning();
       onShowToast({
         type: 'info',
-        title: 'No Recipients',
-        message: 'There are no eligible recipients matching the selected criteria.',
+        title: 'No Eligible Recipients',
+        message: 'There are no recipients matching your selected verification / pass criteria.',
       });
       return;
     }
@@ -45,6 +50,12 @@ export const BulkEmailModal = ({
       let payload = {};
       if (targetMode === 'selected') {
         payload.selectedIds = selectedRegistrants.map((r) => r.uniqueId || r._id);
+      } else if (targetMode === 'verified_pending') {
+        payload.onlyVerified = true;
+        payload.onlyPending = true;
+      } else if (targetMode === 'verified_all') {
+        payload.onlyVerified = true;
+        payload.onlyPending = false;
       } else if (targetMode === 'pending') {
         payload.onlyPending = true;
       } else {
@@ -81,7 +92,7 @@ export const BulkEmailModal = ({
       <div 
         className="modal-content" 
         onClick={(e) => e.stopPropagation()} 
-        style={{ maxWidth: '580px', border: '1px solid rgba(255, 255, 255, 0.12)' }}
+        style={{ maxWidth: '600px', border: '1px solid rgba(255, 255, 255, 0.12)' }}
       >
         
         {/* Modal Header */}
@@ -116,7 +127,75 @@ export const BulkEmailModal = ({
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               
-              {/* Option 1: Selected attendees */}
+              {/* Option 1: Verified & Pending only (Recommended) */}
+              <label 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '12px', 
+                  fontSize: '13px', 
+                  cursor: 'pointer',
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  background: targetMode === 'verified_pending' ? 'rgba(34, 197, 94, 0.14)' : 'rgba(255, 255, 255, 0.02)',
+                  border: `1px solid ${targetMode === 'verified_pending' ? '#22c55e' : 'var(--border-subtle)'}`,
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <input
+                  type="radio"
+                  name="bulkTarget"
+                  checked={targetMode === 'verified_pending'}
+                  onChange={() => setTargetMode('verified_pending')}
+                  disabled={isSending}
+                  style={{ accentColor: '#22c55e', width: '16px', height: '16px' }}
+                />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: '800', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <CheckCircle2 size={15} color="#22c55e" />
+                    <span>Verified & Pending Pass Only ({verifiedPendingCount} hackers)</span>
+                    <span className="badge badge-emerald" style={{ fontSize: '9px' }}>RECOMMENDED</span>
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    Only emails hackers marked as "Verified" in Google Sheets who have not yet received their pass
+                  </div>
+                </div>
+              </label>
+
+              {/* Option 2: All Verified attendees */}
+              <label 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '12px', 
+                  fontSize: '13px', 
+                  cursor: 'pointer',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  background: targetMode === 'verified_all' ? 'rgba(34, 197, 94, 0.12)' : 'transparent',
+                  border: `1px solid ${targetMode === 'verified_all' ? 'rgba(34, 197, 94, 0.4)' : 'var(--border-subtle)'}`,
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <input
+                  type="radio"
+                  name="bulkTarget"
+                  checked={targetMode === 'verified_all'}
+                  onChange={() => setTargetMode('verified_all')}
+                  disabled={isSending}
+                  style={{ accentColor: '#22c55e', width: '16px', height: '16px' }}
+                />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: '800', color: '#ffffff' }}>
+                    All Verified Hackers ({verifiedCount} hackers)
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    Dispatches passes to all verified hackers (including resending)
+                  </div>
+                </div>
+              </label>
+
+              {/* Option 3: Selected attendees */}
               {hasSelected && (
                 <label 
                   style={{ 
@@ -152,7 +231,7 @@ export const BulkEmailModal = ({
                 </label>
               )}
 
-              {/* Option 2: Pending only */}
+              {/* Option 4: Pending only */}
               <label 
                 style={{ 
                   display: 'flex', 
@@ -185,7 +264,7 @@ export const BulkEmailModal = ({
                 </div>
               </label>
 
-              {/* Option 3: All registrants */}
+              {/* Option 5: All registrants */}
               <label 
                 style={{ 
                   display: 'flex', 
