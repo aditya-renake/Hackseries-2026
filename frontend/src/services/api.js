@@ -107,6 +107,14 @@ export const api = {
       });
       return handleResponse(res);
     },
+    bulkImport: async (attendees, autoVerify = true, sendEmails = false) => {
+      const res = await fetch(`${API_BASE}/registrants/bulk-import`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ attendees, autoVerify, sendEmails }),
+      });
+      return handleResponse(res);
+    },
     delete: async (id) => {
       const res = await fetch(`${API_BASE}/registrants/${id}`, {
         method: 'DELETE',

@@ -25,6 +25,7 @@ import { WebhookGuideModal } from '../components/WebhookGuideModal';
 import { EmailTemplateModal } from '../components/EmailTemplateModal';
 import { BulkEmailModal } from '../components/BulkEmailModal';
 import { SuperAdminModal } from '../components/SuperAdminModal';
+import { ExcelImportModal } from '../components/ExcelImportModal';
 import { sounds } from '../utils/soundEffects';
 
 const CACHE_KEY_DASHBOARD = 'hs26_cached_dashboard_state';
@@ -72,6 +73,7 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
 
   // Modals
   const [selectedPassRegistrant, setSelectedPassRegistrant] = useState(null);
+  const [showExcelImport, setShowExcelImport] = useState(false);
   const [showWebhookGuide, setShowWebhookGuide] = useState(false);
   const [showEmailTemplate, setShowEmailTemplate] = useState(false);
   const [showBulkEmail, setShowBulkEmail] = useState(false);
@@ -232,6 +234,21 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
               <QrCode size={14} /> Open Gate Scanner
             </button>
           )}
+
+          <button 
+            className="btn btn-secondary btn-sm" 
+            onClick={() => {
+              sounds.playClick();
+              setShowExcelImport(true);
+            }}
+            style={{
+              border: '1px solid rgba(34, 197, 94, 0.4)',
+              background: 'rgba(34, 197, 94, 0.08)',
+              color: '#4ade80'
+            }}
+          >
+            <FileSpreadsheet size={15} /> Import Excel / CSV
+          </button>
 
           <button className="btn btn-secondary btn-sm" onClick={() => setShowWebhookGuide(true)}>
             <FileSpreadsheet size={15} color="#22c55e" /> Google Sheet Webhook Script
@@ -487,6 +504,15 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
         <PassPreviewModal
           registrant={selectedPassRegistrant}
           onClose={() => setSelectedPassRegistrant(null)}
+          onShowToast={onShowToast}
+          onRefresh={() => fetchData(pagination.page)}
+        />
+      )}
+
+      {showExcelImport && (
+        <ExcelImportModal
+          isOpen={showExcelImport}
+          onClose={() => setShowExcelImport(false)}
           onShowToast={onShowToast}
           onRefresh={() => fetchData(pagination.page)}
         />

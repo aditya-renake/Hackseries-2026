@@ -469,3 +469,95 @@ export const exportCSV = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to generate CSV export', error: error.message });
   }
 };
+
+/**
+ * Bulk import registrants from Excel / CSV with auto-verification & pass generation
+ */
+export const bulkImportRegistrants = async (req, res) => {
+  try {
+    const { attendees, autoVerify = true, sendEmails = false } = req.body || {};
+    if (!Array.isArray(attendees) || attendees.length === 0) {
+      return res.status(400).json({ success: false, message: 'Array of attendee records is required.' });
+    }
+
+    const imported = [];
+    const eventConfig = await configRepo.getConfig().catch(() => ({}));
+
+    for (const item of attendees) {
+      const cleanEmail = String(item.email || '').toLowerCase().trim();
+      const rawName = String(item.name || item.fullName || '').trim() || 'Hacker';
+
+      if (!cleanEmail) continue;
+
+      let existing = await registrantRepo.findByEmail(cleanEmail);
+      const isVerified = autoVerify ? true : Boolean(item.verified || false);
+
+      if (existing) {
+        const updated = await registrantRepo.update(existing.uniqueId, {
+          name: rawName,
+          phone: item.phone ? String(item.phone).trim() : existing.phone,
+          teamName: item.teamName ? String(item.teamName).trim() : existing.teamName,
+          track: item.track || existing.track,
+          institution: item.institution || existing.institution,
+          verified: isVerified,
+          verificationStatus: isVerified ? 'Verified' : 'Not Verified',
+          verifiedAt: isVerified ? new Date().toISOString() : null,
+          formResponses: { ...(existing.formResponses || {}), ...(item.formResponses || {}) },
+        });
+        imported.push(updated);
+
+        if (sendEmails && !existing.emailSent) {
+          sendPassEmail(updated, eventConfig)
+            .then(() => registrantRepo.update(updated.uniqueId, { emailSent: true, emailSentAt: new Date().toISOString() }))
+            .catch((e) => console.warn('[BulkImport Email Error]:', e.message));
+        }
+      } else {
+        const rawUuid = uuidv4().replace(/-/g, '').substring(0, 8).toUpperCase();
+        const uniqueId = `HS26-${rawUuid}`;
+        const ticketType = item.ticketType || 'Hacker Pass';
+        const signature = generatePassSignature(uniqueId, cleanEmail, ticketType);
+        const qrPayload = createQRPayload(uniqueId, cleanEmail, ticketType);
+        const qrCodeDataUrl = await generateQRCodeDataUrl(qrPayload);
+
+        const newAttendee = await registrantRepo.create({
+          uniqueId,
+          name: rawName,
+          email: cleanEmail,
+          phone: item.phone ? String(item.phone).trim() : '',
+          ticketType,
+          teamName: item.teamName ? String(item.teamName).trim() : '',
+          track: item.track || 'AI & Agentic Systems',
+          githubUrl: item.githubUrl ? String(item.githubUrl).trim() : '',
+          institution: item.institution ? String(item.institution).trim() : 'DYP DPU Pune',
+          formResponses: item.formResponses || {},
+          qrPayload,
+          qrSignature: signature,
+          qrCodeDataUrl,
+          verified: isVerified,
+          verificationStatus: isVerified ? 'Verified' : 'Not Verified',
+          verifiedAt: isVerified ? new Date().toISOString() : null,
+          emailSent: false,
+          checkedIn: false,
+        });
+
+        imported.push(newAttendee);
+
+        if (sendEmails) {
+          sendPassEmail(newAttendee, eventConfig)
+            .then(() => registrantRepo.update(newAttendee.uniqueId, { emailSent: true, emailSentAt: new Date().toISOString() }))
+            .catch((e) => console.warn('[BulkImport Email Error]:', e.message));
+        }
+      }
+    }
+
+    return res.json({
+      success: true,
+      message: `Successfully imported ${imported.length} attendees from Excel sheet!`,
+      importedCount: imported.length,
+      emailsDispatched: sendEmails,
+    });
+  } catch (error) {
+    console.error('Bulk Import error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to import attendees', error: error.message });
+  }
+};
