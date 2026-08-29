@@ -1,5 +1,15 @@
 import { getFirestore } from '../config/firebase.js';
 
+// In-memory micro-cache for sub-millisecond dashboard speeds
+let memoryCache = null;
+let lastCacheTime = 0;
+const CACHE_TTL_MS = 2500; // 2.5 second TTL for ultrafast queries
+
+function invalidateCache() {
+  memoryCache = null;
+  lastCacheTime = 0;
+}
+
 export const registrantRepo = {
   getCollection() {
     const db = getFirestore();
@@ -10,6 +20,7 @@ export const registrantRepo = {
    * Create or overwrite registrant document in Firestore
    */
   async create(data) {
+    invalidateCache();
     const collection = this.getCollection();
     const cleanId = data.uniqueId.toUpperCase().trim();
     const item = {
@@ -31,8 +42,14 @@ export const registrantRepo = {
   async findByUniqueId(uniqueId) {
     if (!uniqueId) return null;
     const cleanId = uniqueId.toUpperCase().trim();
-    const collection = this.getCollection();
+    
+    // Check in-memory cache first if warm
+    if (memoryCache && (Date.now() - lastCacheTime < CACHE_TTL_MS)) {
+      const cached = memoryCache.find((r) => r.uniqueId === cleanId || r._id === cleanId);
+      if (cached) return cached;
+    }
 
+    const collection = this.getCollection();
     const doc = await collection.doc(cleanId).get();
     if (doc.exists) {
       return { _id: doc.id, ...doc.data() };
@@ -46,8 +63,14 @@ export const registrantRepo = {
   async findByEmail(email) {
     if (!email) return null;
     const cleanEmail = email.toLowerCase().trim();
-    const collection = this.getCollection();
 
+    // Check in-memory cache first if warm
+    if (memoryCache && (Date.now() - lastCacheTime < CACHE_TTL_MS)) {
+      const cached = memoryCache.find((r) => String(r.email).toLowerCase().trim() === cleanEmail);
+      if (cached) return cached;
+    }
+
+    const collection = this.getCollection();
     const snapshot = await collection.where('email', '==', cleanEmail).limit(1).get();
     if (!snapshot.empty) {
       const doc = snapshot.docs[0];
@@ -70,7 +93,7 @@ export const registrantRepo = {
   },
 
   /**
-   * Get all registrants with search, filter, and pagination
+   * Get all registrants with search, filter, and pagination (optimized with micro-cache)
    */
   async getAll({
     page = 1,
@@ -78,18 +101,26 @@ export const registrantRepo = {
     search = '',
     checkedIn,
     emailSent,
+    verified,
     ticketType,
     track,
     sortBy = 'createdAt',
     sortOrder = 'desc',
   } = {}) {
-    const collection = this.getCollection();
-    const snapshot = await collection.get();
-
     let items = [];
-    snapshot.docs.forEach((doc) => {
-      items.push({ _id: doc.id, ...doc.data() });
-    });
+
+    const now = Date.now();
+    if (memoryCache && (now - lastCacheTime < CACHE_TTL_MS)) {
+      items = [...memoryCache];
+    } else {
+      const collection = this.getCollection();
+      const snapshot = await collection.get();
+      snapshot.docs.forEach((doc) => {
+        items.push({ _id: doc.id, ...doc.data() });
+      });
+      memoryCache = items;
+      lastCacheTime = now;
+    }
 
     // Total counts across all items
     const totalAll = items.length;
@@ -176,6 +207,7 @@ export const registrantRepo = {
    * Update registrant document in Firestore
    */
   async update(uniqueId, updates) {
+    invalidateCache();
     if (!uniqueId) return null;
     const cleanId = uniqueId.toUpperCase().trim();
     const collection = this.getCollection();
@@ -198,6 +230,7 @@ export const registrantRepo = {
    * Delete registrant document
    */
   async delete(uniqueId) {
+    invalidateCache();
     if (!uniqueId) return false;
     const cleanId = uniqueId.toUpperCase().trim();
     const collection = this.getCollection();

@@ -65,7 +65,7 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
   const [showSuperAdminModal, setShowSuperAdminModal] = useState(false);
   const [eventConfig, setEventConfig] = useState(null);
 
-  // Fetch Data
+  // High-Speed Concurrent Fetch
   const fetchData = useCallback(async (page = 1) => {
     try {
       setLoading(true);
@@ -80,10 +80,19 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
         ticketType: ticketFilter,
       };
 
-      const response = await api.registrants.list(params);
-      setRegistrants(response.data || []);
-      setPagination(response.pagination || {});
-      setStats(response.stats || {});
+      const [regRes, configRes] = await Promise.all([
+        api.registrants.list(params),
+        !eventConfig ? api.event.getConfig().catch(() => null) : Promise.resolve(null),
+      ]);
+
+      if (regRes) {
+        setRegistrants(regRes.data || []);
+        setPagination(regRes.pagination || {});
+        setStats(regRes.stats || {});
+      }
+      if (configRes?.data) {
+        setEventConfig(configRes.data);
+      }
     } catch (err) {
       onShowToast({
         type: 'error',
@@ -93,16 +102,13 @@ export const DashboardPage = ({ onShowToast, onNavigateToScanner }) => {
     } finally {
       setLoading(false);
     }
-  }, [pagination.limit, search, checkedInFilter, emailSentFilter, trackFilter, ticketFilter, onShowToast]);
+  }, [pagination.limit, search, checkedInFilter, emailSentFilter, verifiedFilter, trackFilter, ticketFilter, eventConfig, onShowToast]);
 
+  // Initial and reactive fetch on filter change
   useEffect(() => {
     fetchData(1);
-  }, [fetchData]);
-
-  // Load Event Config
-  useEffect(() => {
-    api.event.getConfig().then((res) => setEventConfig(res.data)).catch(() => {});
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkedInFilter, emailSentFilter, verifiedFilter, trackFilter, ticketFilter]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
