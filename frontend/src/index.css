@@ -19,7 +19,8 @@
   --text-muted: #9ca3af;
   --text-dim: #6b7280;
 
-  --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-main: 'Metropolis', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Metropolis', 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   --radius-sm: 8px;
   --radius-md: 14px;
