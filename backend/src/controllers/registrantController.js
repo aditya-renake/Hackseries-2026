@@ -471,15 +471,16 @@ export const exportCSV = async (req, res) => {
 };
 
 /**
- * Bulk import registrants from Excel / CSV with auto-verification & pass generation
+ * Bulk import registrants from Excel / CSV with default Verification Pending & acknowledgement email
  */
 export const bulkImportRegistrants = async (req, res) => {
   try {
-    const { attendees, autoVerify = true, sendEmails = false } = req.body || {};
+    const { attendees, autoVerify = false, sendAckEmail = true, sendEmails = false } = req.body || {};
     if (!Array.isArray(attendees) || attendees.length === 0) {
       return res.status(400).json({ success: false, message: 'Array of attendee records is required.' });
     }
 
+    const shouldSendAck = sendAckEmail || sendEmails;
     const imported = [];
     const eventConfig = await configRepo.getConfig().catch(() => ({}));
 
@@ -490,7 +491,7 @@ export const bulkImportRegistrants = async (req, res) => {
       if (!cleanEmail) continue;
 
       let existing = await registrantRepo.findByEmail(cleanEmail);
-      const isVerified = autoVerify ? true : Boolean(item.verified || false);
+      const isVerified = Boolean(autoVerify);
 
       if (existing) {
         const updated = await registrantRepo.update(existing.uniqueId, {
@@ -506,10 +507,10 @@ export const bulkImportRegistrants = async (req, res) => {
         });
         imported.push(updated);
 
-        if (sendEmails && !existing.emailSent) {
-          sendPassEmail(updated, eventConfig)
-            .then(() => registrantRepo.update(updated.uniqueId, { emailSent: true, emailSentAt: new Date().toISOString() }))
-            .catch((e) => console.warn('[BulkImport Email Error]:', e.message));
+        // Send "Registration Received • Details Under Verification" Acknowledgement Email (NO QR PASS)
+        if (shouldSendAck) {
+          sendRegistrationReceivedEmail(updated, eventConfig)
+            .catch((e) => console.warn('[BulkImport Ack Email Error]:', e.message));
         }
       } else {
         const rawUuid = uuidv4().replace(/-/g, '').substring(0, 8).toUpperCase();
@@ -542,19 +543,19 @@ export const bulkImportRegistrants = async (req, res) => {
 
         imported.push(newAttendee);
 
-        if (sendEmails) {
-          sendPassEmail(newAttendee, eventConfig)
-            .then(() => registrantRepo.update(newAttendee.uniqueId, { emailSent: true, emailSentAt: new Date().toISOString() }))
-            .catch((e) => console.warn('[BulkImport Email Error]:', e.message));
+        // Send "Registration Received • Details Under Verification" Acknowledgement Email (NO QR PASS)
+        if (shouldSendAck) {
+          sendRegistrationReceivedEmail(newAttendee, eventConfig)
+            .catch((e) => console.warn('[BulkImport Ack Email Error]:', e.message));
         }
       }
     }
 
     return res.json({
       success: true,
-      message: `Successfully imported ${imported.length} attendees from Excel sheet!`,
+      message: `Successfully imported ${imported.length} attendees as "Verification Pending"!`,
       importedCount: imported.length,
-      emailsDispatched: sendEmails,
+      ackEmailsDispatched: shouldSendAck,
     });
   } catch (error) {
     console.error('Bulk Import error:', error);

@@ -20,8 +20,8 @@ import { sounds } from '../utils/soundEffects';
 export const ExcelImportModal = ({ isOpen, onClose, onRefresh, onShowToast }) => {
   const [file, setFile] = useState(null);
   const [parsedRows, setParsedRows] = useState([]);
-  const [autoVerify, setAutoVerify] = useState(true);
-  const [sendEmails, setSendEmails] = useState(false);
+  const [autoVerify, setAutoVerify] = useState(false);
+  const [sendAckEmail, setSendAckEmail] = useState(true);
   const [isImporting, setIsImporting] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
@@ -131,7 +131,7 @@ export const ExcelImportModal = ({ isOpen, onClose, onRefresh, onShowToast }) =>
     setIsImporting(true);
 
     try {
-      const res = await api.registrants.bulkImport(parsedRows, autoVerify, sendEmails);
+      const res = await api.registrants.bulkImport(parsedRows, autoVerify, sendAckEmail);
       sounds.playSuccess();
       onShowToast({
         type: 'success',
@@ -170,7 +170,7 @@ export const ExcelImportModal = ({ isOpen, onClose, onRefresh, onShowToast }) =>
                 Import External Excel / CSV Sheet
               </h3>
               <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)' }}>
-                Upload any .xlsx, .xls, or .csv file to import attendees and auto-dispatch digital passes
+                Upload any .xlsx, .xls, or .csv file to import attendees as Pending and send verification acknowledgement emails
               </p>
             </div>
           </div>
@@ -224,7 +224,7 @@ export const ExcelImportModal = ({ isOpen, onClose, onRefresh, onShowToast }) =>
                 <div>
                   <div style={{ fontWeight: '800', color: '#ffffff', fontSize: '14px' }}>{file.name}</div>
                   <div style={{ fontSize: '12px', color: '#4ade80' }}>
-                    ✅ {parsedRows.length} attendees ready for import
+                    ✅ {parsedRows.length} attendees ready for import (Status: ⏳ Verification Pending)
                   </div>
                 </div>
               </div>
@@ -278,11 +278,39 @@ export const ExcelImportModal = ({ isOpen, onClose, onRefresh, onShowToast }) =>
             {/* Automation Options */}
             <div style={{ background: '#090d18', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '16px', marginBottom: '24px' }}>
               <div style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff', marginBottom: '12px' }}>
-                ⚡ Import Automation Options:
+                ⚡ Import & Email Settings:
               </div>
 
-              {/* Option 1: Auto Verify */}
-              <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', marginBottom: '12px' }}>
+              {/* Option 1: Verification Pending Email */}
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer', marginBottom: '14px' }}>
+                <input
+                  type="checkbox"
+                  checked={sendAckEmail}
+                  onChange={(e) => setSendAckEmail(e.target.checked)}
+                  style={{ width: '16px', height: '16px', accentColor: '#38bdf8', cursor: 'pointer', marginTop: '2px' }}
+                />
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: '700', color: '#ffffff' }}>
+                    ✉️ Send "Verification Pending / Registration Received" Acknowledgement Email (Recommended)
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>
+                    Emails each student confirming their registration is under review by the operations team. <strong>Does NOT send the QR pass.</strong>
+                  </div>
+                </div>
+              </label>
+
+              {/* Option 2: Default Status Pending Info */}
+              <div style={{ background: 'rgba(234, 179, 8, 0.08)', border: '1px solid rgba(234, 179, 8, 0.25)', borderRadius: '8px', padding: '10px 14px', marginBottom: '12px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '700', color: '#facc15' }}>
+                  ⏳ Default Import Status: Pending Verification
+                </div>
+                <div style={{ fontSize: '11px', color: '#cbd5e1', marginTop: '2px' }}>
+                  All imported attendees start as <strong>Not Verified</strong>. You can verify them on the dashboard whenever you're ready to dispatch their official QR passes.
+                </div>
+              </div>
+
+              {/* Option 3: Override - Mark as Verified Directly */}
+              <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
                 <input
                   type="checkbox"
                   checked={autoVerify}
@@ -290,29 +318,8 @@ export const ExcelImportModal = ({ isOpen, onClose, onRefresh, onShowToast }) =>
                   style={{ width: '16px', height: '16px', accentColor: '#22c55e', cursor: 'pointer' }}
                 />
                 <div>
-                  <div style={{ fontSize: '13px', fontWeight: '700', color: '#ffffff' }}>
-                    Mark imported attendees as <span style={{ color: '#4ade80' }}>Verified</span> (Recommended)
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#9ca3af' }}>
-                    Enables instant pass generation and allows gate check-in scanning right away.
-                  </div>
-                </div>
-              </label>
-
-              {/* Option 2: Send Emails */}
-              <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  checked={sendEmails}
-                  onChange={(e) => setSendEmails(e.target.checked)}
-                  style={{ width: '16px', height: '16px', accentColor: '#38bdf8', cursor: 'pointer' }}
-                />
-                <div>
-                  <div style={{ fontSize: '13px', fontWeight: '700', color: '#ffffff' }}>
-                    Immediately send Official Holographic QR Pass Emails
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#9ca3af' }}>
-                    Automatically emails every student their digital pass from your Gmail right upon import.
+                  <div style={{ fontSize: '12px', fontWeight: '600', color: '#9ca3af' }}>
+                    Override: Mark as <span style={{ color: '#4ade80' }}>Verified</span> immediately upon import
                   </div>
                 </div>
               </label>
