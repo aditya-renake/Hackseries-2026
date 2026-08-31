@@ -43,7 +43,7 @@ export const InteractiveBackground = () => {
           width: '750px',
           height: '750px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(34, 211, 238, 0.14) 0%, rgba(209, 165, 80, 0.09) 35%, rgba(178, 43, 47, 0.05) 60%, transparent 80%)',
+          background: 'radial-gradient(circle, rgba(178, 43, 47, 0.18) 0%, rgba(209, 165, 80, 0.12) 35%, rgba(247, 208, 112, 0.05) 60%, transparent 80%)',
           transform: `translate3d(${mousePos.x - 375}px, ${mousePos.y - 375}px, 0)`,
           transition: 'transform 0.08s ease-out, opacity 0.4s ease',
           opacity: isHovering ? 1 : 0,

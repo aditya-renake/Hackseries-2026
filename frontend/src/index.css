@@ -49,18 +49,18 @@ html, body {
   width: 100%;
 }
 
-/* High-Impact Cyber Ambient Background with Crisp Matrix Grid & Radial Glows */
+/* Authentic ACES Institutional Ambient Background with Crisp Matrix Grid & Crimson/Gold Radial Glows */
 body {
   background-color: var(--bg-primary);
   background-image: 
-    radial-gradient(circle at 50% 50%, rgba(34, 211, 238, 0.08) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(209, 165, 80, 0.12) 1px, transparent 1px),
+    linear-gradient(rgba(178, 43, 47, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(178, 43, 47, 0.045) 1px, transparent 1px),
     radial-gradient(ellipse 80% 50% at 50% -10%, rgba(178, 43, 47, 0.45) 0%, transparent 65%),
     radial-gradient(circle 700px at 10% 20%, rgba(209, 165, 80, 0.22) 0%, transparent 55%),
-    radial-gradient(circle 800px at 90% 40%, rgba(34, 211, 238, 0.2) 0%, transparent 60%),
-    radial-gradient(circle 750px at 20% 80%, rgba(16, 185, 129, 0.16) 0%, transparent 55%),
-    radial-gradient(ellipse 90% 60% at 50% 100%, rgba(178, 43, 47, 0.3) 0%, transparent 70%);
+    radial-gradient(circle 800px at 90% 40%, rgba(178, 43, 47, 0.28) 0%, transparent 60%),
+    radial-gradient(circle 750px at 20% 80%, rgba(209, 165, 80, 0.16) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 60% at 50% 100%, rgba(178, 43, 47, 0.35) 0%, transparent 70%);
   background-size: 32px 32px, 32px 32px, 32px 32px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
   background-attachment: fixed;
 }
