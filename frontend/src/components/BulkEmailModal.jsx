@@ -14,19 +14,18 @@ export const BulkEmailModal = ({
   onRefresh,
   onClearSelection,
 }) => {
-  // Target Mode: 'verified_pending' | 'verified_all' | 'selected' | 'pending' | 'all'
+  // Target Mode: 'verified_pending' | 'verified_all' | 'selected'
   const hasSelected = selectedRegistrants && selectedRegistrants.length > 0;
-  const initialMode = hasSelected ? 'selected' : (verifiedPendingCount > 0 ? 'verified_pending' : 'pending');
+  const verifiedSelectedCount = (selectedRegistrants || []).filter((r) => r.verified === true || String(r.verificationStatus).toLowerCase() === 'verified').length;
+  const initialMode = hasSelected ? 'selected' : 'verified_pending';
   const [targetMode, setTargetMode] = useState(initialMode);
   const [isSending, setIsSending] = useState(false);
   const [progress, setProgress] = useState(null);
 
   const getTargetCount = () => {
-    if (targetMode === 'selected') return selectedRegistrants.length;
+    if (targetMode === 'selected') return verifiedSelectedCount;
     if (targetMode === 'verified_pending') return verifiedPendingCount;
-    if (targetMode === 'verified_all') return verifiedCount;
-    if (targetMode === 'pending') return pendingCount;
-    return totalCount;
+    return verifiedCount;
   };
 
   const targetCount = getTargetCount();
@@ -36,8 +35,8 @@ export const BulkEmailModal = ({
       sounds.playWarning();
       onShowToast({
         type: 'info',
-        title: 'No Eligible Recipients',
-        message: 'There are no recipients matching your selected verification / pass criteria.',
+        title: 'No Eligible Verified Recipients',
+        message: 'Pass emails can only be sent to attendees whose status is "Verified". Please verify attendees first.',
       });
       return;
     }
@@ -47,18 +46,17 @@ export const BulkEmailModal = ({
       sounds.playClick();
       setProgress(`Dispatching QR passes via Gmail SMTP (tigeradi1504@gmail.com)...`);
 
-      let payload = {};
+      let payload = { onlyVerified: true };
       if (targetMode === 'selected') {
-        payload.selectedIds = selectedRegistrants.map((r) => r.uniqueId || r._id);
+        const verifiedIds = selectedRegistrants
+          .filter((r) => r.verified === true || String(r.verificationStatus).toLowerCase() === 'verified')
+          .map((r) => r.uniqueId || r._id);
+        payload.selectedIds = verifiedIds;
       } else if (targetMode === 'verified_pending') {
         payload.onlyVerified = true;
         payload.onlyPending = true;
       } else if (targetMode === 'verified_all') {
         payload.onlyVerified = true;
-        payload.onlyPending = false;
-      } else if (targetMode === 'pending') {
-        payload.onlyPending = true;
-      } else {
         payload.onlyPending = false;
       }
 
@@ -67,8 +65,8 @@ export const BulkEmailModal = ({
       sounds.playSuccess();
       onShowToast({
         type: 'success',
-        title: 'Bulk Passes Dispatched! 🚀',
-        message: `Successfully emailed ${response.results.sent} digital passes from tigeradi1504@gmail.com`,
+        title: 'Passes Dispatched to Verified Hackers! 🚀',
+        message: `Successfully emailed ${response.results?.sent || 0} digital passes from tigeradi1504@gmail.com`,
       });
 
       if (onClearSelection) onClearSelection();
@@ -102,8 +100,8 @@ export const BulkEmailModal = ({
               <Send size={18} color="#22c55e" />
             </div>
             <div>
-              <div style={{ fontSize: '16px', fontWeight: '800', color: '#fff' }}>Pass Email Dispatcher</div>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Send verified QR passes from tigeradi1504@gmail.com</div>
+              <div style={{ fontSize: '16px', fontWeight: '800', color: '#fff' }}>Verified Pass Email Dispatcher</div>
+              <div style={{ fontSize: '11px', color: '#4ade80' }}>🔒 Strictly Verified Attendees Only</div>
             </div>
           </div>
           <button className="btn btn-ghost btn-sm" onClick={onClose} disabled={isSending} style={{ padding: '6px', borderRadius: '50%' }}>
@@ -113,6 +111,14 @@ export const BulkEmailModal = ({
 
         {/* Modal Body */}
         <div style={{ padding: '24px' }}>
+
+          {/* Strict Verified Security Banner */}
+          <div style={{ background: 'rgba(34, 197, 94, 0.08)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '10px', padding: '12px 16px', marginBottom: '18px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <CheckCircle2 size={18} color="#4ade80" />
+            <div style={{ fontSize: '12px', color: '#cbd5e1' }}>
+              <strong>Zero-Unverified Leak Guarantee:</strong> Official QR Entry passes will <span style={{ color: '#4ade80' }}>only be emailed to Verified attendees</span>. Unverified applicants are automatically skipped.
+            </div>
+          </div>
           
           {/* Target Audience Selector */}
           <div style={{ background: '#0b0f19', borderRadius: '14px', padding: '18px', border: '1px solid var(--border-subtle)', marginBottom: '20px' }}>
@@ -121,7 +127,7 @@ export const BulkEmailModal = ({
                 Select Dispatch Scope:
               </span>
               <span className="badge badge-emerald" style={{ fontSize: '12px', padding: '4px 10px' }}>
-                {targetCount} Hackers Targeted
+                {targetCount} Verified Hackers
               </span>
             </div>
 
@@ -153,16 +159,52 @@ export const BulkEmailModal = ({
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: '800', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <CheckCircle2 size={15} color="#22c55e" />
-                    <span>Verified & Pending Pass Only ({verifiedPendingCount} hackers)</span>
+                    <span>Verified & Needs Pass Only ({verifiedPendingCount} hackers)</span>
                     <span className="badge badge-emerald" style={{ fontSize: '9px' }}>RECOMMENDED</span>
                   </div>
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                    Only emails hackers marked as "Verified" in Google Sheets who have not yet received their pass
+                    Only emails attendees who are marked "Verified" and have not received their QR pass yet
                   </div>
                 </div>
               </label>
 
-              {/* Option 2: All Verified attendees */}
+              {/* Option 2: Selected attendees */}
+              {hasSelected && (
+                <label 
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '12px', 
+                    fontSize: '13px', 
+                    cursor: 'pointer',
+                    padding: '10px 14px',
+                    borderRadius: '10px',
+                    background: targetMode === 'selected' ? 'rgba(34, 197, 94, 0.12)' : 'transparent',
+                    border: `1px solid ${targetMode === 'selected' ? 'rgba(34, 197, 94, 0.4)' : 'var(--border-subtle)'}`,
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="bulkTarget"
+                    checked={targetMode === 'selected'}
+                    onChange={() => setTargetMode('selected')}
+                    disabled={isSending}
+                    style={{ accentColor: '#22c55e', width: '16px', height: '16px' }}
+                  />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: '800', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <CheckSquare size={14} color="#22c55e" />
+                      <span>Only Selected Verified Hackers ({verifiedSelectedCount} of {selectedRegistrants.length} selected)</span>
+                    </div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                      Sends passes strictly to the verified individuals checked in the table
+                    </div>
+                  </div>
+                </label>
+              )}
+
+              {/* Option 3: All Verified attendees */}
               <label 
                 style={{ 
                   display: 'flex', 
@@ -190,109 +232,7 @@ export const BulkEmailModal = ({
                     All Verified Hackers ({verifiedCount} hackers)
                   </div>
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                    Dispatches passes to all verified hackers (including resending)
-                  </div>
-                </div>
-              </label>
-
-              {/* Option 3: Selected attendees */}
-              {hasSelected && (
-                <label 
-                  style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '12px', 
-                    fontSize: '13px', 
-                    cursor: 'pointer',
-                    padding: '10px 14px',
-                    borderRadius: '10px',
-                    background: targetMode === 'selected' ? 'rgba(34, 197, 94, 0.12)' : 'transparent',
-                    border: `1px solid ${targetMode === 'selected' ? 'rgba(34, 197, 94, 0.4)' : 'var(--border-subtle)'}`,
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  <input
-                    type="radio"
-                    name="bulkTarget"
-                    checked={targetMode === 'selected'}
-                    onChange={() => setTargetMode('selected')}
-                    disabled={isSending}
-                    style={{ accentColor: '#22c55e', width: '16px', height: '16px' }}
-                  />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: '800', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <CheckSquare size={14} color="#22c55e" />
-                      <span>Only Selected Hackers ({selectedRegistrants.length} selected)</span>
-                    </div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                      Sends emails strictly to the individuals you checked in the table
-                    </div>
-                  </div>
-                </label>
-              )}
-
-              {/* Option 4: Pending only */}
-              <label 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '12px', 
-                  fontSize: '13px', 
-                  cursor: 'pointer',
-                  padding: '10px 14px',
-                  borderRadius: '10px',
-                  background: targetMode === 'pending' ? 'rgba(34, 197, 94, 0.12)' : 'transparent',
-                  border: `1px solid ${targetMode === 'pending' ? 'rgba(34, 197, 94, 0.4)' : 'var(--border-subtle)'}`,
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                <input
-                  type="radio"
-                  name="bulkTarget"
-                  checked={targetMode === 'pending'}
-                  onChange={() => setTargetMode('pending')}
-                  disabled={isSending}
-                  style={{ accentColor: '#22c55e', width: '16px', height: '16px' }}
-                />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: '800', color: '#ffffff' }}>
-                    All Unsent / Pending Pass Hackers ({pendingCount} hackers)
-                  </div>
-                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                    Skips hackers who already received their pass to avoid spam
-                  </div>
-                </div>
-              </label>
-
-              {/* Option 5: All registrants */}
-              <label 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '12px', 
-                  fontSize: '13px', 
-                  cursor: 'pointer',
-                  padding: '10px 14px',
-                  borderRadius: '10px',
-                  background: targetMode === 'all' ? 'rgba(34, 197, 94, 0.12)' : 'transparent',
-                  border: `1px solid ${targetMode === 'all' ? 'rgba(34, 197, 94, 0.4)' : 'var(--border-subtle)'}`,
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                <input
-                  type="radio"
-                  name="bulkTarget"
-                  checked={targetMode === 'all'}
-                  onChange={() => setTargetMode('all')}
-                  disabled={isSending}
-                  style={{ accentColor: '#22c55e', width: '16px', height: '16px' }}
-                />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: '800', color: '#ffffff' }}>
-                    All Total Registrants ({totalCount} hackers)
-                  </div>
-                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                    Re-sends entry passes to everyone registered
+                    Dispatches passes to all verified hackers (including resending existing passes)
                   </div>
                 </div>
               </label>

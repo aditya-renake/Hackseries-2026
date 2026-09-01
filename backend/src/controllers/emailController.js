@@ -3,7 +3,7 @@ import { configRepo } from '../models/configRepo.js';
 import { sendPassEmail, sendBulkPassEmails, buildPassEmailHtml } from '../services/emailService.js';
 
 /**
- * 1-Click Send Pass Email to a single registrant
+ * 1-Click Send Pass Email to a single registrant (STRICTLY VERIFIED ONLY)
  */
 export const sendSinglePassEmail = async (req, res) => {
   try {
@@ -12,6 +12,14 @@ export const sendSinglePassEmail = async (req, res) => {
 
     if (!registrant) {
       return res.status(404).json({ success: false, message: 'Registrant not found' });
+    }
+
+    const isVerified = registrant.verified === true || String(registrant.verificationStatus).toLowerCase() === 'verified';
+    if (!isVerified) {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot send QR pass to ${registrant.name} because their status is "Pending / Not Verified". Please verify them first.`,
+      });
     }
 
     const config = await configRepo.getConfig();
@@ -46,11 +54,11 @@ export const sendSinglePassEmail = async (req, res) => {
 };
 
 /**
- * Bulk send pass emails to pending or selected attendees
+ * Bulk send pass emails (STRICTLY VERIFIED ONLY)
  */
 export const sendBulkEmails = async (req, res) => {
   try {
-    const { onlyPending = true, onlyVerified = false, selectedIds } = req.body;
+    const { onlyPending = true, selectedIds } = req.body;
 
     const allResult = await registrantRepo.getAll({ limit: 10000 });
     let registrants = allResult.items || [];
@@ -64,19 +72,19 @@ export const sendBulkEmails = async (req, res) => {
         idSet.has(String(r._id || '').toUpperCase().trim()) ||
         emailSet.has(String(r.email || '').toLowerCase().trim())
       );
-    } else {
-      if (onlyVerified) {
-        registrants = registrants.filter((r) => r.verified === true || String(r.verificationStatus).toLowerCase() === 'verified');
-      }
-      if (onlyPending) {
-        registrants = registrants.filter((r) => !r.emailSent);
-      }
+    }
+
+    // STRICT VERIFICATION FILTER: Only verified attendees will ever receive pass emails
+    registrants = registrants.filter((r) => r.verified === true || String(r.verificationStatus).toLowerCase() === 'verified');
+
+    if (onlyPending) {
+      registrants = registrants.filter((r) => !r.emailSent);
     }
 
     if (registrants.length === 0) {
       return res.json({
         success: true,
-        message: 'No eligible registrants found to email.',
+        message: 'No eligible verified registrants found to email. Ensure attendees are marked as "Verified" first.',
         results: { total: 0, sent: 0, failed: 0 },
       });
     }
